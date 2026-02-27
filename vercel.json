@@ -1,0 +1,14 @@
+{
+    "crons": [
+        {
+            "path": "/api/cron-telegram",
+            "schedule": "0 0 * * *"
+        }
+    ],
+    "rewrites": [
+        {
+            "source": "/privacy",
+            "destination": "/privacy-policy"
+        }
+    ]
+}

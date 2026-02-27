@@ -1,0 +1,137 @@
+import Link from 'next/link'
+import { Phone, Mail, MapPin } from 'lucide-react'
+import { FaFacebookF, FaTelegramPlane, FaWhatsapp } from 'react-icons/fa'
+
+const links = {
+    categories: [
+        { label: 'टॉप स्टोरी', href: '/category/top-story' },
+        { label: 'अपराध समाचार', href: '/category/crime' },
+        { label: 'प्रशासनिक कार्रवाई', href: '/category/administration' },
+        { label: 'शहर की सुविधाएं', href: '/category/city-facilities' },
+        { label: 'आपदा / दुर्घटना', href: '/category/disaster-accident' },
+        { label: 'स्वास्थ्य और शिक्षा', href: '/category/health-education' },
+        { label: 'जनसमस्या', href: '/category/public-issues' },
+        { label: 'ग्रामीण विकास', href: '/category/rural-development' },
+        { label: 'सामाजिक कार्यक्रम', href: '/category/social-events' },
+    ],
+    districts: [
+        { label: 'गढ़वा', href: '/garhwa' },
+        { label: 'पलामू', href: '/palamu' },
+        { label: 'झारखंड', href: '/jharkhand' },
+    ],
+    legal: [
+        { label: 'हमारे बारे में', href: '/about' },
+        { label: 'संपर्क', href: '/contact' },
+        { label: 'गोपनीयता नीति', href: '/privacy-policy' },
+        { label: 'नियम और शर्तें', href: '/terms' },
+        { label: 'संपादकीय नीति', href: '/editorial-policy' },
+        { label: 'सुधार नीति', href: '/corrections' },
+    ],
+}
+
+const s = {
+    col: { color: '#d1d5db', fontSize: '0.83rem' } as React.CSSProperties,
+    heading: { color: 'white', fontWeight: 700, fontSize: '0.92rem', marginBottom: '0.9rem', display: 'flex', alignItems: 'center', gap: '8px' } as React.CSSProperties,
+    dot: { display: 'inline-block', width: 3, height: 18, background: '#dc2626', borderRadius: 2 } as React.CSSProperties,
+    link: { display: 'flex', alignItems: 'center', gap: '6px', color: '#d1d5db', fontSize: '0.83rem', marginBottom: '8px' } as React.CSSProperties,
+}
+
+export default function Footer() {
+    const year = new Date().getFullYear()
+    return (
+        <footer style={{ background: '#111827', color: '#d1d5db', paddingTop: '2.5rem', paddingBottom: '1rem', marginTop: '2.5rem' }}>
+            <div className="container">
+                <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(200px, 1fr))', gap: '2rem', marginBottom: '2rem' }}>
+
+                    {/* Brand */}
+                    <div>
+                        <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '1rem' }}>
+                            <div style={{ background: '#b91c1c', color: 'white', padding: '6px 10px', borderRadius: '6px', fontWeight: 900, lineHeight: 1.1 }}>
+                                <span style={{ display: 'block', color: '#fde68a', fontSize: '0.6rem', letterSpacing: '2px' }}>NR DAILY</span>
+                                NEWS
+                            </div>
+                            <div>
+                                <div style={{ fontWeight: 700, color: 'white', fontSize: '0.85rem' }}>गढ़वा पलामू न्यूज़</div>
+                                <div style={{ color: '#f87171', fontSize: '0.72rem' }}>सच्चाई के साथ</div>
+                            </div>
+                        </div>
+                        <p style={{ fontSize: '0.82rem', lineHeight: 1.65, marginBottom: '1rem' }}>
+                            गढ़वा और पलामू की ताज़ा, सटीक और निष्पक्ष खबरें। स्थानीय पत्रकारिता को समर्पित।
+                        </p>
+                        <div style={{ display: 'flex', gap: '8px' }}>
+                            {[
+                                { label: 'FB', icon: <FaFacebookF size={16} />, href: 'https://www.facebook.com/profile.php?id=61588651835601', bg: '#1877f2' },
+                                { label: 'TG', icon: <FaTelegramPlane size={17} />, href: 'https://t.me/nrdailynews', bg: '#0088cc' },
+                                { label: 'WA', icon: <FaWhatsapp size={19} />, href: 'https://wa.me/918789320315', bg: '#25d366' },
+                            ].map(site => (
+                                <a key={site.label} href={site.href} target="_blank" rel="noopener noreferrer"
+                                    style={{ width: 36, height: 36, borderRadius: '50%', background: site.bg, color: 'white', display: 'flex', alignItems: 'center', justifyContent: 'center' }}
+                                    className="hover:opacity-80 transition-opacity"
+                                >
+                                    {site.icon}
+                                </a>
+                            ))}
+                        </div>
+                    </div>
+
+                    {/* Categories */}
+                    <div>
+                        <h3 style={s.heading}><span style={s.dot} /> समाचार श्रेणियाँ</h3>
+                        {links.categories.map(l => (
+                            <Link key={l.href} href={l.href} style={s.link} className="hover:text-red-400">
+                                <span style={{ color: '#dc2626', fontSize: '0.65rem' }}>&rsaquo;</span> {l.label}
+                            </Link>
+                        ))}
+                    </div>
+
+                    {/* Important links */}
+                    <div>
+                        <h3 style={s.heading}><span style={s.dot} /> महत्वपूर्ण लिंक</h3>
+                        {links.legal.map(l => (
+                            <Link key={l.href} href={l.href} style={s.link} className="hover:text-red-400">
+                                <span style={{ color: '#dc2626', fontSize: '0.65rem' }}>&rsaquo;</span> {l.label}
+                            </Link>
+                        ))}
+                    </div>
+
+                    {/* Contact */}
+                    <div>
+                        <h3 style={s.heading}><span style={s.dot} /> संपर्क</h3>
+                        <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
+                            <div style={{ display: 'flex', alignItems: 'flex-start', gap: '10px', fontSize: '0.82rem' }}>
+                                <MapPin size={15} style={{ color: '#f87171', flexShrink: 0, marginTop: 2 }} />
+                                <span>गढ़वा, झारखंड — 822114</span>
+                            </div>
+                            <div style={{ display: 'flex', alignItems: 'flex-start', gap: '10px', fontSize: '0.82rem' }}>
+                                <Phone size={15} style={{ color: '#f87171', flexShrink: 0, marginTop: 2 }} />
+                                <div>
+                                    <a href="tel:+918789320315" className="hover:text-white" style={{ display: 'block' }}>8789320315</a>
+                                    <a href="tel:+919955735617" className="hover:text-white" style={{ display: 'block' }}>9955735617</a>
+                                </div>
+                            </div>
+                            <div style={{ display: 'flex', alignItems: 'center', gap: '10px', fontSize: '0.82rem' }}>
+                                <Mail size={15} style={{ color: '#f87171', flexShrink: 0 }} />
+                                <a href="mailto:news@garhwa-news.vercel.app" className="hover:text-white">news@garhwa-news.vercel.app</a>
+                            </div>
+                        </div>
+                        <a href="https://wa.me/918789320315" target="_blank" rel="noopener noreferrer"
+                            style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '8px', marginTop: '1.25rem', background: '#25d366', color: 'white', padding: '10px', borderRadius: '8px', fontSize: '0.9rem', fontWeight: 700 }}
+                            className="hover:bg-green-600 text-decoration-none transition-colors">
+                            <FaWhatsapp size={20} /> WHATSAPP
+                        </a>
+                    </div>
+                </div>
+
+                {/* Bottom */}
+                <div style={{ borderTop: '1px solid #1f2937', paddingTop: '1rem', display: 'flex', flexDirection: 'column', gap: '6px', alignItems: 'center', fontSize: '0.75rem', color: '#9ca3af', textAlign: 'center' }}>
+                    <p>&copy; {year} NR Daily News — गढ़वा पलामू न्यूज़। सर्वाधिकार सुरक्षित।</p>
+                    <div style={{ display: 'flex', gap: '1rem' }}>
+                        <Link href="/privacy-policy" className="hover:text-white">Privacy</Link>
+                        <Link href="/terms" className="hover:text-white">Terms</Link>
+                        <Link href="/sitemap.xml" className="hover:text-white">Sitemap</Link>
+                    </div>
+                </div>
+            </div>
+        </footer>
+    )
+}
