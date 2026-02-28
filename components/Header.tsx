@@ -2,12 +2,15 @@
 
 import Link from 'next/link'
 import { useState, useEffect } from 'react'
-import { Menu, X, Search, Phone } from 'lucide-react'
+import { Menu, X, Search, Phone, ArrowLeft } from 'lucide-react'
+import { usePathname, useRouter } from 'next/navigation'
 
 export default function Header() {
     const [mobileOpen, setMobileOpen] = useState(false)
     const [searchOpen, setSearchOpen] = useState(false)
     const [isDesktop, setIsDesktop] = useState(true)
+    const pathname = usePathname()
+    const router = useRouter()
 
     useEffect(() => {
         const checkSize = () => setIsDesktop(window.innerWidth >= 768)
@@ -33,17 +36,28 @@ export default function Header() {
             <div className="container" style={{ display: 'flex', flexDirection: 'column' }}>
                 {/* Top Row */}
                 <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', height: 70 }}>
-                    {/* Logo */}
-                    <Link href="/" style={{ display: 'flex', alignItems: 'center', gap: '8px', textDecoration: 'none' }}>
-                        <div style={{ background: '#b91c1c', color: 'white', padding: '6px 12px', borderRadius: '6px', fontWeight: 900, lineHeight: 1.1 }}>
-                            <span style={{ display: 'block', color: '#fde68a', fontSize: '0.65rem', letterSpacing: '2px', fontWeight: 700 }}>NR DAILY</span>
-                            NEWS
-                        </div>
-                        <div style={{ display: isDesktop ? 'block' : 'none' }}>
-                            <div style={{ fontWeight: 800, color: '#111827', fontSize: '0.95rem', lineHeight: 1 }}>गढ़वा पलामू न्यूज़</div>
-                            <div style={{ color: '#dc2626', fontSize: '0.75rem', fontWeight: 600 }}>सच्चाई के साथ</div>
-                        </div>
-                    </Link>
+                    {/* Left Actions - Logo & Back */}
+                    <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
+                        {pathname !== '/' && (
+                            <button
+                                onClick={() => router.back()}
+                                style={{ background: '#f3f4f6', border: 'none', padding: '8px', borderRadius: '50%', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center' }}
+                                aria-label="Go Back"
+                            >
+                                <ArrowLeft size={20} color="#374151" />
+                            </button>
+                        )}
+                        <Link href="/" style={{ display: 'flex', alignItems: 'center', gap: '8px', textDecoration: 'none' }}>
+                            <div style={{ background: '#b91c1c', color: 'white', padding: '6px 12px', borderRadius: '6px', fontWeight: 900, lineHeight: 1.1 }}>
+                                <span style={{ display: 'block', color: '#fde68a', fontSize: '0.65rem', letterSpacing: '2px', fontWeight: 700 }}>NR DAILY</span>
+                                NEWS
+                            </div>
+                            <div style={{ display: isDesktop ? 'block' : 'none' }}>
+                                <div style={{ fontWeight: 800, color: '#111827', fontSize: '0.95rem', lineHeight: 1 }}>गढ़वा पलामू न्यूज़</div>
+                                <div style={{ color: '#dc2626', fontSize: '0.75rem', fontWeight: 600 }}>सच्चाई के साथ</div>
+                            </div>
+                        </Link>
+                    </div>
 
                     {/* Desktop Nav */}
                     {isDesktop && (
