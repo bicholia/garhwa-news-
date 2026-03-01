@@ -20,41 +20,50 @@ export default function PrivacyPolicyPage() {
                         <div className="w-20 h-1 bg-red-600 mx-auto mt-4"></div>
                     </div>
 
-                    <div className="bg-white rounded-2xl shadow-lg p-8 space-y-8">
+                    <div className="bg-white rounded-2xl shadow-lg p-10 space-y-10 border border-gray-100">
                         <section>
-                            <h2 className="text-2xl font-bold text-red-600 mb-3">1. परिचय</h2>
-                            <p className="text-gray-700 leading-relaxed">
-                                गढ़वा पलामू न्यूज़ (garhwapalamunews.com) आपकी निजता का सम्मान करता है।
-                                यह नीति बताती है कि जब आप हमारी वेबसाइट पर जाते हैं, तो हम आपकी कौन सी व्यक्तिगत
-                                जानकारी एकत्र करते हैं और उसका उपयोग कैसे करते हैं।
+                            <h2 className="text-2xl font-black text-gray-900 mb-4 flex items-center gap-2">
+                                <span className="w-8 h-8 bg-red-600 text-white rounded-lg flex items-center justify-center text-sm">01</span>
+                                परिचय और डेटा संग्रह
+                            </h2>
+                            <p className="text-gray-700 leading-relaxed text-lg mb-4">
+                                <strong>NR Daily News</strong> (गढ़वा पलामू न्यूज़) आपकी निजता (Privacy) का सम्मान करता है। जब आप हमारी वेबसाइट का उपयोग करते हैं, तो हम निम्नलिखित जानकारी एकत्र कर सकते हैं:
                             </p>
-                        </section>
-
-                        <section>
-                            <h2 className="text-2xl font-bold text-red-600 mb-3">2. जानकारी का संग्रह</h2>
-                            <ul className="list-disc list-inside text-gray-700 space-y-2">
-                                <li><strong>व्यक्तिगत जानकारी:</strong> नाम, ईमेल पता (जब आप हमसे संपर्क करते हैं)</li>
-                                <li><strong>लॉग डेटा:</strong> IP पता, ब्राउज़र प्रकार, विज़िट की तारीख और समय</li>
-                                <li><strong>कुकीज़:</strong> बेहतर उपयोगकर्ता अनुभव के लिए छोटी फ़ाइलें</li>
+                            <ul className="grid md:grid-cols-2 gap-4 text-gray-700">
+                                <li className="bg-gray-50 p-4 rounded-xl border-l-4 border-red-600"><strong>लोकेशन डेटा:</strong> आपके क्षेत्र की सटीक खबरें दिखाने के लिए।</li>
+                                <li className="bg-gray-50 p-4 rounded-xl border-l-4 border-red-600"><strong>डिवाइस जानकारी:</strong> बेहतर यूजर एक्सपीरियंस के लिए।</li>
+                                <li className="bg-gray-50 p-4 rounded-xl border-l-4 border-red-600"><strong>लॉग्स:</strong> IP एड्रेस और ब्राउज़र टाइप (Security के लिए)।</li>
+                                <li className="bg-gray-50 p-4 rounded-xl border-l-4 border-red-600"><strong>संपर्क जानकारी:</strong> जब आप न्यूज़ टिप या फीडबैक देते हैं।</li>
                             </ul>
                         </section>
 
                         <section>
-                            <h2 className="text-2xl font-bold text-red-600 mb-3">3. डेटा सुरक्षा</h2>
-                            <p className="text-gray-700 leading-relaxed">
-                                हम आपकी व्यक्तिगत जानकारी को अनधिकृत पहुंच या परिवर्तन से बचाने के लिए उचित सुरक्षा उपाय करते हैं।
-                                हम कभी भी आपका डेटा तीसरे पक्ष को नहीं बेचते।
+                            <h2 className="text-2xl font-black text-gray-900 mb-4 flex items-center gap-2">
+                                <span className="w-8 h-8 bg-red-600 text-white rounded-lg flex items-center justify-center text-sm">02</span>
+                                डेटा का उपयोग (Usage)
+                            </h2>
+                            <p className="text-gray-700 leading-relaxed text-lg">
+                                हम आपके डेटा का उपयोग वेबसाइट की सुरक्षा सुनिश्चित करने, आपको विज्ञापन दिखाने (Google AdSense द्वारा), और भविष्य में आपको पर्सनलाइज्ड न्यूज़ अलर्ट भेजने के लिए करते हैं। हम कभी भी किसी तीसरे पक्ष (Third Party) को आपकी निजी जानकारी <strong>नहीं बेचते</strong>।
                             </p>
                         </section>
 
                         <section>
-                            <h2 className="text-2xl font-bold text-red-600 mb-3">4. संपर्क जानकारी</h2>
-                            <p className="text-gray-700 leading-relaxed">
-                                अगर आपके पास इस नीति से संबंधित कोई प्रश्न हैं, तो कृपया हमसे संपर्क करें:
+                            <h2 className="text-2xl font-black text-gray-900 mb-4 flex items-center gap-2">
+                                <span className="w-8 h-8 bg-red-600 text-white rounded-lg flex items-center justify-center text-sm">03</span>
+                                कुकीज़ (Cookies)
+                            </h2>
+                            <p className="text-gray-700 leading-relaxed text-lg">
+                                हमारी वेबसाइट कुकीज़ का उपयोग करती है ताकि हम यह समझ सकें कि पाठक किस तरह की ख़बरों में रुचि रखते हैं। यह डेटा पूरी तरह से गोपनीय रहता है और विज्ञापनदाताओं के साथ केवल आंकड़ों के रूप में साझा किया जाता है।
                             </p>
-                            <div className="mt-4 p-4 bg-gray-50 rounded-lg">
-                                <p><strong>ईमेल:</strong> news@garhwa-news.vercel.app</p>
-                                <p><strong>पता:</strong> वार्ड नंबर 8, पुलिस लाइन के पास, गढ़वा - 822114, झारखंड</p>
+                        </section>
+
+                        <section className="bg-gray-900 text-white p-8 rounded-3xl">
+                            <h2 className="text-2xl font-black mb-4">संपर्क सूत्र (Grievance Redressal)</h2>
+                            <p className="mb-6 opacity-80">किसी भी प्रकार की आपत्ति या निजता संबंधी शिकायत के लिए हमें यहाँ लिखें:</p>
+                            <div className="space-y-2 text-lg">
+                                <p><strong>ईमेल:</strong> contact@nrdailynews.com</p>
+                                <p><strong>व्हाट्सएप:</strong> +91-8789320315</p>
+                                <p><strong>स्थान:</strong> वार्ड नंबर 8, पुलिस लाइन के पास, गढ़वा, झारखंड - 822114</p>
                             </div>
                         </section>
                     </div>

@@ -24,6 +24,7 @@ const links = {
         { label: 'संपर्क', href: '/contact' },
         { label: 'गोपनीयता नीति', href: '/privacy-policy' },
         { label: 'नियम और शर्तें', href: '/terms' },
+        { label: 'रिफंड नीति', href: '/refund-policy' },
         { label: 'संपादकीय नीति', href: '/editorial-policy' },
         { label: 'सुधार नीति', href: '/corrections' },
     ],
@@ -125,9 +126,10 @@ export default function Footer() {
                 {/* Bottom */}
                 <div style={{ borderTop: '1px solid #1f2937', paddingTop: '1rem', display: 'flex', flexDirection: 'column', gap: '6px', alignItems: 'center', fontSize: '0.75rem', color: '#9ca3af', textAlign: 'center' }}>
                     <p>&copy; {year} NR Daily News — गढ़वा पलामू न्यूज़। सर्वाधिकार सुरक्षित।</p>
-                    <div style={{ display: 'flex', gap: '1rem' }}>
+                    <div style={{ display: 'flex', gap: '1rem', flexWrap: 'wrap', justifyContent: 'center' }}>
                         <Link href="/privacy-policy" className="hover:text-white">Privacy</Link>
                         <Link href="/terms" className="hover:text-white">Terms</Link>
+                        <Link href="/refund-policy" className="hover:text-white">Refund</Link>
                         <Link href="/sitemap.xml" className="hover:text-white">Sitemap</Link>
                     </div>
                 </div>

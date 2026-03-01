@@ -2,8 +2,9 @@
 
 import Link from 'next/link'
 import { useState, useEffect } from 'react'
-import { Menu, X, Search, Phone, ArrowLeft } from 'lucide-react'
+import { Menu, X, Search, Phone, ArrowLeft, Calendar } from 'lucide-react'
 import { usePathname, useRouter } from 'next/navigation'
+import WeatherWidget from '@/components/WeatherWidget'
 
 export default function Header() {
     const [mobileOpen, setMobileOpen] = useState(false)
@@ -33,6 +34,23 @@ export default function Header() {
 
     return (
         <header style={{ background: 'white', borderBottom: '1px solid #e5e7eb', position: 'sticky', top: 0, zIndex: 1000, boxShadow: '0 1px 3px rgba(0,0,0,0.05)' }}>
+            {/* Top Bar for Weather and Date */}
+            <div style={{ background: '#f8fafc', borderBottom: '1px solid #f1f5f9', height: '40px', display: 'flex', alignItems: 'center' }}>
+                <div className="container" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                    <div style={{ display: 'flex', alignItems: 'center', gap: '16px' }}>
+                        <div style={{ display: 'flex', alignItems: 'center', gap: '6px', fontSize: '0.75rem', fontWeight: 700, color: '#64748b' }}>
+                            <Calendar size={14} />
+                            {new Date().toLocaleDateString('hi-IN', { weekday: 'long', day: 'numeric', month: 'long', year: 'numeric' })}
+                        </div>
+                        <WeatherWidget />
+                    </div>
+                    {isDesktop && (
+                        <div style={{ fontSize: '0.7rem', fontWeight: 800, color: '#dc2626', letterSpacing: '1px' }}>
+                            NR DAILY NEWS &bull; TRUTH ABOVE ALL
+                        </div>
+                    )}
+                </div>
+            </div>
             <div className="container" style={{ display: 'flex', flexDirection: 'column' }}>
                 {/* Top Row */}
                 <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', height: 70 }}>

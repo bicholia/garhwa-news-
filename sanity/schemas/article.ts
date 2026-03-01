@@ -130,6 +130,23 @@ export const articleSchema = defineType({
             ],
         }),
 
+        defineField({
+            name: 'updates',
+            title: 'Live Updates (ताज़ा अपडेट)',
+            type: 'array',
+            group: 'content',
+            description: 'Breaking news ke naye updates yahan jodein (Isse Google ko Freshness Signal milta hai)',
+            of: [
+                {
+                    type: 'object',
+                    fields: [
+                        { name: 'time', title: 'Update Time', type: 'datetime', options: { dateFormat: 'DD-MM-YYYY', timeFormat: 'HH:mm' } },
+                        { name: 'text', title: 'Update Text', type: 'text', rows: 2 }
+                    ]
+                }
+            ],
+        }),
+
         // ── META GROUP ──────────────────────────────────────────────
         defineField({
             name: 'category',
@@ -163,6 +180,14 @@ export const articleSchema = defineType({
                 layout: 'radio',
             },
             validation: Rule => Rule.required(),
+        }),
+
+        defineField({
+            name: 'location',
+            title: 'सटीक स्थान (Micro Location)',
+            type: 'string',
+            group: 'meta',
+            description: 'Local SEO ke liye sabse zaruri - Exact jagah ka naam (e.g. Garhwa Sadar, Bishunpura Thana)',
         }),
 
         defineField({
@@ -224,7 +249,7 @@ export const articleSchema = defineType({
             options: {
                 layout: 'tags',
             },
-            description: 'e.g. गढ़वा, सड़क दुर्घटना, पुलिस',
+            description: 'e.g. Garhwa Sadar firing, Bishunpura crime news (Local + Micro Keywords)',
         }),
 
         // ── ADS GROUP ────────────────────────────────────────────────

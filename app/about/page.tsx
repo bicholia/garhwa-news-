@@ -20,13 +20,33 @@ export default function AboutPage() {
                 <div className="container mx-auto px-4 max-w-4xl">
 
                     {/* Header */}
-                    <div className="text-center mb-12">
-                        <h1 className="text-4xl font-bold text-gray-900 mb-4 border-b-4 border-red-600 inline-block pb-2">
-                            हमारे बारे में
+                    <div className="text-center mb-16">
+                        <h1 className="text-5xl font-black text-gray-900 mb-6 border-b-8 border-red-600 inline-block pb-2">
+                            हमारी कहानी
                         </h1>
-                        <p className="text-xl text-gray-600 mt-4">
-                            गढ़वा-पलामू की आवाज - सच्चाई के साथ
+                        <p className="text-xl text-gray-600 mt-4 font-semibold">
+                            गढ़वा-पलामू का अपना डिजिटल न्यूज़ नेटवर्क — <span className="text-red-600">NR Daily News</span>
                         </p>
+                    </div>
+
+                    {/* Founder's Story / Digital Upliftment */}
+                    <div className="bg-white rounded-3xl shadow-xl overflow-hidden mb-12 border border-gray-100">
+                        <div className="md:flex">
+                            <div className="md:w-1/3 bg-red-600 p-12 flex flex-col justify-center text-white">
+                                <h2 className="text-3xl font-black mb-4">Founder's Story</h2>
+                                <div className="w-16 h-1 bg-white opacity-50 mb-6"></div>
+                                <p className="text-red-100 italic">"हमारा सपना गढ़वा के हर घर को डिजिटल क्रांति से जोड़ना है।"</p>
+                            </div>
+                            <div className="md:w-2/3 p-10">
+                                <h2 className="text-2xl font-bold text-gray-900 mb-6">डिजिटल उत्थान (Digital Upliftment)</h2>
+                                <p className="text-gray-700 leading-relaxed mb-6 text-lg">
+                                    NR Daily News की शुरुआत एक छोटे से सपने के साथ हुई थी — गढ़वा और पलामू जैसे क्षेत्रों में सूचना के अभाव को मिटाना। हमने देखा कि हमारे क्षेत्र की खबरें बड़े मीडिया हाउसों में कहीं खो जाती थीं।
+                                </p>
+                                <p className="text-gray-700 leading-relaxed mb-6 text-lg">
+                                    हमारा उद्देश्य केवल समाचार देना नहीं, बल्कि इस क्षेत्र का <strong>डिजिटल उत्थान (Digital Upliftment)</strong> करना है। हम स्थानीय युवाओं को डिजिटल पत्रकारिता से जोड़ रहे हैं और तकनीकी रूप से सशक्त बना रहे हैं ताकि हमारे जिले की आवाज़ पूरी दुनिया में गूंज सके।
+                                </p>
+                            </div>
+                        </div>
                     </div>
 
                     {/* Mission */}
