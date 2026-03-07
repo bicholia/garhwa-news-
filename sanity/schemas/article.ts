@@ -1,7 +1,4 @@
-// schemas/article.ts — Article document schema for NR Daily News
-// FIELDS: title, slug, excerpt, body (blocks), featureImage, category, district, publishedAt, author, seo
-
-import { defineField, defineType } from 'sanity'
+import { defineField, defineType, type StringRule, type SlugRule, type TextRule, type ImageRule, type ArrayRule, type ReferenceRule } from 'sanity'
 
 export const articleSchema = defineType({
     name: 'article',
@@ -21,8 +18,8 @@ export const articleSchema = defineType({
             name: 'title',
             title: 'शीर्षक (Title)',
             type: 'string',
-            validation: (Rule) =>
-                Rule.custom((title, context) => {
+            validation: (rule: StringRule) =>
+                rule.custom((title: string | undefined) => {
                     if (!title) {
                         return 'शीर्षक (Title) is required'
                     }
@@ -47,7 +44,7 @@ export const articleSchema = defineType({
                         .replace(/[^\w\-]/g, '')
                         .slice(0, 100),
             },
-            validation: Rule => Rule.required().error('Slug required hai'),
+            validation: (rule: SlugRule) => rule.required().error('Slug required hai'),
         }),
 
         defineField({
@@ -57,15 +54,15 @@ export const articleSchema = defineType({
             group: 'content',
             rows: 3,
             description: 'Homepage aur Google mein dikh ne wala short summary (120-160 chars ideal)',
-            validation: Rule => Rule.required().max(200),
+            validation: (rule: TextRule) => rule.required().max(200),
         }),
 
         defineField({
             name: 'featureImage',
             title: 'मुख्य चित्र (Feature Image)',
             type: 'image',
-            validation: (Rule) =>
-                Rule.custom((image, context) => {
+            validation: (rule: ImageRule) =>
+                rule.custom((image: any) => {
                     if (!image) return 'Each article needs a featured image'
                     return true
                 }).required(),
@@ -92,8 +89,8 @@ export const articleSchema = defineType({
             title: 'खबर का विवरण (Article Body)',
             type: 'array',
             group: 'content',
-            validation: (Rule) =>
-                Rule.custom((body, context) => {
+            validation: (rule: ArrayRule<any>) =>
+                rule.custom((body: any) => {
                     if (!body || (Array.isArray(body) && body.length === 0)) {
                         return 'Article body cannot be empty'
                     }
@@ -154,7 +151,7 @@ export const articleSchema = defineType({
             type: 'reference',
             to: [{ type: 'category' }],
             group: 'meta',
-            validation: Rule => Rule.required(),
+            validation: (rule: ReferenceRule) => rule.required(),
         }),
 
         defineField({
@@ -179,7 +176,7 @@ export const articleSchema = defineType({
                 ],
                 layout: 'radio',
             },
-            validation: Rule => Rule.required(),
+            validation: (rule: StringRule) => rule.required(),
         }),
 
         defineField({
@@ -227,7 +224,7 @@ export const articleSchema = defineType({
             type: 'string',
             group: 'seo',
             description: 'Google search result mein dikh ne wala title (60 chars max). Blank chhodo to article title use hoga.',
-            validation: Rule => Rule.max(60),
+            validation: (rule: StringRule) => rule.max(60),
         }),
 
         defineField({
@@ -237,7 +234,7 @@ export const articleSchema = defineType({
             group: 'seo',
             rows: 2,
             description: 'Google search result mein dikh ne wala description (160 chars max)',
-            validation: Rule => Rule.max(160),
+            validation: (rule: TextRule) => rule.max(160),
         }),
 
         defineField({
@@ -331,7 +328,7 @@ export const articleSchema = defineType({
             media: 'featureImage',
             district: 'district',
         },
-        prepare({ title, subtitle, media, district }) {
+        prepare({ title, subtitle, media, district }: { title: string, subtitle: string, media: any, district: string }) {
             return {
                 title,
                 subtitle: `${subtitle} | District: ${district}`,

@@ -1,18 +1,16 @@
 'use client'
 
-import { FaWhatsapp } from 'react-icons/fa'
+import { Mail } from 'lucide-react'
 
-export default function WhatsAppButton() {
+export default function MailButton() {
     return (
         <a
-            href="https://wa.me/918789320315?text=नमस्ते! मुझे एक खबर भेजनी है।"
-            target="_blank"
-            rel="noopener noreferrer"
+            href="mailto:bicholia03@gmail.com"
             style={{
                 position: 'fixed',
                 bottom: 24,
                 right: 24,
-                background: '#16a34a',
+                background: '#dc2626',
                 color: 'white',
                 width: 56,
                 height: 56,
@@ -25,9 +23,9 @@ export default function WhatsAppButton() {
                 transition: 'transform 0.2s'
             }}
             className="hover:scale-110"
-            aria-label="WhatsApp"
+            aria-label="Email Us"
         >
-            <FaWhatsapp size={30} />
+            <Mail size={24} />
         </a>
     )
 }

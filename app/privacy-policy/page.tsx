@@ -61,8 +61,8 @@ export default function PrivacyPolicyPage() {
                             <h2 className="text-2xl font-black mb-4">संपर्क सूत्र (Grievance Redressal)</h2>
                             <p className="mb-6 opacity-80">किसी भी प्रकार की आपत्ति या निजता संबंधी शिकायत के लिए हमें यहाँ लिखें:</p>
                             <div className="space-y-2 text-lg">
-                                <p><strong>ईमेल:</strong> contact@nrdailynews.com</p>
-                                <p><strong>व्हाट्सएप:</strong> +91-8789320315</p>
+                                <p><strong>ईमेल:</strong> bicholia03@gmail.com</p>
+
                                 <p><strong>स्थान:</strong> वार्ड नंबर 8, पुलिस लाइन के पास, गढ़वा, झारखंड - 822114</p>
                             </div>
                         </section>

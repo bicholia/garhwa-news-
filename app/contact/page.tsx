@@ -61,21 +61,6 @@ export default function ContactPage() {
                                     </div>
                                 </div>
 
-                                {/* Phone */}
-                                <div className="flex items-start space-x-4">
-                                    <div style={{ background: '#fee2e2', padding: '12px', borderRadius: '50%', color: '#dc2626' }}>
-                                        <svg style={{ width: 20, height: 20 }} fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z"></path></svg>
-                                    </div>
-                                    <div>
-                                        <h3 className="font-bold text-lg">फोन / WhatsApp</h3>
-                                        <p className="text-gray-600">
-                                            <a href="tel:+918789320315" className="hover:text-red-600 transition">+91 87893 20315</a>
-                                            <br />
-                                            <a href="https://wa.me/918789320315" target="_blank" rel="noopener noreferrer" className="text-green-600 hover:underline">WhatsApp पर संपर्क करें</a>
-                                        </p>
-                                    </div>
-                                </div>
-
                                 {/* Email */}
                                 <div className="flex items-start space-x-4">
                                     <div style={{ background: '#fee2e2', padding: '12px', borderRadius: '50%', color: '#dc2626' }}>
@@ -84,7 +69,7 @@ export default function ContactPage() {
                                     <div>
                                         <h3 className="font-bold text-lg">ईमेल</h3>
                                         <p className="text-gray-600">
-                                            <a href="mailto:news@garhwa-news.vercel.app" className="hover:text-red-600 transition">news@garhwa-news.vercel.app</a>
+                                            <a href="mailto:bicholia03@gmail.com" className="hover:text-red-600 transition">bicholia03@gmail.com</a>
                                         </p>
                                     </div>
                                 </div>

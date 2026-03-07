@@ -3,6 +3,8 @@ import { Suspense } from 'react'
 import './global.css'
 import PremiumLoader from '@/components/PremiumLoader'
 import { ErrorHandler } from './error-handler'
+import CookieBanner from '@/components/CookieBanner'
+import { Analytics } from '@vercel/analytics/react'
 
 export const metadata: Metadata = {
   metadataBase: new URL('https://garhwapalamunews.com'),
@@ -64,6 +66,8 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
             <PremiumLoader />
           </Suspense>
           {children}
+          <CookieBanner />
+          <Analytics />
         </div>
       </body>
     </html>

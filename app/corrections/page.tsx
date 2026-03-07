@@ -49,9 +49,7 @@ export default function CorrectionsPage() {
                         <section className="bg-gray-50 p-6 rounded-lg">
                             <h2 className="text-xl font-bold text-gray-800 mb-2">संपर्क सूत्र</h2>
                             <p className="text-gray-700">
-                                <strong>ईमेल:</strong> news@garhwa-news.vercel.app
-                                <br />
-                                <strong>WhatsApp:</strong> 8789320315
+                                <strong>ईमेल:</strong> bicholia03@gmail.com
                             </p>
                         </section>
                     </div>

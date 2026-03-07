@@ -1,5 +1,4 @@
-
-import { defineField, defineType } from 'sanity'
+import { defineField, defineType, type StringRule } from 'sanity'
 
 export const liveUpdateSchema = defineType({
     name: 'liveUpdate',
@@ -10,7 +9,7 @@ export const liveUpdateSchema = defineType({
             name: 'text',
             title: 'Update Text',
             type: 'string',
-            validation: Rule => Rule.required(),
+            validation: (rule: StringRule) => rule.required(),
         }),
         defineField({
             name: 'isNew',

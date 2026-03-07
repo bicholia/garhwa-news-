@@ -63,7 +63,7 @@ export default function Footer() {
                             {[
                                 { label: 'FB', icon: <FaFacebookF size={16} />, href: 'https://www.facebook.com/profile.php?id=61588651835601', bg: '#1877f2' },
                                 { label: 'TG', icon: <FaTelegramPlane size={17} />, href: 'https://t.me/nrdailynews', bg: '#0088cc' },
-                                { label: 'WA', icon: <FaWhatsapp size={19} />, href: 'https://wa.me/918789320315', bg: '#25d366' },
+
                             ].map(site => (
                                 <a key={site.label} href={site.href} target="_blank" rel="noopener noreferrer"
                                     style={{ width: 36, height: 36, borderRadius: '50%', background: site.bg, color: 'white', display: 'flex', alignItems: 'center', justifyContent: 'center' }}
@@ -103,23 +103,11 @@ export default function Footer() {
                                 <MapPin size={15} style={{ color: '#f87171', flexShrink: 0, marginTop: 2 }} />
                                 <span>गढ़वा, झारखंड — 822114</span>
                             </div>
-                            <div style={{ display: 'flex', alignItems: 'flex-start', gap: '10px', fontSize: '0.82rem' }}>
-                                <Phone size={15} style={{ color: '#f87171', flexShrink: 0, marginTop: 2 }} />
-                                <div>
-                                    <a href="tel:+918789320315" className="hover:text-white" style={{ display: 'block' }}>8789320315</a>
-                                    <a href="tel:+919955735617" className="hover:text-white" style={{ display: 'block' }}>9955735617</a>
-                                </div>
-                            </div>
                             <div style={{ display: 'flex', alignItems: 'center', gap: '10px', fontSize: '0.82rem' }}>
                                 <Mail size={15} style={{ color: '#f87171', flexShrink: 0 }} />
-                                <a href="mailto:news@garhwa-news.vercel.app" className="hover:text-white">news@garhwa-news.vercel.app</a>
+                                <a href="mailto:bicholia03@gmail.com" className="hover:text-white">bicholia03@gmail.com</a>
                             </div>
                         </div>
-                        <a href="https://wa.me/918789320315" target="_blank" rel="noopener noreferrer"
-                            style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '8px', marginTop: '1.25rem', background: '#25d366', color: 'white', padding: '10px', borderRadius: '8px', fontSize: '0.9rem', fontWeight: 700 }}
-                            className="hover:bg-green-600 text-decoration-none transition-colors">
-                            <FaWhatsapp size={20} /> WHATSAPP
-                        </a>
                     </div>
                 </div>
 

@@ -81,3 +81,33 @@ export async function getTelegramStats() {
         return { subscribers: 0, lastPost: 'N/A' }
     }
 }
+export async function sendNotificationToTelegram(message: string) {
+    const token = process.env.TELEGRAM_BOT_TOKEN
+    const chatId = process.env.TELEGRAM_CHANNEL_ID
+
+    if (!token || !chatId) {
+        console.error('Telegram credentials missing')
+        return false
+    }
+
+    const url = `https://api.telegram.org/bot${token}/sendMessage`
+
+    try {
+        const response = await fetch(url, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+                chat_id: chatId,
+                text: message,
+                parse_mode: 'Markdown',
+                disable_web_page_preview: true
+            })
+        })
+
+        const data = await response.json()
+        return data.ok
+    } catch (error) {
+        console.error('Telegram notification failed:', error)
+        return false
+    }
+}

@@ -56,7 +56,7 @@ export default function EditorialPolicyPage() {
                             <p className="text-gray-700">
                                 संपादकीय सामग्री से संबंधित किसी भी शिकायत के लिए:
                                 <br />
-                                <strong>ईमेल:</strong> news@garhwa-news.vercel.app
+                                <strong>ईमेल:</strong> bicholia03@gmail.com
                             </p>
                         </section>
                     </div>

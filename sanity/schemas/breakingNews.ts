@@ -1,7 +1,7 @@
 // sanity/schemas/breakingNews.ts
 // Ye breaking news ticker ke liye hai — bina redeploy ke update hoga!
 
-import { defineField, defineType } from 'sanity'
+import { defineField, defineType, type StringRule } from 'sanity'
 
 export const breakingNewsSchema = defineType({
     name: 'breakingNews',
@@ -14,7 +14,7 @@ export const breakingNewsSchema = defineType({
             name: 'text',
             title: 'Breaking News Text',
             type: 'string',
-            validation: Rule => Rule.required().max(200),
+            validation: (rule: StringRule) => rule.required().max(200),
         }),
         defineField({
             name: 'href',
@@ -38,7 +38,7 @@ export const breakingNewsSchema = defineType({
 
     preview: {
         select: { title: 'text', active: 'active' },
-        prepare({ title, active }) {
+        prepare({ title, active }: { title: string, active: boolean }) {
             return {
                 title,
                 subtitle: active ? 'Active — Ticker mein dikh raha hai' : 'Hidden',

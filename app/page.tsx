@@ -1,7 +1,7 @@
 import { client, urlFor } from '@/lib/sanity'
 import NewsGrid from '@/components/NewsGrid'
 import BreakingNews from '@/components/BreakingNews'
-import WhatsAppButton from '@/components/WhatsAppButton'
+import MailButton from '@/components/MailButton'
 import PublicLayout from '@/components/PublicLayout'
 import AdBanner from '@/components/AdBanner'
 import Link from 'next/link'
@@ -74,7 +74,7 @@ export default async function Home() {
   return (
     <PublicLayout>
       <BreakingNews />
-      <WhatsAppButton />
+      <MailButton />
 
       <div className="container" style={{ paddingTop: '1.5rem', paddingBottom: '3rem' }}>
 

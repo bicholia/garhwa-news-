@@ -24,6 +24,7 @@ export default function WeatherWidget() {
 
     useEffect(() => {
         const fetchWeather = async () => {
+            if (!activeCity) return
             setLoading(true)
             try {
                 const apiKey = process.env.NEXT_PUBLIC_OPENWEATHER_API_KEY
@@ -56,7 +57,7 @@ export default function WeatherWidget() {
         return () => clearInterval(interval)
     }, [])
 
-    if (!weather && loading) return null
+    if (!activeCity || (!weather && loading)) return null
 
     return (
         <div style={{

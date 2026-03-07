@@ -1,5 +1,4 @@
-
-import { defineField, defineType } from 'sanity'
+import { defineField, defineType, type StringRule, type SlugRule } from 'sanity'
 
 export const categorySchema = defineType({
     name: 'category',
@@ -10,7 +9,7 @@ export const categorySchema = defineType({
             name: 'name',
             title: 'Category Name',
             type: 'string',
-            validation: Rule => Rule.required(),
+            validation: (rule: StringRule) => rule.required(),
         }),
         defineField({
             name: 'slug',
@@ -20,7 +19,7 @@ export const categorySchema = defineType({
                 source: 'name',
                 maxLength: 96,
             },
-            validation: Rule => Rule.required(),
+            validation: (rule: SlugRule) => rule.required(),
         }),
         defineField({
             name: 'description',

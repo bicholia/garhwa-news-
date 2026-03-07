@@ -2,7 +2,7 @@
 
 import Link from 'next/link'
 import { useState, useEffect } from 'react'
-import { Menu, X, Search, Phone, ArrowLeft, Calendar } from 'lucide-react'
+import { Menu, X, Search, Phone, ArrowLeft, Calendar, Mail } from 'lucide-react'
 import { usePathname, useRouter } from 'next/navigation'
 import WeatherWidget from '@/components/WeatherWidget'
 
@@ -41,6 +41,10 @@ export default function Header() {
                         <div style={{ display: 'flex', alignItems: 'center', gap: '6px', fontSize: '0.75rem', fontWeight: 700, color: '#64748b' }}>
                             <Calendar size={14} />
                             {new Date().toLocaleDateString('hi-IN', { weekday: 'long', day: 'numeric', month: 'long', year: 'numeric' })}
+                        </div>
+                        <div style={{ display: 'flex', alignItems: 'center', gap: '6px', fontSize: '0.75rem', fontWeight: 700, color: '#64748b' }}>
+                            <Mail size={16} />
+                            <span className="text-sm">संपर्क करें</span>
                         </div>
                         <WeatherWidget />
                     </div>
@@ -118,11 +122,6 @@ export default function Header() {
                                 <Search size={20} style={{ color: '#374151' }} />
                             </button>
                         )}
-
-                        <a href="https://wa.me/918789320315" target="_blank" rel="noopener noreferrer"
-                            style={{ background: '#16a34a', color: 'white', padding: '8px 16px', borderRadius: 20, fontSize: '0.8rem', fontWeight: 700, display: isDesktop ? 'flex' : 'none', alignItems: 'center', gap: 6 }}>
-                            WHATSAPP
-                        </a>
 
                         {!isDesktop && (
                             <button onClick={() => setMobileOpen(!mobileOpen)}

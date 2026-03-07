@@ -1,4 +1,4 @@
-import { defineField, defineType } from 'sanity'
+import { defineField, defineType, type StringRule, type ImageRule } from 'sanity'
 
 export const globalAdSchema = defineType({
     name: 'globalAd',
@@ -9,7 +9,7 @@ export const globalAdSchema = defineType({
             name: 'title',
             title: 'Campaign Title',
             type: 'string',
-            validation: Rule => Rule.required(),
+            validation: (rule: StringRule) => rule.required(),
             description: 'Internal reference name for this banner'
         }),
         defineField({
@@ -17,7 +17,7 @@ export const globalAdSchema = defineType({
             title: 'Banner Image',
             type: 'image',
             options: { hotspot: true },
-            validation: Rule => Rule.required()
+            validation: (rule: ImageRule) => rule.required()
         }),
         defineField({
             name: 'url',
@@ -46,19 +46,19 @@ export const globalAdSchema = defineType({
                 ],
                 layout: 'dropdown'
             },
-            validation: Rule => Rule.required()
+            validation: (rule: StringRule) => rule.required()
         }),
         defineField({
             name: 'customWidth',
             title: 'Custom Width (px)',
             type: 'number',
-            hidden: ({ document }) => document?.slot !== 'custom',
+            hidden: ({ document }: { document: any }) => document?.slot !== 'custom',
         }),
         defineField({
             name: 'customHeight',
             title: 'Custom Height (px)',
             type: 'number',
-            hidden: ({ document }) => document?.slot !== 'custom',
+            hidden: ({ document }: { document: any }) => document?.slot !== 'custom',
         }),
         defineField({
             name: 'priority',
@@ -93,7 +93,7 @@ export const globalAdSchema = defineType({
             media: 'image',
             isActive: 'isActive'
         },
-        prepare(selection) {
+        prepare(selection: any) {
             const { title, subtitle, media, isActive } = selection
             return {
                 title: `${title} ${isActive ? '(Active)' : '(Inactive)'}`,
