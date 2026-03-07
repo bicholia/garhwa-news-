@@ -1,0 +1,56 @@
+﻿node : file:///C:/User
+s/LAPPY%20PLUS/OneDriv
+e/Desktop/NR%20Daily%2
+0news/garhwa-news/scri
+pts/seed_20_viral_arti
+cles.mjs:1321
+At line:1 char:1
++ node scripts/seed_20
+_viral_articles.mjs 
+2>&1 | Out-File 
+-FilePath scr ...
++ ~~~~~~~~~~~~~~~~~~~~
+~~~~~~~~~~~~~~~~~~~~~~
+~~
+    + CategoryInfo    
+          : NotSpeci  
+  fied: (file:///C:   
+ /User...ticles.mj    
+s:1321:String) []    
+, RemoteException
+    + FullyQualifiedE 
+   rrorId : NativeCo  
+  mmandError
+ 
+        const 
+imageAsset = await cli
+ent.fetch(\`*[_type 
+== "sanity.imageAsset"
+][0]{_id}\`);
+                      
+                      
+  ^
+
+SyntaxError: Invalid 
+or unexpected token
+    at compileSourceTe
+xtModule (node:interna
+l/modules/esm/utils:34
+6:16)
+    at ModuleLoader.mo
+duleStrategy (node:int
+ernal/modules/esm/tran
+slators:146:18)
+    at #translate (nod
+e:internal/modules/esm
+/loader:497:12)
+    at ModuleLoader.lo
+adAndTranslate (node:i
+nternal/modules/esm/lo
+ader:544:27)
+    at async 
+ModuleJob._link (node:
+internal/modules/esm/m
+odule_job:148:19)
+
+Node.js v20.19.6
