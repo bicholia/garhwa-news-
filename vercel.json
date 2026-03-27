@@ -3,6 +3,18 @@
         {
             "path": "/api/cron-telegram",
             "schedule": "0 0 * * *"
+        },
+        {
+            "path": "/api/ai-news-agent",
+            "schedule": "30 0 * * *"
+        },
+        {
+            "path": "/api/ai-news-agent",
+            "schedule": "30 6 * * *"
+        },
+        {
+            "path": "/api/ai-news-agent",
+            "schedule": "30 12 * * *"
         }
     ],
     "rewrites": [

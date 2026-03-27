@@ -1,4 +1,5 @@
 import { client, urlFor } from '@/lib/sanity'
+import { getNewsBySlug, getRelatedNews, mergeAndSortNews } from '@/lib/db'
 import { notFound } from 'next/navigation'
 import { FaFacebookF, FaTwitter, FaWhatsapp, FaTelegramPlane } from 'react-icons/fa'
 import Image from 'next/image'
@@ -12,8 +13,26 @@ import PublicLayout from '@/components/PublicLayout'
 export const revalidate = 0 // Fetch fresh news every time
 
 async function getArticle(slug: string) {
+    const postgresArticle: any = await getNewsBySlug(slug)
+    
+    if (postgresArticle) {
+        // Fetch related from both
+        const [pgRelated, snRelated]: [any[], any[]] = await Promise.all([
+            getRelatedNews(postgresArticle.category, postgresArticle.district, slug, 3),
+            client.fetch(`*[_type == "article" && district == $district] | order(publishedAt desc)[0...3] {
+                _id, title, "slug": slug.current, featureImage, publishedAt
+            }`, { district: postgresArticle.district })
+        ])
+        
+        return {
+            ...postgresArticle,
+            related: mergeAndSortNews(pgRelated, snRelated, 3)
+        }
+    }
+
+    // Fallback to Sanity
     const query = `* [_type == "article" && slug.current == $slug][0] {
-    title,
+        title,
         excerpt,
         featureImage,
         body,
@@ -24,20 +43,28 @@ async function getArticle(slug: string) {
         _updatedAt,
         localAd,
         "author": author -> { name, slug, image, bio },
-            "category": category -> {
-                "slug": slug.current,
-                "name": name
-            },
-                district,
-                "related": * [_type == "article" && category._ref == ^.category._ref && slug.current != $slug] | order(publishedAt desc)[0...3] {
-        _id,
+        "category": category -> {
+            "slug": slug.current,
+            "name": name
+        },
+        district,
+        seoKeywords,
+        "related": * [_type == "article" && category._ref == ^.category._ref && slug.current != $slug] | order(publishedAt desc)[0...3] {
+            _id,
             title,
-            slug,
+            "slug": slug.current,
             featureImage,
             publishedAt
+        }
+    } `
+    const sanityArticle: any = await client.fetch(query, { slug })
+    
+    if (sanityArticle) {
+        const pgRelated = await getRelatedNews(sanityArticle.category?.name, sanityArticle.district, slug, 3)
+        sanityArticle.related = mergeAndSortNews(pgRelated, sanityArticle.related, 3)
     }
-} `
-    return await client.fetch(query, { slug })
+    
+    return sanityArticle
 }
 
 export async function generateMetadata({ params }: { params: Promise<{ slug: string }> }): Promise<Metadata> {
@@ -45,13 +72,40 @@ export async function generateMetadata({ params }: { params: Promise<{ slug: str
     const decodedSlug = decodeURIComponent(slug)
     const article = await getArticle(decodedSlug)
     if (!article) return {}
+    
+    const domain = 'https://garhwapalamunews.com'
+    const imageUrl = (article.image_url || (article.featureImage?.asset ? urlFor(article.featureImage).width(1200).height(630).url() : `${domain}/og-image.png`))
+
     return {
         title: `${article.title} | गढ़वा पलामू न्यूज़`,
-        description: article.excerpt,
+        description: article.excerpt?.substring(0, 160),
+        keywords: article.seoKeywords || article.seo_keywords || `${article.district}, Garhwa News, Palamu News, Jharkhand News, ${article.category?.name}, गढ़वा समाचार, पलामू न्यूज़, ${article.title}`,
+        alternates: {
+            canonical: `${domain}/news/${slug}`,
+        },
         openGraph: {
             title: article.title,
             description: article.excerpt,
-            images: article.featureImage?.asset ? [urlFor(article.featureImage).url()] : [],
+            url: `${domain}/news/${slug}`,
+            siteName: 'NR Daily News',
+            locale: 'hi_IN',
+            type: 'article',
+            publishedTime: article.publishedAt || article.published_at,
+            authors: [article.author?.name || 'NR Daily News Bureau'],
+            images: [
+                {
+                    url: imageUrl,
+                    width: 1200,
+                    height: 630,
+                    alt: article.title,
+                },
+            ],
+        },
+        twitter: {
+            card: 'summary_large_image',
+            title: article.title,
+            description: article.excerpt,
+            images: [imageUrl],
         },
     }
 }
@@ -62,7 +116,8 @@ export default async function ArticlePage({ params }: { params: Promise<{ slug: 
     const article = await getArticle(decodedSlug)
     if (!article) notFound()
 
-    const formattedDate = new Date(article.publishedAt).toLocaleDateString('hi-IN', {
+    const publishedDate = article.publishedAt || article.published_at
+    const formattedDate = new Date(publishedDate).toLocaleDateString('hi-IN', {
         weekday: 'long',
         year: 'numeric',
         month: 'long',
@@ -71,70 +126,82 @@ export default async function ArticlePage({ params }: { params: Promise<{ slug: 
         minute: '2-digit',
     })
 
-    // JSON-LD for Google News
+    // Structured Data for SEO (GEO/AEO)
     const jsonLd = {
         '@context': 'https://schema.org',
-        '@type': 'NewsArticle',
-        headline: article.title,
-        description: article.excerpt,
-        image: article.featureImage?.asset ? [
-            urlFor(article.featureImage).width(1200).height(630).url(),
-            urlFor(article.featureImage).width(1200).height(900).url(),
-            urlFor(article.featureImage).width(1200).height(1200).url()
-        ] : [],
-        datePublished: article.publishedAt,
-        dateModified: article._updatedAt || article.publishedAt,
-        dateline: article.location ? `${article.location}, ${article.district === 'garhwa' ? 'Garhwa' : article.district === 'palamu' ? 'Palamu' : 'Jharkhand'}` : undefined,
-        keywords: article.tags?.join(', '),
-        author: [
+        '@graph': [
             {
-                '@type': 'Person',
-                name: article.author?.name || 'संवाददाता',
-                url: article.author?.slug ? `https://garhwapalamunews.com/author/${article.author.slug.current}` : undefined,
+                '@type': 'NewsArticle',
+                headline: article.title,
+                description: article.excerpt,
+                image: (article.featureImage?.asset || article.image_url) ? [
+                    article.image_url || urlFor(article.featureImage).width(1200).height(630).url()
+                ] : [],
+                datePublished: article.publishedAt || article.published_at,
+                dateModified: article._updatedAt || article.publishedAt || article.published_at,
+                author: [{
+                    '@type': 'Person',
+                    name: article.author?.name || 'संवाददाता',
+                    jobTitle: 'Journalist',
+                    url: article.author?.slug ? `https://garhwapalamunews.com/author/${article.author.slug.current}` : undefined,
+                }],
+                publisher: {
+                    '@type': 'NewsMediaOrganization',
+                    name: 'NR Daily News',
+                    logo: 'https://garhwapalamunews.com/logo.png',
+                    sameAs: ['https://facebook.com/garhwa.news', 'https://twitter.com/garhwapalamunews']
+                },
+                wordCount: article.content ? article.content.split(' ').length : 0,
+                keywords: [...(article.tags || []), article.category?.name, article.district].filter(Boolean).join(', ')
             },
-        ],
-        publisher: {
-            '@type': 'NewsMediaOrganization',
-            name: 'Garhwa Palamu News',
-            logo: {
-                '@type': 'ImageObject',
-                url: 'https://garhwapalamunews.com/logo.png'
-            }
-        },
-        mainEntityOfPage: {
-            '@type': 'WebPage',
-            '@id': `https://garhwapalamunews.com/news/${decodedSlug}`
-        }
+            {
+                '@type': 'BreadcrumbList',
+                itemListElement: [
+                    { '@type': 'ListItem', position: 1, name: 'Home', item: 'https://garhwapalamunews.com' },
+                    { '@type': 'ListItem', position: 2, name: article.category?.name || 'News', item: `https://garhwapalamunews.com/category/${article.category?.slug}` },
+                    { '@type': 'ListItem', position: 3, name: article.title, item: `https://garhwapalamunews.com/news/${decodedSlug}` }
+                ]
+            },
+            // AEO: FAQ Schema based on highlights
+            article.highlights?.length > 0 ? {
+                '@type': 'FAQPage',
+                mainEntity: article.highlights.map((h: string) => ({
+                    '@type': 'Question',
+                    name: `खबर का मुख्य बिंदु: ${h.split(':')[0] || 'मुख्य जानकारी'}`,
+                    acceptedAnswer: { '@type': 'Answer', text: h }
+                }))
+            } : null
+        ].filter(Boolean)
     }
 
     return (
         <PublicLayout>
             <div style={{ background: '#f9fafb', minHeight: '100vh', paddingBottom: '4rem' }}>
-                <script
-                    type="application/ld+json"
-                    dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
-                />
+                <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }} />
                 <main className="container" style={{ maxWidth: 880, paddingTop: '2rem' }}>
                     <article style={{ background: 'white', borderRadius: '16px', boxShadow: '0 4px 6px -1px rgba(0,0,0,0.1)', overflow: 'hidden' }}>
 
                         {/* Feature Image */}
-                        {article.featureImage?.asset && (
+                        {(article.featureImage?.asset || article.image_url) && (
                             <div style={{ position: 'relative', width: '100%', height: 450 }}>
                                 <Image
-                                    src={urlFor(article.featureImage).width(1200).height(630).url()}
+                                    src={article.image_url || urlFor(article.featureImage).width(1200).height(630).url()}
                                     alt={article.title}
                                     fill
                                     priority
                                     style={{ objectFit: 'cover' }}
                                 />
+                                <div style={{ position: 'absolute', bottom: '1rem', right: '1rem', background: 'rgba(0,0,0,0.6)', color: 'white', padding: '4px 8px', borderRadius: '4px', fontSize: '0.65rem' }}>
+                                    © NR Daily News Photo
+                                </div>
                             </div>
                         )}
 
                         <div style={{ padding: '2rem' }}>
                             {/* Meta */}
                             <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '1.5rem', flexWrap: 'wrap' }}>
-                                <Link href={`/category/${article.category?.slug || 'news'}`} style={{ background: '#fef2f2', color: '#b91c1c', padding: '4px 12px', borderRadius: '20px', fontSize: '0.75rem', fontWeight: 800, textDecoration: 'none' }}>
-                                    {(article.category?.name || 'NEWS').toUpperCase()}
+                                <Link href={`/category/${article.category?.slug || (typeof article.category === 'string' ? 'news' : article.category?.slug || 'news')}`} style={{ background: '#fef2f2', color: '#b91c1c', padding: '4px 12px', borderRadius: '20px', fontSize: '0.75rem', fontWeight: 800, textTransform: 'uppercase', textDecoration: 'none' }}>
+                                    {typeof article.category === 'string' ? article.category : (article.category?.name || 'NEWS').toUpperCase()}
                                 </Link>
                                 {article.location && (
                                     <>
@@ -152,6 +219,20 @@ export default async function ArticlePage({ params }: { params: Promise<{ slug: 
                                 {article.title}
                             </h1>
 
+                            {/* GEO/SXO: Key Highlights Box */}
+                            {article.highlights && article.highlights.length > 0 && (
+                                <div style={{ background: '#f0f9ff', borderLeft: '5px solid #0ea5e9', padding: '1.5rem', marginBottom: '2.5rem', borderRadius: '0 8px 8px 0' }}>
+                                    <h2 style={{ fontSize: '1.1rem', fontWeight: 900, color: '#0369a1', marginBottom: '1rem', display: 'flex', alignItems: 'center', gap: '8px' }}>
+                                        🎯 मुख्य बिंदु (Key Highlights)
+                                    </h2>
+                                    <ul style={{ margin: 0, paddingLeft: '1.2rem', color: '#0c4a6e', display: 'flex', flexDirection: 'column', gap: '0.5rem', fontWeight: 600 }}>
+                                        {article.highlights.map((h: string, idx: number) => (
+                                            <li key={idx} style={{ lineHeight: 1.5 }}>{h}</li>
+                                        ))}
+                                    </ul>
+                                </div>
+                            )}
+
                             <div style={{ display: 'flex', alignItems: 'center', gap: '12px', marginBottom: '2.5rem', paddingBottom: '1.5rem', borderBottom: '1px solid #f3f4f6' }}>
                                 <div style={{ width: 44, height: 44, borderRadius: '50%', background: '#f3f4f6', display: 'flex', alignItems: 'center', justifyContent: 'center', fontWeight: 800, color: '#374151', overflow: 'hidden', position: 'relative' }}>
                                     {article.author?.image?.asset ? (
@@ -163,7 +244,7 @@ export default async function ArticlePage({ params }: { params: Promise<{ slug: 
                                 <div>
                                     <div style={{ fontSize: '0.85rem', fontWeight: 700, color: '#111827' }}>
                                         {article.author ? (
-                                            <Link href={`/author/${article.author.slug.current}`} style={{ color: 'inherit', textDecoration: 'none' }} className="hover:text-red-600">
+                                            <Link href={`/author/${article.author.slug.current || article.author.slug}`} style={{ color: 'inherit', textDecoration: 'none' }} className="hover:text-red-600">
                                                 {article.author.name}
                                             </Link>
                                         ) : 'संवाददाता'}
@@ -207,7 +288,11 @@ export default async function ArticlePage({ params }: { params: Promise<{ slug: 
 
                             {/* Content */}
                             <div className="prose max-w-none" style={{ color: '#374151', lineHeight: 1.8, fontSize: '1.1rem', fontFamily: 'inherit' }}>
-                                {article.body?.length > 0 && typeof article.body[0]?.children?.[0]?.text === 'string' && article.body[0].children[0].text.trimStart().startsWith('<') ? (
+                                {article.content ? (
+                                    article.content.split('\n').map((para: string, i: number) => (
+                                        <p key={i} style={{ marginBottom: '1.5rem' }}>{para}</p>
+                                    ))
+                                ) : article.body?.length > 0 && typeof article.body[0]?.children?.[0]?.text === 'string' && article.body[0].children[0].text.trimStart().startsWith('<') ? (
                                     // HTML content from admin form — render directly
                                     <div dangerouslySetInnerHTML={{ __html: article.body.map((b: any) => b.children?.map((c: any) => c.text).join('') ?? '').join('\n') }} />
                                 ) : (
@@ -265,7 +350,7 @@ export default async function ArticlePage({ params }: { params: Promise<{ slug: 
                                     </div>
                                     <div>
                                         <h3 style={{ fontSize: '1.1rem', fontWeight: 800, color: '#111827', margin: '0 0 0.5rem 0' }}>
-                                            लेखक: <Link href={`/author/${article.author.slug.current}`} style={{ color: '#dc2626', textDecoration: 'none' }}>{article.author.name}</Link>
+                                            लेखक: <Link href={`/author/${article.author.slug.current || article.author.slug}`} style={{ color: '#dc2626', textDecoration: 'none' }}>{article.author.name}</Link>
                                         </h3>
                                         <p style={{ fontSize: '0.9rem', color: '#4b5563', margin: 0, lineHeight: 1.5 }}>
                                             {article.author.bio || `${article.author.name} गढ़वा पलामू न्यूज़ के वरिष्ठ संवाददाता हैं। वे स्थानीय राजनीति, अपराध और सामाजिक मुद्दों पर गहरी पकड़ रखते हैं।`}
@@ -282,7 +367,6 @@ export default async function ArticlePage({ params }: { params: Promise<{ slug: 
                                         { label: 'Facebook', icon: <FaFacebookF size={18} />, bg: '#1877f2', href: `https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(`https://garhwapalamunews.com/news/${decodedSlug}`)}` },
                                         { label: 'Twitter', icon: <FaTwitter size={18} />, bg: '#1da1f2', href: `https://twitter.com/intent/tweet?url=${encodeURIComponent(`https://garhwapalamunews.com/news/${decodedSlug}`)}&text=${encodeURIComponent(article.title)}` },
                                         { label: 'WhatsApp', icon: <FaWhatsapp size={20} />, bg: '#25d366', href: `https://api.whatsapp.com/send?text=${encodeURIComponent(article.title + ' ' + `https://garhwapalamunews.com/news/${decodedSlug}`)}` },
-                                        { label: 'Telegram', icon: <FaTelegramPlane size={18} />, bg: '#0088cc', href: `https://t.me/share/url?url=${encodeURIComponent(`https://garhwapalamunews.com/news/${decodedSlug}`)}&text=${encodeURIComponent(article.title)}` }
                                     ].map(item => (
                                         <a key={item.label} href={item.href} target="_blank" rel="noopener noreferrer" title={`Share on ${item.label}`}
                                             className="hover:opacity-85 transition-opacity"
@@ -302,12 +386,12 @@ export default async function ArticlePage({ params }: { params: Promise<{ slug: 
                             <SectionHeading title="ये भी पढ़ें" />
                             <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(260px, 1fr))', gap: '1.5rem' }}>
                                 {article.related.map((item: any) => (
-                                    <Link key={item._id} href={`/news/${item.slug.current}`} style={{ textDecoration: 'none' }}>
+                                    <Link key={item._id || item.id} href={`/news/${item.slug.current || item.slug}`} style={{ textDecoration: 'none' }}>
                                         <div style={{ background: 'white', borderRadius: '12px', overflow: 'hidden', boxShadow: '0 1px 3px rgba(0,0,0,0.1)' }}>
-                                            {item.featureImage?.asset && (
+                                            {(item.featureImage?.asset || item.image_url) && (
                                                 <div style={{ position: 'relative', height: 160, width: '100%' }}>
                                                     <Image
-                                                        src={urlFor(item.featureImage).width(400).height(250).url()}
+                                                        src={item.image_url || urlFor(item.featureImage).width(400).height(250).url()}
                                                         alt={item.title}
                                                         fill
                                                         style={{ objectFit: 'cover' }}

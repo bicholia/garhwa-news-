@@ -88,16 +88,6 @@ export default function LivePage() {
                         )}
                     </div>
 
-                    {/* Telegram CTA */}
-                    <div className="cta-block cta-tg" style={{ marginTop: '2rem' }}>
-                        <div>
-                            <h2>Telegram पर Live अपडेट पाएं</h2>
-                            <p>हर मिनट की खबर सबसे पहले आपके Telegram पर</p>
-                        </div>
-                        <a href="https://t.me/garhwapalamunews" target="_blank" rel="noopener" className="cta-btn">
-                            Channel Join करें
-                        </a>
-                    </div>
                 </div>
             </div>
         </PublicLayout>

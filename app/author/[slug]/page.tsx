@@ -1,4 +1,5 @@
 import { client } from '@/lib/sanity'
+import { getNewsByCategory, mergeAndSortNews } from '@/lib/db'
 import ArticleCard from '@/components/ArticleCard'
 import SectionHeading from '@/components/SectionHeading'
 import { notFound } from 'next/navigation'
@@ -19,18 +20,24 @@ export default async function AuthorPage({ params }: { params: Promise<{ slug: s
 
     if (!author) notFound()
 
-    const articles = await client.fetch(
-        `*[_type == "article" && author->slug.current == $slug] | order(publishedAt desc) {
-      _id,
-      title,
-      slug,
-      excerpt,
-      featureImage,
-      publishedAt,
-      author->{name}
-    }`,
-        { slug }
-    )
+    // Fetch articles from both sources
+    // Note: Since AI news currently uses 'संवाददाता', we fetch 'स्थानीय समाचार' as a fallback 
+    // or we could filter Postgres by author_name if we had one. 
+    // For now, we fetch Sanity articles for this specific author and 
+    // could potentially merge with relevant PG articles if needed.
+    const [snArticles, pgArticles] = await Promise.all([
+        client.fetch(
+            `*[_type == "article" && author->slug.current == $slug] | order(publishedAt desc) {
+                _id, title, slug, excerpt, featureImage, publishedAt, author->{name}
+            }`,
+            { slug }
+        ),
+        // If the author is "Admin" or "Reporter", we could fetch from PG
+        // For now, let's just support the merge utility in case PG adds this author
+        [] 
+    ])
+
+    const articles = mergeAndSortNews(pgArticles, snArticles, 20)
 
     return (
         <PublicLayout>
@@ -52,7 +59,7 @@ export default async function AuthorPage({ params }: { params: Promise<{ slug: s
                 ) : (
                     <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(300px, 1fr))', gap: '2rem' }}>
                         {articles.map((article: any) => (
-                            <ArticleCard key={article._id} article={article} />
+                            <ArticleCard key={article.id || article._id} article={article} />
                         ))}
                     </div>
                 )}

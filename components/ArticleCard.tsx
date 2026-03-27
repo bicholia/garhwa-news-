@@ -8,23 +8,35 @@ interface Props {
 }
 
 export default function ArticleCard({ article, priority = false }: Props) {
-    const formattedDate = new Date(article.publishedAt).toLocaleDateString('hi-IN', {
+    const publishedDate = article.publishedAt || article.published_at
+    const formattedDate = new Date(publishedDate).toLocaleDateString('hi-IN', {
         day: 'numeric',
         month: 'short',
         year: 'numeric',
     })
 
-    const hasImage = article.featureImage?.asset
+    const hasImage = article.featureImage?.asset || article.image_url
+    const imageUrl = article.featureImage?.asset 
+        ? urlFor(article.featureImage).width(600).height(400).url() 
+        : article.image_url
+
+    const truncate = (text: string, length: number) => {
+        if (!text) return '';
+        const cleanText = text.replace(/[#*`]/g, ''); // Strip markdown chars
+        return cleanText.length > length ? cleanText.substring(0, length) + '...' : cleanText;
+    };
+
+    const slug = typeof article.slug === 'string' ? article.slug : article.slug?.current
 
     return (
-        <article className="card shadow-sm hover:shadow-md transition-shadow duration-300" style={{ height: '100%', display: 'flex', flexDirection: 'column' }}>
-            <Link href={`/news/${article.slug.current}`} style={{ textDecoration: 'none', display: 'flex', flexDirection: 'column', height: '100%' }}>
+        <article className="card shadow-sm hover:shadow-md transition-shadow duration-300" style={{ height: '100%', display: 'flex', flexDirection: 'column', background: 'white', borderRadius: '12px', overflow: 'hidden' }}>
+            <Link href={`/news/${slug}`} style={{ textDecoration: 'none', display: 'flex', flexDirection: 'column', height: '100%' }}>
 
                 {/* Image or Placeholder */}
                 <div style={{ position: 'relative', height: 200, width: '100%', overflow: 'hidden', flexShrink: 0 }}>
                     {hasImage ? (
                         <Image
-                            src={urlFor(article.featureImage).width(600).height(400).url()}
+                            src={imageUrl}
                             alt={article.title}
                             fill
                             priority={priority}
@@ -53,44 +65,47 @@ export default function ArticleCard({ article, priority = false }: Props) {
 
                 <div style={{ padding: '1rem', flex: 1, display: 'flex', flexDirection: 'column' }}>
                     <h2 style={{
-                        fontSize: '1rem',
-                        fontWeight: 800,
+                        fontSize: '1.05rem',
+                        fontWeight: 900,
                         color: '#111827',
                         marginBottom: '0.6rem',
-                        lineHeight: 1.4,
+                        lineHeight: 1.3,
                         display: '-webkit-box',
                         WebkitLineClamp: 2,
                         WebkitBoxOrient: 'vertical',
                         overflow: 'hidden'
                     }} className="hover:text-red-700">
-                        {article.title}
+                        {truncate(article.title, 100)}
                     </h2>
                     <p style={{
-                        fontSize: '0.85rem',
+                        fontSize: '0.875rem',
                         color: '#4b5563',
                         marginBottom: '1rem',
                         lineHeight: 1.5,
                         display: '-webkit-box',
                         WebkitLineClamp: 3,
                         WebkitBoxOrient: 'vertical',
-                        overflow: 'hidden'
+                        overflow: 'hidden',
+                        opacity: 0.9
                     }}>
-                        {article.excerpt}
+                        {truncate(article.excerpt || '', 160)}
                     </p>
                     <div style={{
                         marginTop: 'auto',
                         display: 'flex',
                         justifyContent: 'space-between',
                         alignItems: 'center',
-                        fontSize: '0.72rem',
-                        color: '#6b7280',
-                        fontWeight: 600
+                        fontSize: '0.75rem',
+                        color: '#9ca3af',
+                        fontWeight: 700,
+                        textTransform: 'uppercase',
+                        letterSpacing: '0.5px'
                     }}>
                         <span>{formattedDate}</span>
-                        <span style={{ color: '#dc2626' }}>{article.author?.name || 'संवाददाता'}</span>
+                        <span style={{ color: '#ef4444' }}>{article.author?.name || article.author_name || 'संवाददाता'}</span>
                     </div>
                 </div>
             </Link>
         </article>
-    )
+    );
 }

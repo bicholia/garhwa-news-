@@ -22,11 +22,21 @@ export const metadata: Metadata = {
     type: 'website',
     locale: 'hi_IN',
     siteName: 'NR Daily News — गढ़वा पलामू न्यूज़',
-    images: [{ url: '/og-image.png', width: 1200, height: 630, alt: 'NR Daily News' }],
+    images: [{ url: '/logo.png', width: 1200, height: 630, alt: 'NR Daily News' }],
   },
   twitter: {
     card: 'summary_large_image',
-    images: ['/og-image.png'],
+    images: ['/logo.png'],
+  },
+  icons: {
+    icon: [
+      { url: '/favicon.png', sizes: '32x32' },
+      { url: '/icon.png', sizes: '192x192', type: 'image/png' },
+    ],
+    shortcut: '/favicon.png',
+    apple: [
+      { url: '/apple-icon.png', sizes: '180x180', type: 'image/png' },
+    ],
   },
   robots: {
     index: true,
@@ -41,8 +51,16 @@ export const metadata: Metadata = {
   },
   alternates: { canonical: 'https://garhwapalamunews.com' },
   verification: {
-    google: process.env.NEXT_PUBLIC_GOOGLE_SITE_VERIFICATION || '',
-  }
+    google: 'kM9KfIqT55O1p0X_rZ3VrGo8Fivt6NNfV5lIe5bi8go',
+  },
+  appleWebApp: {
+    capable: true,
+    statusBarStyle: 'default',
+    title: 'NR Daily News',
+  },
+  formatDetection: {
+    telephone: false,
+  },
 }
 
 // This is the SHELL layout — it wraps everything.
@@ -52,6 +70,9 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
   return (
     <html lang="hi">
       <head>
+        <meta name="theme-color" content="#dc2626" />
+        <meta name="mobile-web-app-capable" content="yes" />
+        <meta name="apple-mobile-web-app-title" content="NR Daily News" />
         <link rel="preconnect" href="https://fonts.googleapis.com" />
         <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />
         <link

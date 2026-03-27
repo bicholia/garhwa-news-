@@ -1,10 +1,11 @@
 import { client } from '@/lib/sanity'
+import { getNewsByDistrict, mergeAndSortNews } from '@/lib/db'
 import ArticleCard from '@/components/ArticleCard'
 import SectionHeading from '@/components/SectionHeading'
 import Pagination from '@/components/Pagination'
 import PublicLayout from '@/components/PublicLayout'
 
-export const revalidate = 60
+export const revalidate = 3600
 
 const POSTS_PER_PAGE = 12
 
@@ -20,22 +21,19 @@ export default async function PalamuPage({ searchParams }: { searchParams: Promi
     const currentPage = Number(page) || 1
     const offset = (currentPage - 1) * POSTS_PER_PAGE
 
-    const [articles, totalCount] = await Promise.all([
+    const [pgData, snArticles, snTotal] = await Promise.all([
+        getNewsByDistrict('palamu', POSTS_PER_PAGE, offset),
         client.fetch(
             `*[_type == "article" && district == "palamu"] | order(publishedAt desc)[$offset...$limit] {
-        _id,
-        title,
-        slug,
-        excerpt,
-        featureImage,
-        publishedAt,
-        author->{name}
-      }`,
+                _id, title, slug, excerpt, featureImage, publishedAt, author->{name}
+            }`,
             { offset, limit: offset + POSTS_PER_PAGE }
         ),
-        client.fetch(`count(*[_type == "article" && district == "palamu"])`),
+        client.fetch(`count(*[_type == "article" && district == "palamu"])`)
     ])
 
+    const articles = mergeAndSortNews(pgData.articles, snArticles, POSTS_PER_PAGE)
+    const totalCount = pgData.total + snTotal
     const totalPages = Math.ceil(totalCount / POSTS_PER_PAGE)
 
     return (
@@ -51,7 +49,7 @@ export default async function PalamuPage({ searchParams }: { searchParams: Promi
                     <>
                         <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(300px, 1fr))', gap: '2rem' }}>
                             {articles.map((article: any) => (
-                                <ArticleCard key={article._id} article={article} />
+                                <ArticleCard key={article.id || article._id} article={article} />
                             ))}
                         </div>
                         {totalPages > 1 && (

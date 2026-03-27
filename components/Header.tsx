@@ -5,6 +5,7 @@ import { useState, useEffect } from 'react'
 import { Menu, X, Search, Phone, ArrowLeft, Calendar, Mail } from 'lucide-react'
 import { usePathname, useRouter } from 'next/navigation'
 import WeatherWidget from '@/components/WeatherWidget'
+import Image from 'next/image'
 
 export default function Header() {
     const [mobileOpen, setMobileOpen] = useState(false)
@@ -70,10 +71,14 @@ export default function Header() {
                             </button>
                         )}
                         <Link href="/" style={{ display: 'flex', alignItems: 'center', gap: '8px', textDecoration: 'none' }}>
-                            <div style={{ background: '#b91c1c', color: 'white', padding: '6px 12px', borderRadius: '6px', fontWeight: 900, lineHeight: 1.1 }}>
-                                <span style={{ display: 'block', color: '#fde68a', fontSize: '0.65rem', letterSpacing: '2px', fontWeight: 700 }}>NR DAILY</span>
-                                NEWS
-                            </div>
+                            <Image 
+                                src="/logo.png" 
+                                alt="NR Daily News Logo" 
+                                width={isDesktop ? 150 : 120} 
+                                height={isDesktop ? 50 : 40} 
+                                style={{ height: isDesktop ? '50px' : '40px', width: 'auto' }}
+                                priority
+                            />
                             <div style={{ display: isDesktop ? 'block' : 'none' }}>
                                 <div style={{ fontWeight: 800, color: '#111827', fontSize: '0.95rem', lineHeight: 1 }}>गढ़वा पलामू न्यूज़</div>
                                 <div style={{ color: '#dc2626', fontSize: '0.75rem', fontWeight: 600 }}>सच्चाई के साथ</div>

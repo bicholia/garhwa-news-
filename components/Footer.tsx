@@ -1,6 +1,7 @@
 import Link from 'next/link'
 import { Phone, Mail, MapPin } from 'lucide-react'
 import { FaFacebookF, FaTelegramPlane, FaWhatsapp } from 'react-icons/fa'
+import Image from 'next/image'
 
 const links = {
     categories: [
@@ -47,10 +48,13 @@ export default function Footer() {
                     {/* Brand */}
                     <div>
                         <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '1rem' }}>
-                            <div style={{ background: '#b91c1c', color: 'white', padding: '6px 10px', borderRadius: '6px', fontWeight: 900, lineHeight: 1.1 }}>
-                                <span style={{ display: 'block', color: '#fde68a', fontSize: '0.6rem', letterSpacing: '2px' }}>NR DAILY</span>
-                                NEWS
-                            </div>
+                            <Image 
+                                src="/logo.png" 
+                                alt="NR Daily News Logo" 
+                                width={150} 
+                                height={50} 
+                                style={{ height: '50px', width: 'auto' }}
+                            />
                             <div>
                                 <div style={{ fontWeight: 700, color: 'white', fontSize: '0.85rem' }}>गढ़वा पलामू न्यूज़</div>
                                 <div style={{ color: '#f87171', fontSize: '0.72rem' }}>सच्चाई के साथ</div>
@@ -62,7 +66,6 @@ export default function Footer() {
                         <div style={{ display: 'flex', gap: '8px' }}>
                             {[
                                 { label: 'FB', icon: <FaFacebookF size={16} />, href: 'https://www.facebook.com/profile.php?id=61588651835601', bg: '#1877f2' },
-                                { label: 'TG', icon: <FaTelegramPlane size={17} />, href: 'https://t.me/nrdailynews', bg: '#0088cc' },
 
                             ].map(site => (
                                 <a key={site.label} href={site.href} target="_blank" rel="noopener noreferrer"

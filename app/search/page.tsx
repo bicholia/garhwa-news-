@@ -1,4 +1,4 @@
-
+import { searchNews, mergeAndSortNews } from '@/lib/db'
 import { client } from '@/lib/sanity'
 import ArticleCard from '@/components/ArticleCard'
 import SectionHeading from '@/components/SectionHeading'
@@ -8,18 +8,21 @@ export default async function SearchPage({ searchParams }: { searchParams: Promi
     const { q } = await searchParams
     const query = q || ''
 
-    const articles: any[] = query ? await client.fetch(
-        `*[_type == "article" && (title match "*" + $q + "*" || excerpt match "*" + $q + "*")] | order(publishedAt desc) {
-      _id,
-      title,
-      slug,
-      excerpt,
-      featureImage,
-      publishedAt,
-      author->{name}
-    }`,
-        { q: query }
-    ) : []
+    let articles: any[] = []
+
+    if (query) {
+        const [pgResults, snResults] = await Promise.all([
+            searchNews(query),
+            client.fetch(
+                `*[_type == "article" && (title match "*" + $q + "*" || excerpt match "*" + $q + "*")] | order(priority desc, publishedAt desc) {
+                    _id, title, slug, excerpt, featureImage, publishedAt, author->{name}, priority
+                }`,
+                { q: query }
+            )
+        ])
+        
+        articles = mergeAndSortNews(pgResults, snResults, 20)
+    }
 
     return (
         <PublicLayout>
@@ -35,7 +38,7 @@ export default async function SearchPage({ searchParams }: { searchParams: Promi
                 ) : articles.length > 0 ? (
                     <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(300px, 1fr))', gap: '2rem' }}>
                         {articles.map((article: any) => (
-                            <ArticleCard key={article._id} article={article} />
+                            <ArticleCard key={article.id || article._id} article={article} />
                         ))}
                     </div>
                 ) : (

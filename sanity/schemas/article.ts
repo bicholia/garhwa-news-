@@ -236,6 +236,14 @@ export const articleSchema = defineType({
             description: 'Google search result mein dikh ne wala description (160 chars max)',
             validation: (rule: TextRule) => rule.max(160),
         }),
+        
+        defineField({
+            name: 'seoKeywords',
+            title: 'SEO Keywords (AI Generated)',
+            type: 'string',
+            group: 'seo',
+            description: 'Comma separated keywords for Google ranking. Automatically filled by AI agent.',
+        }),
 
         defineField({
             name: 'tags',

@@ -1,24 +1,22 @@
 import { client } from '@/lib/sanity'
+import { getNewsByCategoryPage, CATEGORY_MAP, mergeAndSortNews } from '@/lib/db'
 import ArticleCard from '@/components/ArticleCard'
 import SectionHeading from '@/components/SectionHeading'
 import Pagination from '@/components/Pagination'
 import { notFound } from 'next/navigation'
 import PublicLayout from '@/components/PublicLayout'
 
-export const revalidate = 60
+export const revalidate = 3600
 
 const POSTS_PER_PAGE = 12
 
 export async function generateMetadata({ params }: { params: Promise<{ slug: string }> }) {
     const { slug } = await params
-    const category = await client.fetch(
-        `*[_type == "category" && slug.current == $slug][0]{ name }`,
-        { slug }
-    )
-    if (!category) return {}
+    const categoryName = CATEGORY_MAP[slug as keyof typeof CATEGORY_MAP] || slug
+    
     return {
-        title: `${category.name} समाचार | गढ़वा पलामू न्यूज़`,
-        description: `गढ़वा और पलामू क्षेत्र से ${category.name} से जुड़ी ताज़ा खबरें। पढ़ें विस्तार से।`,
+        title: `${categoryName} समाचार | गढ़वा पलामू न्यूज़`,
+        description: `गढ़वा और पलामू क्षेत्र से ${categoryName} से जुड़ी ताज़ा खबरें। पढ़ें विस्तार से।`,
     }
 }
 
@@ -34,38 +32,27 @@ export default async function CategoryPage({
     const currentPage = Number(page) || 1
     const offset = (currentPage - 1) * POSTS_PER_PAGE
 
-    const category = await client.fetch(
-        `*[_type == "category" && slug.current == $slug][0]{ name }`,
-        { slug }
-    )
+    const categoryName = CATEGORY_MAP[slug as keyof typeof CATEGORY_MAP] || slug
 
-    if (!category) notFound()
-
-    const [articles, totalCount] = await Promise.all([
+    const [pgData, snArticles, snTotal] = await Promise.all([
+        getNewsByCategoryPage(slug, POSTS_PER_PAGE, offset),
         client.fetch(
             `*[_type == "article" && category->slug.current == $slug] | order(publishedAt desc)[$offset...$limit] {
-        _id,
-        title,
-        slug,
-        excerpt,
-        featureImage,
-        publishedAt,
-        author->{name}
-      }`,
+                _id, title, slug, excerpt, featureImage, publishedAt, author->{name}
+            }`,
             { slug, offset, limit: offset + POSTS_PER_PAGE }
         ),
-        client.fetch(
-            `count(*[_type == "article" && category->slug.current == $slug])`,
-            { slug }
-        ),
+        client.fetch(`count(*[_type == "article" && category->slug.current == $slug])`, { slug })
     ])
 
+    const articles = mergeAndSortNews(pgData.articles, snArticles, POSTS_PER_PAGE)
+    const totalCount = pgData.total + snTotal
     const totalPages = Math.ceil(totalCount / POSTS_PER_PAGE)
 
     return (
         <PublicLayout>
             <main className="container" style={{ paddingTop: '2rem', paddingBottom: '4rem' }}>
-                <SectionHeading title={`${category.name} समाचार`} />
+                <SectionHeading title={`${categoryName} समाचार`} />
 
                 {articles.length === 0 ? (
                     <div style={{ textAlign: 'center', padding: '4rem 0', color: '#6b7280' }}>
@@ -75,7 +62,7 @@ export default async function CategoryPage({
                     <>
                         <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(300px, 1fr))', gap: '2rem' }}>
                             {articles.map((article: any) => (
-                                <ArticleCard key={article._id} article={article} />
+                                <ArticleCard key={article.id || article._id} article={article} />
                             ))}
                         </div>
                         {totalPages > 1 && (

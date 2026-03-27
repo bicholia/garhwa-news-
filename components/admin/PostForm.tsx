@@ -4,7 +4,7 @@ import { useState, useRef } from 'react'
 import { useRouter } from 'next/navigation'
 import dynamic from 'next/dynamic'
 import Image from 'next/image'
-import { Image as ImageIcon } from 'lucide-react'
+import { Image as ImageIcon, Sparkles, Loader2 } from 'lucide-react'
 
 // Dynamic import to avoid SSR issues with contentEditable
 const RichEditor = dynamic(() => import('./RichEditor'), {
@@ -50,6 +50,8 @@ export default function PostForm({ initialData, isEditing }: PostFormProps) {
     const [success, setSuccess] = useState('')
     const [error, setError] = useState('')
     const [imgUploading, setImgUploading] = useState(false)
+    const [aiPrompt, setAiPrompt] = useState('')
+    const [aiLoading, setAiLoading] = useState(false)
 
     const [formData, setFormData] = useState({
         title: initialData?.title || '',
@@ -136,12 +138,104 @@ export default function PostForm({ initialData, isEditing }: PostFormProps) {
         }
     }
 
+    const handleAIGenerate = async () => {
+        if (!aiPrompt) {
+            setError('कृपया पहले कोई लिंक या जानकारी लिखें')
+            return
+        }
+        setAiLoading(true)
+        setError('')
+        try {
+            const res = await fetch('/api/admin/ai-generate', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ prompt: aiPrompt }),
+            })
+            const data = await res.json()
+            if (!res.ok) throw new Error(data.error || 'AI generation failed')
+
+            setFormData(prev => ({
+                ...prev,
+                title: data.title || prev.title,
+                excerpt: data.excerpt || prev.excerpt,
+                body: data.content || prev.body,
+                category: data.category || prev.category,
+                district: data.district || prev.district
+            }))
+            
+            setSuccess('AI ने खबर तैयार कर दी है! कृपया चेक करें।')
+            setAiPrompt('')
+        } catch (err: any) {
+            setError('AI Error: ' + err.message)
+        } finally {
+            setAiLoading(false)
+        }
+    }
+
     return (
         <form onSubmit={handleSubmit}>
             <div style={{ display: 'grid', gridTemplateColumns: '1fr 340px', gap: '2rem', alignItems: 'start' }}>
 
                 {/* ===== LEFT: Main Content ===== */}
                 <div style={{ display: 'flex', flexDirection: 'column', gap: '1.25rem' }}>
+
+                    {/* AI Assistant Card */}
+                    {!isEditing && (
+                        <div style={{ 
+                            background: 'linear-gradient(135deg, #f8fafc, #eff6ff)', 
+                            padding: '1.5rem', 
+                            borderRadius: '1rem', 
+                            border: '1.5px solid #bfdbfe',
+                            boxShadow: '0 4px 6px -1px rgba(59, 130, 246, 0.1)'
+                        }}>
+                            <div style={{ display: 'flex', alignItems: 'center', gap: '0.6rem', marginBottom: '1rem' }}>
+                                <Sparkles size={20} color="#2563eb" />
+                                <h3 style={{ margin: 0, fontSize: '0.95rem', fontWeight: 800, color: '#1e40af' }}>Magic AI Assistant</h3>
+                            </div>
+                            <div style={{ display: 'flex', gap: '0.75rem' }}>
+                                <input 
+                                    type="text"
+                                    value={aiPrompt}
+                                    onChange={(e) => setAiPrompt(e.target.value)}
+                                    placeholder="किसी खबर का लिंक (URL) या छोटा विवरण यहाँ पेस्ट करें..."
+                                    style={{
+                                        ...inputStyle,
+                                        borderColor: '#bfdbfe',
+                                        fontSize: '0.85rem'
+                                    }}
+                                />
+                                <button
+                                    type="button"
+                                    disabled={aiLoading}
+                                    onClick={handleAIGenerate}
+                                    style={{
+                                        background: '#2563eb',
+                                        color: 'white',
+                                        border: 'none',
+                                        borderRadius: '0.75rem',
+                                        padding: '0 1.5rem',
+                                        fontWeight: 700,
+                                        cursor: aiLoading ? 'not-allowed' : 'pointer',
+                                        display: 'flex',
+                                        alignItems: 'center',
+                                        gap: '0.5rem',
+                                        whiteSpace: 'nowrap',
+                                        transition: 'all 0.2s'
+                                    }}
+                                >
+                                    {aiLoading ? (
+                                        <Loader2 size={18} className="animate-spin" />
+                                    ) : (
+                                        <Sparkles size={18} />
+                                    )}
+                                    {aiLoading ? 'लिख रहा है...' : 'AI जादू'}
+                                </button>
+                            </div>
+                            <p style={{ margin: '0.5rem 0 0 0', fontSize: '0.75rem', color: '#64748b' }}>
+                                💡 टिप्स: लिंक पेस्ट करें और AI खुद फोटो, हेडलाइन और खबर लिख देगा।
+                            </p>
+                        </div>
+                    )}
 
                     {/* Alerts */}
                     {success && (

@@ -1,5 +1,6 @@
 import { MetadataRoute } from 'next'
 import { client } from '@/lib/sanity'
+import { getAllNews } from '@/lib/db'
 
 const baseUrl = 'https://garhwapalamunews.com'
 
@@ -10,8 +11,28 @@ async function getSiteData() {
       publishedAt
     }
   `
+  
+  const [snArticles, pgArticles] = await Promise.all([
+    client.fetch(query),
+    getAllNews(100) // Get the latest 100 for sitemap
+  ])
+
+  // Normalize and merge articles for sitemap
+  const mergedArticles = [...snArticles];
+  const seenSlugs = new Set(snArticles.map((a: any) => a.slug));
+
+  pgArticles.forEach((a: any) => {
+    if (!seenSlugs.has(a.slug)) {
+      mergedArticles.push({
+        slug: a.slug,
+        publishedAt: a.published_at
+      });
+      seenSlugs.add(a.slug);
+    }
+  });
+
   return {
-    articles: await client.fetch(query),
+    articles: mergedArticles,
     authors: await client.fetch(`*[_type == "author"] { "slug": slug.current, _updatedAt }`),
     categories: await client.fetch(`*[_type == "category"] { "slug": slug.current, _updatedAt }`)
   }

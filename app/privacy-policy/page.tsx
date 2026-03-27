@@ -24,36 +24,40 @@ export default function PrivacyPolicyPage() {
                         <section>
                             <h2 className="text-2xl font-black text-gray-900 mb-4 flex items-center gap-2">
                                 <span className="w-8 h-8 bg-red-600 text-white rounded-lg flex items-center justify-center text-sm">01</span>
-                                परिचय और डेटा संग्रह
+                                डेटा संग्रह (Data Collection)
                             </h2>
                             <p className="text-gray-700 leading-relaxed text-lg mb-4">
-                                <strong>NR Daily News</strong> (गढ़वा पलामू न्यूज़) आपकी निजता (Privacy) का सम्मान करता है। जब आप हमारी वेबसाइट का उपयोग करते हैं, तो हम निम्नलिखित जानकारी एकत्र कर सकते हैं:
+                                <strong>NR Daily News</strong> आपकी निजता का सम्मान करता है। हम निम्नलिखित जानकारी एकत्र कर सकते हैं:
                             </p>
                             <ul className="grid md:grid-cols-2 gap-4 text-gray-700">
-                                <li className="bg-gray-50 p-4 rounded-xl border-l-4 border-red-600"><strong>लोकेशन डेटा:</strong> आपके क्षेत्र की सटीक खबरें दिखाने के लिए।</li>
-                                <li className="bg-gray-50 p-4 rounded-xl border-l-4 border-red-600"><strong>डिवाइस जानकारी:</strong> बेहतर यूजर एक्सपीरियंस के लिए।</li>
-                                <li className="bg-gray-50 p-4 rounded-xl border-l-4 border-red-600"><strong>लॉग्स:</strong> IP एड्रेस और ब्राउज़र टाइप (Security के लिए)।</li>
-                                <li className="bg-gray-50 p-4 rounded-xl border-l-4 border-red-600"><strong>संपर्क जानकारी:</strong> जब आप न्यूज़ टिप या फीडबैक देते हैं।</li>
+                                <li className="bg-gray-50 p-4 rounded-xl border-l-4 border-red-600"><strong>लोकेशन:</strong> क्षेत्रीय समाचार दिखाने के लिए।</li>
+                                <li className="bg-gray-50 p-4 rounded-xl border-l-4 border-red-600"><strong>लॉग्स:</strong> IP एड्रेस और ब्राउज़र जानकारी (सुरक्षा के लिए)।</li>
+                                <li className="bg-gray-50 p-4 rounded-xl border-l-4 border-red-600"><strong>कुकीज़:</strong> बेहतर अनुभव और विज्ञापनों के लिए।</li>
                             </ul>
                         </section>
 
                         <section>
                             <h2 className="text-2xl font-black text-gray-900 mb-4 flex items-center gap-2">
                                 <span className="w-8 h-8 bg-red-600 text-white rounded-lg flex items-center justify-center text-sm">02</span>
-                                डेटा का उपयोग (Usage)
+                                AI और डेटा प्रोसेसिंग
                             </h2>
-                            <p className="text-gray-700 leading-relaxed text-lg">
-                                हम आपके डेटा का उपयोग वेबसाइट की सुरक्षा सुनिश्चित करने, आपको विज्ञापन दिखाने (Google AdSense द्वारा), और भविष्य में आपको पर्सनलाइज्ड न्यूज़ अलर्ट भेजने के लिए करते हैं। हम कभी भी किसी तीसरे पक्ष (Third Party) को आपकी निजी जानकारी <strong>नहीं बेचते</strong>।
+                            <p className="text-gray-700 leading-relaxed text-lg mb-4">
+                                हम समाचारों को बेहतर बनाने और स्वचालित रूप से स्थानीय जानकारी एकत्र करने के लिए <strong>Google Gemini AI</strong> का उपयोग करते हैं। 
                             </p>
+                            <ul className="space-y-3 text-gray-700">
+                                <li className="flex gap-2">✅ समाचारों का विश्लेषण और पुनर्गठन Google के सुरक्षित AI सर्वर पर होता है।</li>
+                                <li className="flex gap-2">✅ आपकी निजी जानकारी कभी भी AI ट्रेनिंग के लिए साझा नहीं की जाती।</li>
+                                <li className="flex gap-2">✅ सभी डेटा <strong>Vercel Postgres</strong> (सुरक्षित क्लाउड स्टोरेज) पर स्टोर किया जाता है।</li>
+                            </ul>
                         </section>
 
                         <section>
                             <h2 className="text-2xl font-black text-gray-900 mb-4 flex items-center gap-2">
                                 <span className="w-8 h-8 bg-red-600 text-white rounded-lg flex items-center justify-center text-sm">03</span>
-                                कुकीज़ (Cookies)
+                                आपकी जानकारी की सुरक्षा
                             </h2>
                             <p className="text-gray-700 leading-relaxed text-lg">
-                                हमारी वेबसाइट कुकीज़ का उपयोग करती है ताकि हम यह समझ सकें कि पाठक किस तरह की ख़बरों में रुचि रखते हैं। यह डेटा पूरी तरह से गोपनीय रहता है और विज्ञापनदाताओं के साथ केवल आंकड़ों के रूप में साझा किया जाता है।
+                                हम कभी भी आपका डेटा किसी तीसरे पक्ष को <strong>नहीं बेचते</strong>। सभी डेटा एन्क्रिप्टेड है और केवल सेवा सुधार के लिए उपयोग किया जाता है।
                             </p>
                         </section>
 
