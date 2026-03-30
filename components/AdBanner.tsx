@@ -86,7 +86,7 @@ export default async function AdBanner({
     if (!finalImageUrl) {
         return (
             <div
-                className={`flex flex-col items-center justify-center p-8 my-10 border border-brand-navy/10 rounded-3xl bg-brand-navy/[0.02] relative overflow-hidden group ${className}`}
+                className={`flex flex-col items-center justify-center p-6 my-6 border border-brand-navy/10 rounded-3xl bg-brand-navy/[0.02] relative overflow-hidden group ${className}`}
                 style={{
                     maxWidth: finalWidth,
                     minHeight: Math.max(finalHeight, 120),
@@ -130,14 +130,14 @@ export default async function AdBanner({
 
     return (
         <div
-            className={`my-12 text-center ${className}`}
+            className={`my-8 text-center ${className}`}
             style={{
                 maxWidth: finalWidth,
-                margin: '3rem auto',
+                margin: '2rem auto',
                 ...style
             }}
         >
-            <span className="inline-block text-[9px] font-black uppercase tracking-[0.3em] text-brand-gold mb-3 italic">
+            <span className="inline-block text-[9px] font-black uppercase tracking-[0.3em] text-brand-gold mb-2 italic">
                 Strategic Partner Briefing
             </span>
             {/* Only wrap in <a> if we actually have a target URL */}

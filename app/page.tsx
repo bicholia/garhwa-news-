@@ -54,8 +54,8 @@ export default async function Home() {
           
           {/* MASTER HERO SECTION: Cinematic & Powerful */}
           {mainStory && (
-            <section className="group relative mb-16 lg:mb-24 rounded-3xl overflow-hidden bg-brand-navy shadow-2xl">
-              <div className="grid grid-cols-1 lg:grid-cols-12 min-h-[500px] lg:min-h-[700px]">
+            <section className="group relative mb-10 lg:mb-16 rounded-3xl overflow-hidden bg-brand-navy shadow-2xl">
+              <div className="grid grid-cols-1 lg:grid-cols-12 min-h-[400px] lg:min-h-[500px]">
                 {/* Visual Side */}
                 <div className="lg:col-span-8 relative overflow-hidden">
                   {mainStory.image_url || mainStory.featureImage?.asset ? (
@@ -80,10 +80,10 @@ export default async function Home() {
                   <div className="text-brand-gold font-black uppercase tracking-[0.4em] text-[10px] mb-6 flex items-center gap-2">
                       <TrendingUp size={16} /> The Lead Report
                   </div>
-                  <h1 className="text-3xl lg:text-5xl font-black text-white font-serif leading-[1.1] mb-6 tracking-tight">
+                  <h1 className="text-2xl lg:text-4xl font-black text-white font-serif leading-[1.1] mb-4 tracking-tight">
                     {mainStory.title}
                   </h1>
-                  <p className="text-gray-400 text-lg leading-relaxed mb-8 font-medium">
+                  <p className="text-gray-400 text-base leading-relaxed mb-6 font-medium line-clamp-3">
                     {mainStory.excerpt}
                   </p>
                   <Link 
@@ -104,7 +104,7 @@ export default async function Home() {
 
           {/* SECONDARY STORIES: Grid of 3 */}
           {subStories && subStories.length > 0 && (
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 mb-24 -mt-12 lg:-mt-20 relative z-20 container">
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 mb-16 -mt-8 lg:-mt-12 relative z-20 container">
                 {subStories.map((story: any) => {
                     const imageUrl = story.image_url || (story.featureImage?.asset ? urlFor(story.featureImage).width(600).height(400).url() : null);
                     const date = story.publishedAt || story.published_at;
