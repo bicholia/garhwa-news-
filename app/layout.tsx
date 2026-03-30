@@ -9,24 +9,24 @@ import { Analytics } from '@vercel/analytics/react'
 export const metadata: Metadata = {
   metadataBase: new URL('https://garhwapalamunews.com'),
   title: {
-    default: 'गढ़वा पलामू न्यूज़ | NR Daily News — ताज़ा समाचार, सरकारी नौकरियां, अपराध',
-    template: '%s | गढ़वा पलामू न्यूज़',
+    default: 'NR Global News | Truth & Integrity in Journalism',
+    template: '%s | NR Global News',
   },
   description:
-    'गढ़वा और पलामू जिले की ताज़ा खबरें, ब्रेकिंग न्यूज़, सरकारी नौकरियां, अपराध, राजनीति और मनोरंजन। Jharkhand local news in Hindi.',
+    'NR Global News is a leading international news agency providing real-time updates on politics, crime, sports, and local developments in Jharkhand, Garhwa, and Palamu.',
   keywords: [
-    'गढ़वा समाचार', 'पलामू न्यूज़', 'झारखंड खबरें', 'Garhwa news', 'Palamu news',
-    'Jharkhand Hindi news', 'सरकारी नौकरी', 'ब्रेकिंग न्यूज़', 'NR Daily News',
+    'NR Global News', 'NR Daily News', 'Jharkhand News', 'Garhwa News', 'Palamu News',
+    'International News Agency', 'Latest Hindi News', 'Breaking News India'
   ],
   openGraph: {
     type: 'website',
-    locale: 'hi_IN',
-    siteName: 'NR Daily News — गढ़वा पलामू न्यूज़',
-    images: [{ url: '/logo.png', width: 1200, height: 630, alt: 'NR Daily News' }],
+    locale: 'en_US',
+    siteName: 'NR Global News Agency',
+    images: [{ url: '/logo-new.png', width: 1200, height: 630, alt: 'NR Global News' }],
   },
   twitter: {
     card: 'summary_large_image',
-    images: ['/logo.png'],
+    images: ['/logo-new.png'],
   },
   icons: {
     icon: [
@@ -41,52 +41,27 @@ export const metadata: Metadata = {
   robots: {
     index: true,
     follow: true,
-    googleBot: {
-      index: true,
-      follow: true,
-      'max-video-preview': -1,
-      'max-image-preview': 'large',
-      'max-snippet': -1,
-    },
   },
   alternates: { canonical: 'https://garhwapalamunews.com' },
-  verification: {
-    google: 'kM9KfIqT55O1p0X_rZ3VrGo8Fivt6NNfV5lIe5bi8go',
-  },
-  appleWebApp: {
-    capable: true,
-    statusBarStyle: 'default',
-    title: 'NR Daily News',
-  },
-  formatDetection: {
-    telephone: false,
-  },
 }
 
-// This is the SHELL layout — it wraps everything.
-// Admin pages have their own layout inside /app/admin/dashboard/layout.tsx
-// Public pages use /app/(public)/layout.tsx (or we use conditional below)
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
-    <html lang="hi">
+    <html lang="hi" className="scroll-smooth">
       <head>
-        <meta name="theme-color" content="#dc2626" />
+        <meta name="theme-color" content="#0F172A" />
         <meta name="mobile-web-app-capable" content="yes" />
-        <meta name="apple-mobile-web-app-title" content="NR Daily News" />
-        <link rel="preconnect" href="https://fonts.googleapis.com" />
-        <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />
-        <link
-          href="https://fonts.googleapis.com/css2?family=Noto+Sans+Devanagari:wght@300;400;500;600;700;800;900&family=Inter:wght@400;500;600;700;800&display=swap"
-          rel="stylesheet"
-        />
+        <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
       </head>
-      <body suppressHydrationWarning>
-        <div id="nr-daily-news-root" style={{ display: 'contents' }}>
+      <body className="bg-news-paper min-h-screen antialiased selection:bg-brand-gold/30 selection:text-brand-navy" suppressHydrationWarning>
+        <div id="nr-daily-news-root" className="flex flex-col min-h-screen">
           <ErrorHandler />
           <Suspense fallback={null}>
             <PremiumLoader />
           </Suspense>
-          {children}
+          <main className="flex-grow">
+            {children}
+          </main>
           <CookieBanner />
           <Analytics />
         </div>

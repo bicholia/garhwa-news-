@@ -1,0 +1,92 @@
+﻿Γû▓ Next.js 16.1.6 (Turbopack)
+- Environments: .env.production.local, .env.local
+
+npx : ΓÜá The 
+"middleware" file 
+convention is deprecated. 
+Please use "proxy" 
+instead. Learn more: https
+://nextjs.org/docs/message
+s/middleware-to-proxy
+At line:1 char:1
++ npx next build 2>&1 | 
+Out-File -FilePath "script
+s/build_output.log" - ...
++ ~~~~~~~~~~~~~~~~~~~
+    + CategoryInfo        
+      : NotSpecified: (Γ  
+  Üá The "middle...lewa   
+ re-to-proxy:String) [    
+], RemoteException
+    + FullyQualifiedError 
+   Id : NativeCommandErr  
+  or
+ 
+  Creating an optimized production build ...
+Γ£ô Compiled successfully in 17.8s
+  Running TypeScript ...
+  Collecting page data using 3 workers ...
+  Generating static pages using 3 workers (0/40) ...
+  Generating static pages using 3 workers (10/40) 
+  Generating static pages using 3 workers (20/40) 
+  Generating static pages using 3 workers (30/40) 
+Γ£ô Generating static pages using 3 workers (40/40) in 12.9s
+  Finalizing page optimization ...
+
+Route (app)                       Revalidate  Expire
+Γöî Γùï /                                     1h      1y
+Γö£ Γùï /_not-found
+Γö£ Γùï /about
+Γö£ ╞Æ /admin/[[...secret]]
+Γö£ Γùï /admin/dashboard
+Γö£ Γùï /admin/dashboard/ads
+Γö£ Γùï /admin/dashboard/bulk-upload
+Γö£ Γùï /admin/dashboard/posts
+Γö£ ╞Æ /admin/dashboard/posts/[id]
+Γö£ Γùï /admin/dashboard/posts/new
+Γö£ Γùï /admin/dashboard/settings
+Γö£ Γùï /admin/login
+Γö£ Γùï /admin/telegram-stats                 5m      1y
+Γö£ ╞Æ /api/admin/ads
+Γö£ ╞Æ /api/admin/ai-generate
+Γö£ ╞Æ /api/admin/bulk-upload
+Γö£ ╞Æ /api/admin/global-ads
+Γö£ ╞Æ /api/admin/login
+Γö£ ╞Æ /api/admin/media/upload
+Γö£ ╞Æ /api/admin/posts
+Γö£ ╞Æ /api/admin/posts/[id]
+Γö£ ╞Æ /api/admin/posts/bulk-delete
+Γö£ ╞Æ /api/admin/posts/create
+Γö£ ╞Æ /api/admin/profile
+Γö£ ╞Æ /api/ai-news-agent
+Γö£ ╞Æ /api/cron-telegram
+Γö£ ╞Æ /api/health
+Γö£ ╞Æ /api/news
+Γö£ ╞Æ /api/telegram-webhook
+Γö£ ╞Æ /api/track-interest
+Γö£ ╞Æ /author/[slug]
+Γö£ ╞Æ /category/[slug]
+Γö£ Γùï /contact
+Γö£ Γùï /corrections
+Γö£ Γùï /debug-trigger
+Γö£ Γùï /editorial-policy
+Γö£ ╞Æ /garhwa
+Γö£ ╞Æ /jharkhand
+Γö£ Γùï /live
+Γö£ Γùï /manifest.webmanifest
+Γö£ ╞Æ /news/[slug]
+Γö£ ╞Æ /palamu
+Γö£ Γùï /privacy-policy
+Γö£ Γùï /refund-policy
+Γö£ Γùï /robots.txt
+Γö£ ╞Æ /search
+Γö£ Γùï /sitemap.xml
+Γö£ Γùï /terms
+Γöö Γùï /videos
+
+
+╞Æ Proxy (Middleware)
+
+Γùï  (Static)   prerendered as static content
+╞Æ  (Dynamic)  server-rendered on demand
+

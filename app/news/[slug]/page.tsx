@@ -1,7 +1,7 @@
 import { client, urlFor } from '@/lib/sanity'
 import { getNewsBySlug, getRelatedNews, mergeAndSortNews } from '@/lib/db'
 import { notFound } from 'next/navigation'
-import { FaFacebookF, FaTwitter, FaWhatsapp, FaTelegramPlane } from 'react-icons/fa'
+import { FaFacebookF, FaTwitter, FaWhatsapp, FaTelegramPlane, FaLinkedinIn } from 'react-icons/fa'
 import Image from 'next/image'
 import Link from 'next/link'
 import { PortableText } from '@portabletext/react'
@@ -9,6 +9,7 @@ import { Metadata } from 'next'
 import SectionHeading from '@/components/SectionHeading'
 import AdBanner from '@/components/AdBanner'
 import PublicLayout from '@/components/PublicLayout'
+import { Clock, MapPin, User, Bookmark, Share2, ShieldCheck, ArrowRight, TrendingUp } from 'lucide-react'
 
 export const revalidate = 0 // Fetch fresh news every time
 
@@ -16,7 +17,6 @@ async function getArticle(slug: string) {
     const postgresArticle: any = await getNewsBySlug(slug)
     
     if (postgresArticle) {
-        // Fetch related from both
         const [pgRelated, snRelated]: [any[], any[]] = await Promise.all([
             getRelatedNews(postgresArticle.category, postgresArticle.district, slug, 3),
             client.fetch(`*[_type == "article" && district == $district] | order(publishedAt desc)[0...3] {
@@ -30,7 +30,6 @@ async function getArticle(slug: string) {
         }
     }
 
-    // Fallback to Sanity
     const query = `* [_type == "article" && slug.current == $slug][0] {
         title,
         excerpt,
@@ -42,6 +41,7 @@ async function getArticle(slug: string) {
         publishedAt,
         _updatedAt,
         localAd,
+        highlights,
         "author": author -> { name, slug, image, bio },
         "category": category -> {
             "slug": slug.current,
@@ -77,35 +77,17 @@ export async function generateMetadata({ params }: { params: Promise<{ slug: str
     const imageUrl = (article.image_url || (article.featureImage?.asset ? urlFor(article.featureImage).width(1200).height(630).url() : `${domain}/og-image.png`))
 
     return {
-        title: `${article.title} | गढ़वा पलामू न्यूज़`,
+        title: `${article.title} | NR Global Agency`,
         description: article.excerpt?.substring(0, 160),
-        keywords: article.seoKeywords || article.seo_keywords || `${article.district}, Garhwa News, Palamu News, Jharkhand News, ${article.category?.name}, गढ़वा समाचार, पलामू न्यूज़, ${article.title}`,
-        alternates: {
-            canonical: `${domain}/news/${slug}`,
-        },
+        keywords: article.seoKeywords || article.seo_keywords || `NR Global News, ${article.district}, ${article.category?.name}`,
+        alternates: { canonical: `${domain}/news/${slug}` },
         openGraph: {
             title: article.title,
             description: article.excerpt,
             url: `${domain}/news/${slug}`,
-            siteName: 'NR Daily News',
-            locale: 'hi_IN',
+            siteName: 'NR Global News',
             type: 'article',
-            publishedTime: article.publishedAt || article.published_at,
-            authors: [article.author?.name || 'NR Daily News Bureau'],
-            images: [
-                {
-                    url: imageUrl,
-                    width: 1200,
-                    height: 630,
-                    alt: article.title,
-                },
-            ],
-        },
-        twitter: {
-            card: 'summary_large_image',
-            title: article.title,
-            description: article.excerpt,
-            images: [imageUrl],
+            images: [{ url: imageUrl }],
         },
     }
 }
@@ -117,16 +99,13 @@ export default async function ArticlePage({ params }: { params: Promise<{ slug: 
     if (!article) notFound()
 
     const publishedDate = article.publishedAt || article.published_at
-    const formattedDate = new Date(publishedDate).toLocaleDateString('hi-IN', {
+    const formattedDate = new Date(publishedDate || Date.now()).toLocaleDateString('hi-IN', {
         weekday: 'long',
         year: 'numeric',
         month: 'long',
         day: 'numeric',
-        hour: '2-digit',
-        minute: '2-digit',
     })
 
-    // Structured Data for SEO (GEO/AEO)
     const jsonLd = {
         '@context': 'https://schema.org',
         '@graph': [
@@ -138,271 +117,180 @@ export default async function ArticlePage({ params }: { params: Promise<{ slug: 
                     article.image_url || urlFor(article.featureImage).width(1200).height(630).url()
                 ] : [],
                 datePublished: article.publishedAt || article.published_at,
-                dateModified: article._updatedAt || article.publishedAt || article.published_at,
                 author: [{
                     '@type': 'Person',
                     name: article.author?.name || 'संवाददाता',
-                    jobTitle: 'Journalist',
-                    url: article.author?.slug ? `https://garhwapalamunews.com/author/${article.author.slug.current}` : undefined,
                 }],
                 publisher: {
                     '@type': 'NewsMediaOrganization',
-                    name: 'NR Daily News',
-                    logo: 'https://garhwapalamunews.com/logo.png',
-                    sameAs: ['https://facebook.com/garhwa.news', 'https://twitter.com/garhwapalamunews']
-                },
-                wordCount: article.content ? article.content.split(' ').length : 0,
-                keywords: [...(article.tags || []), article.category?.name, article.district].filter(Boolean).join(', ')
-            },
-            {
-                '@type': 'BreadcrumbList',
-                itemListElement: [
-                    { '@type': 'ListItem', position: 1, name: 'Home', item: 'https://garhwapalamunews.com' },
-                    { '@type': 'ListItem', position: 2, name: article.category?.name || 'News', item: `https://garhwapalamunews.com/category/${article.category?.slug}` },
-                    { '@type': 'ListItem', position: 3, name: article.title, item: `https://garhwapalamunews.com/news/${decodedSlug}` }
-                ]
-            },
-            // AEO: FAQ Schema based on highlights
-            article.highlights?.length > 0 ? {
-                '@type': 'FAQPage',
-                mainEntity: article.highlights.map((h: string) => ({
-                    '@type': 'Question',
-                    name: `खबर का मुख्य बिंदु: ${h.split(':')[0] || 'मुख्य जानकारी'}`,
-                    acceptedAnswer: { '@type': 'Answer', text: h }
-                }))
-            } : null
-        ].filter(Boolean)
+                    name: 'NR Global News',
+                    logo: 'https://garhwapalamunews.com/logo-new.png',
+                }
+            }
+        ]
     }
 
     return (
         <PublicLayout>
-            <div style={{ background: '#f9fafb', minHeight: '100vh', paddingBottom: '4rem' }}>
+            <div className="bg-news-paper min-h-screen pb-20">
                 <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }} />
-                <main className="container" style={{ maxWidth: 880, paddingTop: '2rem' }}>
-                    <article style={{ background: 'white', borderRadius: '16px', boxShadow: '0 4px 6px -1px rgba(0,0,0,0.1)', overflow: 'hidden' }}>
+                
+                {/* Hero Banner Area */}
+                <div className="bg-brand-navy pt-10 pb-20 lg:pt-16 lg:pb-32 px-4">
+                    <div className="container max-w-4xl mx-auto text-center">
+                        <div className="flex justify-center items-center gap-4 mb-8">
+                             <Link href={`/category/${article.category?.slug?.current || article.category?.slug || 'news'}`} 
+                                className="bg-brand-gold text-white text-[10px] font-black uppercase tracking-[0.3em] px-6 py-2 rounded-full shadow-lg">
+                                {typeof article.category === 'string' ? article.category : article.category?.name || 'REPORT'}
+                            </Link>
+                            <span className="text-white/20 text-xs font-black uppercase tracking-widest hidden md:inline">NR Agency Intelligence</span>
+                        </div>
+                        <h1 className="text-3xl md:text-5xl lg:text-6xl font-black text-white font-serif leading-[1.15] mb-8 tracking-tight">
+                            {article.title}
+                        </h1>
+                        <div className="flex flex-wrap justify-center items-center gap-6 text-xs font-bold uppercase tracking-widest text-gray-400">
+                             <div className="flex items-center gap-2"><Clock size={14} className="text-brand-gold" /> {formattedDate}</div>
+                             <div className="flex items-center gap-2"><MapPin size={14} className="text-brand-gold" /> {article.location || article.district}</div>
+                             <div className="flex items-center gap-2"><User size={14} className="text-brand-gold" /> {article.author?.name || 'By NR Desk'}</div>
+                        </div>
+                    </div>
+                </div>
 
-                        {/* Feature Image */}
+                <main className="container max-w-4xl mx-auto -mt-16 lg:-mt-24 px-4 relative z-10">
+                    <article className="bg-white rounded-3xl shadow-2xl overflow-hidden border border-gray-100">
+                        {/* Featured Image */}
                         {(article.featureImage?.asset || article.image_url) && (
-                            <div style={{ position: 'relative', width: '100%', height: 450 }}>
+                            <div className="relative aspect-[16/9] w-full group">
                                 <Image
-                                    src={article.image_url || urlFor(article.featureImage).width(1200).height(630).url()}
+                                    src={article.image_url || urlFor(article.featureImage).width(1200).height(675).url()}
                                     alt={article.title}
                                     fill
                                     priority
-                                    style={{ objectFit: 'cover' }}
+                                    className="object-cover"
                                 />
-                                <div style={{ position: 'absolute', bottom: '1rem', right: '1rem', background: 'rgba(0,0,0,0.6)', color: 'white', padding: '4px 8px', borderRadius: '4px', fontSize: '0.65rem' }}>
-                                    © NR Daily News Photo
+                                <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent opacity-0 group-hover:opacity-100 transition-opacity flex items-end p-8">
+                                    <div className="text-white text-[10px] font-black uppercase tracking-widest flex items-center gap-2">
+                                        <ShieldCheck size={14} className="text-brand-gold" /> Authenticated Agency Media
+                                    </div>
                                 </div>
                             </div>
                         )}
 
-                        <div style={{ padding: '2rem' }}>
-                            {/* Meta */}
-                            <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '1.5rem', flexWrap: 'wrap' }}>
-                                <Link href={`/category/${article.category?.slug || (typeof article.category === 'string' ? 'news' : article.category?.slug || 'news')}`} style={{ background: '#fef2f2', color: '#b91c1c', padding: '4px 12px', borderRadius: '20px', fontSize: '0.75rem', fontWeight: 800, textTransform: 'uppercase', textDecoration: 'none' }}>
-                                    {typeof article.category === 'string' ? article.category : (article.category?.name || 'NEWS').toUpperCase()}
-                                </Link>
-                                {article.location && (
-                                    <>
-                                        <span style={{ color: '#9ca3af', fontSize: '0.75rem' }}>|</span>
-                                        <span style={{ color: '#111827', fontSize: '0.85rem', fontWeight: 700, display: 'flex', alignItems: 'center', gap: '4px' }}>
-                                            📍 {article.location}
-                                        </span>
-                                    </>
-                                )}
-                                <span style={{ color: '#9ca3af', fontSize: '0.75rem' }}>|</span>
-                                <span style={{ color: '#6b7280', fontSize: '0.75rem', fontWeight: 600 }}>{formattedDate}</span>
+                        <div className="p-8 lg:p-16">
+                            {/* Short Intro / Excerpt */}
+                            {article.excerpt && (
+                                <p className="text-xl lg:text-2xl font-black text-brand-navy font-serif leading-relaxed mb-12 italic border-l-4 border-brand-gold pl-8">
+                                    {article.excerpt}
+                                </p>
+                            )}
+
+                            {/* Action Bar */}
+                            <div className="flex items-center justify-between mb-12 py-6 border-y border-gray-50">
+                                <div className="flex items-center gap-6">
+                                    <button className="flex items-center gap-2 text-[10px] font-black uppercase tracking-widest text-brand-navy hover:text-brand-gold transition-colors">
+                                        <Bookmark size={16} /> Save Brief
+                                    </button>
+                                    <button className="flex items-center gap-2 text-[10px] font-black uppercase tracking-widest text-brand-navy hover:text-brand-gold transition-colors">
+                                        <Share2 size={16} /> Distribute
+                                    </button>
+                                </div>
+                                <div className="flex items-center gap-3">
+                                    <FaFacebookF className="text-gray-400 hover:text-brand-gold cursor-pointer" />
+                                    <FaTwitter className="text-gray-400 hover:text-brand-gold cursor-pointer" />
+                                    <FaWhatsapp className="text-gray-400 hover:text-brand-gold cursor-pointer" />
+                                </div>
                             </div>
 
-                            <h1 style={{ fontSize: '2.25rem', fontWeight: 900, color: '#111827', marginBottom: '1.5rem', lineHeight: 1.2 }}>
-                                {article.title}
-                            </h1>
-
-                            {/* GEO/SXO: Key Highlights Box */}
-                            {article.highlights && article.highlights.length > 0 && (
-                                <div style={{ background: '#f0f9ff', borderLeft: '5px solid #0ea5e9', padding: '1.5rem', marginBottom: '2.5rem', borderRadius: '0 8px 8px 0' }}>
-                                    <h2 style={{ fontSize: '1.1rem', fontWeight: 900, color: '#0369a1', marginBottom: '1rem', display: 'flex', alignItems: 'center', gap: '8px' }}>
-                                        🎯 मुख्य बिंदु (Key Highlights)
+                            {/* Highlights */}
+                            {Array.isArray(article.highlights) && article.highlights.length > 0 && (
+                                <div className="bg-brand-navy/5 rounded-2xl p-8 lg:p-12 mb-12 border border-brand-gold/10">
+                                    <h2 className="text-xs font-black uppercase tracking-[0.4em] text-brand-gold mb-8 flex items-center gap-3">
+                                        <TrendingUp size={16} /> Intelligence Summary
                                     </h2>
-                                    <ul style={{ margin: 0, paddingLeft: '1.2rem', color: '#0c4a6e', display: 'flex', flexDirection: 'column', gap: '0.5rem', fontWeight: 600 }}>
+                                    <ul className="space-y-6">
                                         {article.highlights.map((h: string, idx: number) => (
-                                            <li key={idx} style={{ lineHeight: 1.5 }}>{h}</li>
+                                            <li key={idx} className="flex items-start gap-4 text-brand-navy font-bold leading-relaxed italic">
+                                                <span className="w-2 h-2 mt-2 bg-brand-gold rounded-full shrink-0" /> {h}
+                                            </li>
                                         ))}
                                     </ul>
                                 </div>
                             )}
 
-                            <div style={{ display: 'flex', alignItems: 'center', gap: '12px', marginBottom: '2.5rem', paddingBottom: '1.5rem', borderBottom: '1px solid #f3f4f6' }}>
-                                <div style={{ width: 44, height: 44, borderRadius: '50%', background: '#f3f4f6', display: 'flex', alignItems: 'center', justifyContent: 'center', fontWeight: 800, color: '#374151', overflow: 'hidden', position: 'relative' }}>
-                                    {article.author?.image?.asset ? (
-                                        <Image src={urlFor(article.author.image).width(88).height(88).url()} alt={article.author.name} fill style={{ objectFit: 'cover' }} />
-                                    ) : (
-                                        article.author?.name?.charAt(0) || 'S'
-                                    )}
-                                </div>
-                                <div>
-                                    <div style={{ fontSize: '0.85rem', fontWeight: 700, color: '#111827' }}>
-                                        {article.author ? (
-                                            <Link href={`/author/${article.author.slug.current || article.author.slug}`} style={{ color: 'inherit', textDecoration: 'none' }} className="hover:text-red-600">
-                                                {article.author.name}
-                                            </Link>
-                                        ) : 'संवाददाता'}
-                                    </div>
-                                    <div style={{ fontSize: '0.75rem', color: '#6b7280' }}>NR DAILY NEWS BUREAU</div>
-                                </div>
-                            </div>
-
-                            {/* Top Ad — slot must match Sanity globalAd.slot value exactly */}
-                            <AdBanner slot="article_top_leaderboard" width={728} height={90} />
-
-                            {/* Local Sponsored Ad Banner */}
-                            {article.localAd?.image?.asset && article.localAd?.isActive !== false && (
-                                <div style={{ margin: '2rem 0', textAlign: 'center', background: '#f9fafb', padding: '1rem', borderRadius: '12px', border: '1px solid #e5e7eb' }}>
-                                    <span style={{ fontSize: '0.7rem', color: '#6b7280', textTransform: 'uppercase', letterSpacing: '1px', display: 'block', marginBottom: '0.5rem', fontWeight: 700 }}>विज्ञापन (Advertisement)</span>
-                                    {article.localAd.url ? (
-                                        <a href={article.localAd.url} target="_blank" rel="noopener noreferrer" style={{ display: 'inline-block' }}>
-                                            <Image
-                                                src={urlFor(article.localAd.image).width(800).url()}
-                                                alt="Sponsored Advertisement"
-                                                width={800}
-                                                height={200}
-                                                style={{ maxWidth: '100%', height: 'auto', borderRadius: '8px' }}
-                                                unoptimized
-                                            />
-                                        </a>
-                                    ) : (
-                                        <div style={{ display: 'inline-block' }}>
-                                            <Image
-                                                src={urlFor(article.localAd.image).width(800).url()}
-                                                alt="Sponsored Advertisement"
-                                                width={800}
-                                                height={200}
-                                                style={{ maxWidth: '100%', height: 'auto', borderRadius: '8px' }}
-                                                unoptimized
-                                            />
-                                        </div>
-                                    )}
-                                </div>
-                            )}
-
-                            {/* Content */}
-                            <div className="prose max-w-none" style={{ color: '#374151', lineHeight: 1.8, fontSize: '1.1rem', fontFamily: 'inherit' }}>
+                            {/* Main Body */}
+                            <div className="prose prose-lg max-w-none text-gray-700 leading-[1.8] font-medium selection:bg-brand-gold/20">
                                 {article.content ? (
                                     article.content.split('\n').map((para: string, i: number) => (
-                                        <p key={i} style={{ marginBottom: '1.5rem' }}>{para}</p>
+                                        <p key={i} className="mb-8">{para}</p>
                                     ))
                                 ) : article.body?.length > 0 && typeof article.body[0]?.children?.[0]?.text === 'string' && article.body[0].children[0].text.trimStart().startsWith('<') ? (
-                                    // HTML content from admin form — render directly
                                     <div dangerouslySetInnerHTML={{ __html: article.body.map((b: any) => b.children?.map((c: any) => c.text).join('') ?? '').join('\n') }} />
                                 ) : (
-                                    // Proper Sanity portable text
                                     <PortableText value={article.body} />
                                 )}
                             </div>
 
-                            {/* Bottom Ad */}
-                            <AdBanner slot="article_below_content" width={300} height={250} />
-
-                            {/* Live Updates Timeline */}
-                            {article.updates && article.updates.length > 0 && (
-                                <div style={{ marginTop: '3rem', padding: '2rem', background: '#fffbeb', borderRadius: '12px', border: '1px solid #fde68a' }}>
-                                    <h3 style={{ fontSize: '1.25rem', fontWeight: 900, color: '#92400e', marginBottom: '1.5rem', display: 'flex', alignItems: 'center', gap: '8px' }}>
-                                        <span style={{ width: '12px', height: '12px', background: '#ef4444', borderRadius: '50%', display: 'inline-block', animation: 'pulse 2s infinite' }}></span>
-                                        Live Updates (ताज़ा अपडेट)
-                                    </h3>
-                                    <div style={{ display: 'flex', flexDirection: 'column', gap: '1.5rem', borderLeft: '2px dashed #fcd34d', paddingLeft: '1.5rem', marginLeft: '6px' }}>
-                                        {article.updates.map((update: any, idx: number) => (
-                                            <div key={idx} style={{ position: 'relative' }}>
-                                                <div style={{ position: 'absolute', left: '-1.85rem', top: '0.2rem', width: '12px', height: '12px', background: '#f59e0b', borderRadius: '50%', border: '2px solid white' }}></div>
-                                                <div style={{ fontSize: '0.8rem', fontWeight: 800, color: '#b45309', marginBottom: '0.25rem' }}>
-                                                    {new Date(update.time).toLocaleTimeString('hi-IN', { hour: '2-digit', minute: '2-digit' })}, {new Date(update.time).toLocaleDateString('hi-IN', { day: 'numeric', month: 'short' })}
-                                                </div>
-                                                <p style={{ margin: 0, fontSize: '1.05rem', color: '#374151', lineHeight: 1.6, fontWeight: 500 }}>
-                                                    {update.text}
-                                                </p>
-                                            </div>
-                                        ))}
-                                    </div>
-                                    <style>{`@keyframes pulse { 0% { box-shadow: 0 0 0 0 rgba(239, 68, 68, 0.7); } 70% { box-shadow: 0 0 0 10px rgba(239, 68, 68, 0); } 100% { box-shadow: 0 0 0 0 rgba(239, 68, 68, 0); } }`}</style>
-                                </div>
-                            )}
-
-                            {/* Keywords / Tags for Local SEO */}
-                            {article.tags && article.tags.length > 0 && (
-                                <div style={{ marginTop: '2.5rem', display: 'flex', flexWrap: 'wrap', gap: '8px', alignItems: 'center' }}>
-                                    <span style={{ fontSize: '0.9rem', fontWeight: 700, color: '#4b5563' }}>Tags:</span>
+                            {/* Tags Section */}
+                            {Array.isArray(article.tags) && article.tags.length > 0 && (
+                                <div className="mt-20 pt-10 border-t border-gray-50 flex flex-wrap gap-3">
+                                    <span className="text-[10px] font-black uppercase tracking-widest text-brand-gold w-full mb-2 italic">Classified Data Tags</span>
                                     {article.tags.map((tag: string, idx: number) => (
-                                        <span key={idx} style={{ background: '#f3f4f6', color: '#374151', padding: '4px 12px', borderRadius: '4px', fontSize: '0.85rem', fontWeight: 600 }}>
+                                        <span key={idx} className="bg-news-paper px-4 py-2 rounded-lg text-xs font-black text-brand-navy uppercase tracking-widest border border-gray-100 hover:bg-brand-navy hover:text-white transition-all cursor-default">
                                             #{tag}
                                         </span>
                                     ))}
                                 </div>
                             )}
-
-                            {/* Author Bio Box for SEO (E-E-A-T) */}
-                            {article.author && (
-                                <div style={{ marginTop: '3rem', padding: '1.5rem', background: '#f9fafb', borderRadius: '12px', border: '1px solid #e5e7eb', display: 'flex', gap: '1rem', alignItems: 'center' }}>
-                                    <div style={{ width: 70, height: 70, borderRadius: '50%', overflow: 'hidden', flexShrink: 0, position: 'relative', background: '#e5e7eb', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '1.5rem', fontWeight: 'bold', color: '#6b7280' }}>
-                                        {article.author?.image?.asset ? (
-                                            <Image src={urlFor(article.author.image).width(140).height(140).url()} alt={article.author.name} fill style={{ objectFit: 'cover' }} />
-                                        ) : article.author.name.charAt(0)}
-                                    </div>
-                                    <div>
-                                        <h3 style={{ fontSize: '1.1rem', fontWeight: 800, color: '#111827', margin: '0 0 0.5rem 0' }}>
-                                            लेखक: <Link href={`/author/${article.author.slug.current || article.author.slug}`} style={{ color: '#dc2626', textDecoration: 'none' }}>{article.author.name}</Link>
-                                        </h3>
-                                        <p style={{ fontSize: '0.9rem', color: '#4b5563', margin: 0, lineHeight: 1.5 }}>
-                                            {article.author.bio || `${article.author.name} गढ़वा पलामू न्यूज़ के वरिष्ठ संवाददाता हैं। वे स्थानीय राजनीति, अपराध और सामाजिक मुद्दों पर गहरी पकड़ रखते हैं।`}
-                                        </p>
-                                    </div>
-                                </div>
-                            )}
-
-                            {/* Share */}
-                            <div style={{ marginTop: '3rem', paddingTop: '2rem', borderTop: '1px solid #f3f4f6' }}>
-                                <h3 style={{ fontSize: '1rem', fontWeight: 800, marginBottom: '1rem', color: '#111827' }}>शेयर करें:</h3>
-                                <div style={{ display: 'flex', gap: '8px', flexWrap: 'wrap' }}>
-                                    {[
-                                        { label: 'Facebook', icon: <FaFacebookF size={18} />, bg: '#1877f2', href: `https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(`https://garhwapalamunews.com/news/${decodedSlug}`)}` },
-                                        { label: 'Twitter', icon: <FaTwitter size={18} />, bg: '#1da1f2', href: `https://twitter.com/intent/tweet?url=${encodeURIComponent(`https://garhwapalamunews.com/news/${decodedSlug}`)}&text=${encodeURIComponent(article.title)}` },
-                                        { label: 'WhatsApp', icon: <FaWhatsapp size={20} />, bg: '#25d366', href: `https://api.whatsapp.com/send?text=${encodeURIComponent(article.title + ' ' + `https://garhwapalamunews.com/news/${decodedSlug}`)}` },
-                                    ].map(item => (
-                                        <a key={item.label} href={item.href} target="_blank" rel="noopener noreferrer" title={`Share on ${item.label}`}
-                                            className="hover:opacity-85 transition-opacity"
-                                            style={{ background: item.bg, color: 'white', padding: '8px 16px', borderRadius: '6px', fontSize: '0.85rem', fontWeight: 700, textDecoration: 'none', display: 'flex', alignItems: 'center', gap: '8px' }}>
-                                            {item.icon}
-                                            <span>{item.label}</span>
-                                        </a>
-                                    ))}
-                                </div>
-                            </div>
                         </div>
                     </article>
 
-                    {/* Related */}
+                    {/* Author Ecosystem Box */}
+                    {article.author && (
+                        <div className="mt-12 p-8 lg:p-12 bg-white rounded-3xl shadow-xl border border-gray-100 flex flex-col md:flex-row items-center gap-8 group">
+                            <div className="w-24 h-24 rounded-2xl overflow-hidden shrink-0 border-2 border-brand-gold/20 p-1 bg-white relative">
+                                {article.author?.image?.asset ? (
+                                    <Image src={urlFor(article.author.image).width(200).height(200).url()} alt={article.author.name} fill className="object-cover rounded-xl" />
+                                ) : (
+                                    <div className="w-full h-full bg-brand-navy flex items-center justify-center text-white font-serif text-3xl font-black rounded-xl">{article.author.name.charAt(0)}</div>
+                                )}
+                            </div>
+                            <div className="text-center md:text-left">
+                                <span className="text-[10px] font-black uppercase tracking-[0.3em] text-brand-gold mb-2 block italic">Authenticated Agent</span>
+                                <h3 className="text-2xl font-black text-brand-navy font-serif mb-3">
+                                    <Link href={`/author/${article.author?.slug?.current || article.author?.slug || 'admin'}`} className="hover:text-brand-gold transition-colors">
+                                        {article.author.name}
+                                    </Link>
+                                </h3>
+                                <p className="text-sm text-gray-500 font-medium leading-relaxed max-w-2xl">
+                                    {article.author.bio || `${article.author.name} is a senior intelligence correspondent for NR Global Agency, specializing in regional geopolitical developments and sociopolitical analysis.`}
+                                </p>
+                            </div>
+                        </div>
+                    )}
+
+                    {/* Related Archives */}
                     {article.related && article.related.length > 0 && (
-                        <section style={{ marginTop: '4rem' }}>
-                            <SectionHeading title="ये भी पढ़ें" />
-                            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(260px, 1fr))', gap: '1.5rem' }}>
+                        <section className="mt-24">
+                            <SectionHeading title="System Related Archives" />
+                            <div className="grid grid-cols-1 md:grid-cols-3 gap-8 mt-12">
                                 {article.related.map((item: any) => (
-                                    <Link key={item._id || item.id} href={`/news/${item.slug.current || item.slug}`} style={{ textDecoration: 'none' }}>
-                                        <div style={{ background: 'white', borderRadius: '12px', overflow: 'hidden', boxShadow: '0 1px 3px rgba(0,0,0,0.1)' }}>
-                                            {(item.featureImage?.asset || item.image_url) && (
-                                                <div style={{ position: 'relative', height: 160, width: '100%' }}>
-                                                    <Image
-                                                        src={item.image_url || urlFor(item.featureImage).width(400).height(250).url()}
-                                                        alt={item.title}
-                                                        fill
-                                                        style={{ objectFit: 'cover' }}
-                                                    />
-                                                </div>
-                                            )}
-                                            <div style={{ padding: '1rem' }}>
-                                                <h3 style={{ fontSize: '0.95rem', fontWeight: 700, color: '#111827', margin: 0, lineHeight: 1.4 }} className="hover:text-red-600">
-                                                    {item.title}
-                                                </h3>
+                                    <Link key={item._id || item.id} href={`/news/${item.slug.current || item.slug}`} className="group bg-white rounded-2xl p-4 shadow-lg hover:-translate-y-2 transition-all duration-500 border border-gray-50">
+                                        {(item.featureImage?.asset || item.image_url) && (
+                                            <div className="relative aspect-video rounded-xl overflow-hidden mb-4">
+                                                <Image
+                                                    src={item.image_url || urlFor(item.featureImage).width(400).height(225).url()}
+                                                    alt={item.title}
+                                                    fill
+                                                    className="object-cover group-hover:scale-110 transition-transform duration-700"
+                                                />
                                             </div>
+                                        )}
+                                        <h3 className="text-sm font-black text-brand-navy font-serif leading-tight group-hover:text-brand-gold transition-colors italic">
+                                            {item.title}
+                                        </h3>
+                                        <div className="mt-4 flex items-center justify-between text-[8px] font-black uppercase tracking-widest text-brand-navy/30">
+                                            <span>{new Date(item.publishedAt).toLocaleDateString()}</span>
+                                            <span className="flex items-center gap-1">Open <ArrowRight size={8} /></span>
                                         </div>
                                     </Link>
                                 ))}

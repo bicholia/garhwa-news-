@@ -16,35 +16,25 @@ export default function NewsGrid({ title, articles, link, limit, showExcerpt = t
     if (!displayArticles || displayArticles.length === 0) return null;
 
     return (
-        <section style={{ marginBottom: '3rem' }}>
+        <section className="mb-16">
             <SectionHeading title={title} link={link} />
-            <div style={{
-                display: 'grid',
-                gridTemplateColumns: 'repeat(auto-fill, minmax(280px, 1fr))',
-                gap: '1.5rem'
-            }}>
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
                 {displayArticles.map((article: any, idx: number) => (
                     <ArticleCard
-                        key={article._id}
+                        key={article._id || article.id}
                         article={article}
-                        priority={idx < 2}
+                        priority={idx < 3}
                     />
                 ))}
             </div>
+            
             {limit && articles.length > limit && link && (
-                <div style={{ marginTop: '1.5rem', textAlign: 'center' }}>
-                    <Link href={link} style={{
-                        display: 'inline-block',
-                        padding: '10px 24px',
-                        background: '#f3f4f6',
-                        color: '#374151',
-                        borderRadius: '30px',
-                        fontSize: '0.9rem',
-                        fontWeight: 700,
-                        textDecoration: 'none',
-                        transition: 'all 0.2s'
-                    }} className="hover:bg-red-600 hover:text-white">
-                        देखें सभी खबरें →
+                <div className="mt-10 text-center">
+                    <Link 
+                        href={link} 
+                        className="inline-flex items-center gap-2 px-8 py-3 bg-white border border-gray-200 text-brand-navy font-black text-xs uppercase tracking-[0.2em] rounded-full hover:bg-brand-navy hover:text-white transition-all duration-300 shadow-sm hover:shadow-md"
+                    >
+                        Explore More Reports <span className="text-brand-gold">&rarr;</span>
                     </Link>
                 </div>
             )}

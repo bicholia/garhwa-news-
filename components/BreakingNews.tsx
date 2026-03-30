@@ -1,26 +1,15 @@
 import { client } from '@/lib/sanity'
-import Link from 'next/link'
+import NextLink from 'next/link'
+import { TrendingUp } from 'lucide-react'
 
 async function getBreakingNews() {
-    // First try articles marked as breaking
-    const breaking = await client.fetch(
-        `*[_type == "article" && isBreaking == true] | order(publishedAt desc)[0...5] {
+    const news = await client.fetch(
+        `*[_type == "article"] | order(publishedAt desc)[0...10] {
         title,
         "slug": slug.current
       }`
     )
-
-    // Fallback: if no breaking news, show latest 5 articles
-    if (!breaking || breaking.length === 0) {
-        return await client.fetch(
-            `*[_type == "article"] | order(publishedAt desc)[0...5] {
-            title,
-            "slug": slug.current
-          }`
-        )
-    }
-
-    return breaking
+    return news
 }
 
 export default async function BreakingNews() {
@@ -29,44 +18,26 @@ export default async function BreakingNews() {
     if (!news || news.length === 0) return null
 
     return (
-        <div style={{ background: '#dc2626', color: 'white', overflow: 'hidden', height: 40, display: 'flex', alignItems: 'center' }}>
-            <div className="container" style={{ display: 'flex', alignItems: 'center' }}>
-                <span style={{
-                    background: 'white',
-                    color: '#dc2626',
-                    padding: '2px 8px',
-                    borderRadius: 4,
-                    marginRight: 16,
-                    fontSize: '0.75rem',
-                    fontWeight: 800,
-                    flexShrink: 0
-                }}>
-                    BREAKING NEWS
-                </span>
-                <div style={{ flex: 1, overflow: 'hidden', position: 'relative' }}>
-                    <div className="animate-marquee" style={{ display: 'inline-flex', whiteSpace: 'nowrap' }}>
-                        {/* Duplicate for seamless loop */}
+        <div className="bg-brand-navy border-b border-brand-navy-light text-white h-12 flex items-center overflow-hidden">
+            <div className="container flex items-center h-full">
+                <div className="flex items-center gap-2 bg-brand-gold px-6 h-full z-10 font-black text-[10px] uppercase tracking-[0.2em] italic shrink-0 whitespace-nowrap shadow-[10px_0_20px_rgba(0,0,0,0.3)]">
+                    <TrendingUp size={14} className="animate-pulse" />
+                    Global Alert
+                </div>
+                
+                <div className="flex-1 overflow-hidden relative h-full flex items-center ml-6">
+                    <div className="animate-marquee whitespace-nowrap flex gap-12 text-sm font-bold tracking-tight">
                         {[...news, ...news].map((item: any, i: number) => (
-                            <span key={i} style={{ margin: '0 20px', fontSize: '0.9rem', fontWeight: 600 }}>
-                                <Link href={`/news/${item.slug}`} style={{ color: 'white', textDecoration: 'none' }} className="hover:underline">
+                            <div key={i} className="flex items-center gap-4">
+                                <NextLink href={`/news/${item.slug}`} className="hover:text-brand-gold transition-colors duration-300">
                                     {item.title}
-                                </Link>
-                                {i < news.length * 2 - 1 && <span style={{ margin: '0 12px', opacity: 0.5 }}>◆</span>}
-                            </span>
+                                </NextLink>
+                                <span className="text-brand-gold italic opacity-50 font-black">/ /</span>
+                            </div>
                         ))}
                     </div>
                 </div>
             </div>
-            <style dangerouslySetInnerHTML={{
-                __html: `
-        @keyframes marquee {
-          0% { transform: translateX(0); }
-          100% { transform: translateX(-50%); }
-        }
-        .animate-marquee {
-          animation: marquee 30s linear infinite;
-        }
-      `}} />
         </div>
     )
 }

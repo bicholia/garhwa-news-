@@ -40,9 +40,9 @@ export default function ErrorPage({
                         होम पेज
                     </Link>
                 </div>
-                {process.env.NODE_ENV === 'development' && (
+                {true && (
                     <div style={{ marginTop: '2rem', padding: '1rem', backgroundColor: '#fef2f2', border: '1px solid #fca5a5', borderRadius: '0.5rem', textAlign: 'left', fontSize: '0.8rem', color: '#991b1b', overflowX: 'auto' }}>
-                        <strong>Developer Error details:</strong><br />
+                        <strong>Technical Error info:</strong><br />
                         {error.message}
                     </div>
                 )}

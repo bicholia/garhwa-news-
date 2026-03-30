@@ -1,6 +1,7 @@
 import Link from 'next/link'
 import Image from 'next/image'
 import { urlFor } from '@/lib/sanity'
+import { Clock, User, ArrowRight } from 'lucide-react'
 
 interface Props {
     article: any
@@ -17,23 +18,22 @@ export default function ArticleCard({ article, priority = false }: Props) {
 
     const hasImage = article.featureImage?.asset || article.image_url
     const imageUrl = article.featureImage?.asset 
-        ? urlFor(article.featureImage).width(600).height(400).url() 
+        ? urlFor(article.featureImage).width(800).height(450).url() 
         : article.image_url
 
     const truncate = (text: string, length: number) => {
         if (!text) return '';
-        const cleanText = text.replace(/[#*`]/g, ''); // Strip markdown chars
+        const cleanText = text.replace(/[#*`]/g, '');
         return cleanText.length > length ? cleanText.substring(0, length) + '...' : cleanText;
     };
 
     const slug = typeof article.slug === 'string' ? article.slug : article.slug?.current
 
     return (
-        <article className="card shadow-sm hover:shadow-md transition-shadow duration-300" style={{ height: '100%', display: 'flex', flexDirection: 'column', background: 'white', borderRadius: '12px', overflow: 'hidden' }}>
-            <Link href={`/news/${slug}`} style={{ textDecoration: 'none', display: 'flex', flexDirection: 'column', height: '100%' }}>
-
-                {/* Image or Placeholder */}
-                <div style={{ position: 'relative', height: 200, width: '100%', overflow: 'hidden', flexShrink: 0 }}>
+        <article className="group bg-white rounded-2xl overflow-hidden border border-gray-100 shadow-sm hover:shadow-xl transition-all duration-500 flex flex-col h-full transform hover:-translate-y-1">
+            <Link href={`/news/${slug}`} className="flex flex-col h-full">
+                {/* Image Section */}
+                <div className="relative aspect-[16/9] overflow-hidden">
                     {hasImage ? (
                         <Image
                             src={imageUrl}
@@ -41,68 +41,44 @@ export default function ArticleCard({ article, priority = false }: Props) {
                             fill
                             priority={priority}
                             sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
-                            style={{ objectFit: 'cover' }}
+                            className="object-cover transition-transform duration-700 group-hover:scale-110"
                         />
                     ) : (
-                        <div style={{
-                            width: '100%', height: '100%',
-                            background: 'linear-gradient(135deg, #1e293b 0%, #334155 100%)',
-                            display: 'flex', flexDirection: 'column',
-                            alignItems: 'center', justifyContent: 'center', gap: '8px',
-                        }}>
-                            <div style={{
-                                background: '#b91c1c', color: 'white',
-                                padding: '6px 12px', borderRadius: '6px',
-                                fontWeight: 900, fontSize: '1rem', lineHeight: 1.1, textAlign: 'center'
-                            }}>
-                                <span style={{ display: 'block', color: '#fde68a', fontSize: '0.55rem', letterSpacing: '2px', fontWeight: 700 }}>NR DAILY</span>
-                                NEWS
+                        <div className="w-full h-full bg-brand-navy flex flex-col items-center justify-center p-6 text-center">
+                            <div className="border-2 border-brand-gold/50 p-4 rounded-lg">
+                                <div className="text-[10px] text-brand-gold font-black uppercase tracking-[0.3em] mb-1">NR Global</div>
+                                <div className="text-white font-serif text-xl font-black">AGENCY NEWS</div>
                             </div>
-                            <span style={{ color: '#94a3b8', fontSize: '0.7rem', fontWeight: 600 }}>गढ़वा पलामू न्यूज़</span>
                         </div>
                     )}
+                    {/* Badge Overlay */}
+                    <div className="absolute top-4 left-4">
+                        <span className="bg-brand-gold text-white text-[10px] font-black uppercase tracking-widest px-3 py-1.5 rounded-full shadow-lg">
+                            Premium Agency
+                        </span>
+                    </div>
                 </div>
 
-                <div style={{ padding: '1rem', flex: 1, display: 'flex', flexDirection: 'column' }}>
-                    <h2 style={{
-                        fontSize: '1.05rem',
-                        fontWeight: 900,
-                        color: '#111827',
-                        marginBottom: '0.6rem',
-                        lineHeight: 1.3,
-                        display: '-webkit-box',
-                        WebkitLineClamp: 2,
-                        WebkitBoxOrient: 'vertical',
-                        overflow: 'hidden'
-                    }} className="hover:text-red-700">
-                        {truncate(article.title, 100)}
+                {/* Content Section */}
+                <div className="p-6 flex flex-col flex-1">
+                    <div className="flex items-center gap-4 text-[10px] font-bold uppercase tracking-widest text-brand-gold mb-3">
+                        <span className="flex items-center gap-1"><Clock size={12} /> {formattedDate}</span>
+                        <span className="flex items-center gap-1"><User size={12} /> {article.author?.name || 'By NR Desk'}</span>
+                    </div>
+
+                    <h2 className="text-xl lg:text-2xl font-black text-brand-navy font-serif leading-[1.2] mb-3 group-hover:text-brand-gold transition-colors duration-300 line-clamp-2">
+                        {truncate(article.title, 120)}
                     </h2>
-                    <p style={{
-                        fontSize: '0.875rem',
-                        color: '#4b5563',
-                        marginBottom: '1rem',
-                        lineHeight: 1.5,
-                        display: '-webkit-box',
-                        WebkitLineClamp: 3,
-                        WebkitBoxOrient: 'vertical',
-                        overflow: 'hidden',
-                        opacity: 0.9
-                    }}>
-                        {truncate(article.excerpt || '', 160)}
+
+                    <p className="text-sm text-gray-500 leading-relaxed mb-6 line-clamp-3">
+                        {truncate(article.excerpt || '', 180)}
                     </p>
-                    <div style={{
-                        marginTop: 'auto',
-                        display: 'flex',
-                        justifyContent: 'space-between',
-                        alignItems: 'center',
-                        fontSize: '0.75rem',
-                        color: '#9ca3af',
-                        fontWeight: 700,
-                        textTransform: 'uppercase',
-                        letterSpacing: '0.5px'
-                    }}>
-                        <span>{formattedDate}</span>
-                        <span style={{ color: '#ef4444' }}>{article.author?.name || article.author_name || 'संवाददाता'}</span>
+
+                    <div className="mt-auto flex items-center justify-between pt-4 border-t border-gray-50">
+                        <span className="text-[10px] font-black uppercase tracking-widest text-brand-navy/40">Intl. Report No. {Math.floor(Math.random() * 900) + 100}</span>
+                        <div className="flex items-center gap-2 text-brand-gold font-black text-xs uppercase tracking-widest group-hover:translate-x-2 transition-transform duration-300">
+                            Read Full Report <ArrowRight size={14} />
+                        </div>
                     </div>
                 </div>
             </Link>

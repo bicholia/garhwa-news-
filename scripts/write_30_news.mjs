@@ -49,27 +49,30 @@ async function uploadImageToSanity(imageUrl, title) {
 }
 
 async function rewriteWithAI(title, content) {
-    const today = new Date().toLocaleDateString('hi-IN', { timeZone: 'Asia/Kolkata', year: 'numeric', month: 'long', day: 'numeric' });
-    const geoPrompt = `You are a professional Hindi news editor. Current date: ${today}.
-Rewrite the following news for "NR Daily News" (Garhwa & Palamu Jharkhand local news outlet).
-Follow these strict rules:
-1. Format: Professional, breaking news style, present tense.
-2. Structure: Response MUST be a valid JSON object ONLY.
-3. Content: Injected local context (Garhwa/Palamu/Jharkhand).
-4. Keywords: Generate 5-10 SEO-friendly Hindi/English comma-separated keywords specific to this news.
+    const now = new Date();
+    const todayHindi = now.toLocaleDateString('hi-IN', { timeZone: 'Asia/Kolkata', year: 'numeric', month: 'long', day: 'numeric', weekday: 'long' });
+    const todayISO = now.toLocaleDateString('en-IN', { timeZone: 'Asia/Kolkata', year: 'numeric', month: '2-digit', day: '2-digit' });
+    const geoPrompt = `You are a BREAKING NEWS editor at "NR Daily News" (Garhwa & Palamu Jharkhand).
+Today's date (IST): ${todayHindi} (${todayISO}).
 
-JSON Structure:
+CRITICAL RULES - FOLLOW STRICTLY:
+1. ✅ Write ONLY in present tense as if the news is happening TODAY (${todayISO}).
+2. ✅ The article MUST feel like fresh, breaking news published RIGHT NOW.
+3. ❌ NEVER use past events or references to things that happened months or years ago.
+4. ❌ NEVER write in past tense (घटना हुई, लगाया गया, था, थे, हुई, आई, गई).
+5. ✅ Use active, urgent language: "जारी है", "आ रही है", "हो रहा है", "मिल रही है".
+6. ✅ Always mention Garhwa, Palamu or Jharkhand in context.
+7. ✅ Response MUST be a single valid JSON object only, no other text.
+
+JSON Format:
 {
-    "title": "Hindi Catchy Title",
-    "excerpt": "Short 1-2 sentence summary",
-    "content": "Detailed news content in Hindi",
-    "highlights": ["Point 1", "Point 2", "Point 3"],
-    "englishImagePrompt": "A professional photo of [topic] in a village/town setting of Jharkhand, cinematic, 4k",
-    "seoKeywords": "Garhwa News, [Local Topics], [Action], आज की खबर, न्यूज़"
+    "title": "Breaking: आज का ताज़ा हिंदी शीर्षक",
+    "excerpt": "1-2 sentences - what is happening RIGHT NOW",
+    "content": "Detailed news in Hindi, present tense, 3-5 paragraphs",
+    "highlights": ["ताज़ा अपडेट 1", "ताज़ा अपडेट 2", "ताज़ा अपडेट 3"],
+    "englishImagePrompt": "News photo of [topic] in Jharkhand village setting, cinematic, 4k",
+    "seoKeywords": "Garhwa News Today, Palamu Breaking News, आज की खबर, [topic], झारखंड न्यूज़"
 }
-- 'highlights' में 3 सबसे मुख्य तथ्य होने चाहिए।
-- भाषा सरल और ब्रेकिंग न्यूज़ स्टाइल में होनी चाहिए। 
-- खबर में पुरानी तारीखों को हटाकर आज के संदर्भ में लिखें।
 शीर्षक: ${title}
 संदर्भ: ${content}`;
 
@@ -180,11 +183,12 @@ async function run() {
         for (const item of targetNews) {
             if (count >= 30) break;
 
-            const slug = createSlug(item.title);
-            if (await isNewsExists(slug)) {
+            const baseSlug = createSlug(item.title);
+            if (await isNewsExists(baseSlug)) {
                 console.log(`⏩ Skipping (exists): ${item.title.substring(0, 40)}`);
                 continue;
             }
+            const finalSlug = baseSlug + '-' + Math.random().toString(36).substring(7);
 
             console.log(`📝 [${count+1}/30] Processing: ${item.title.substring(0, 50)}...`);
             const rewritten = await rewriteWithAI(item.title, item.content);
@@ -209,7 +213,7 @@ async function run() {
                 // Try Postgres first
                 await insertNews({
                     title: rewritten.title,
-                    slug: slug + '-' + Math.random().toString(36).substring(7),
+                    slug: finalSlug,
                     content: rewritten.content,
                     excerpt: rewritten.excerpt,
                     image_url: assetId,
@@ -238,7 +242,7 @@ async function run() {
                 await client.create({
                     _type: 'article',
                     title: rewritten.title,
-                    slug: { _type: 'slug', current: slug + '-' + Math.random().toString(36).substring(7) },
+                    slug: { _type: 'slug', current: finalSlug },
                     excerpt: rewritten.excerpt,
                     body: [
                         { _type: 'block', style: 'normal', children: [{ _type: 'span', text: rewritten.content }] }

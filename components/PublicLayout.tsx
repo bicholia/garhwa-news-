@@ -4,13 +4,13 @@ import InstallPWA from '@/components/InstallPWA'
 import '@/app/global.css'
 export default function PublicLayout({ children }: { children: React.ReactNode }) {
     return (
-        <>
+        <div className="flex flex-col min-h-screen">
             <Header />
-            <main style={{ minHeight: '100vh' }}>
+            <div className="flex-grow">
                 {children}
-            </main>
+            </div>
             <InstallPWA />
             <Footer />
-        </>
+        </div>
     )
 }

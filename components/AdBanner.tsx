@@ -86,36 +86,31 @@ export default async function AdBanner({
     if (!finalImageUrl) {
         return (
             <div
-                className={className}
+                className={`flex flex-col items-center justify-center p-8 my-10 border border-brand-navy/10 rounded-3xl bg-brand-navy/[0.02] relative overflow-hidden group ${className}`}
                 style={{
-                    width: '100%',
                     maxWidth: finalWidth,
-                    minHeight: Math.max(finalHeight, 80),
-                    background: '#f8fafc',
-                    border: '2px dashed #cbd5e1',
-                    borderRadius: '8px',
-                    display: 'flex',
-                    flexDirection: 'column',
-                    alignItems: 'center',
-                    justifyContent: 'center',
-                    margin: '1.5rem auto',
-                    textAlign: 'center',
-                    color: '#64748b',
-                    overflow: 'hidden',
-                    padding: '1rem',
+                    minHeight: Math.max(finalHeight, 120),
                     ...style
                 }}
             >
-                <span style={{ fontSize: '0.7rem', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.05em', color: '#94a3b8', marginBottom: 4 }}>
-                    विज्ञापन (Advertisement)
+                <div className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-transparent via-brand-gold/30 to-transparent" />
+                <span className="text-[10px] font-black uppercase tracking-[0.4em] text-brand-gold mb-3 italic">
+                    Global Intelligence Ad Slot
                 </span>
-                <div style={{ fontSize: '1rem', fontWeight: 800, color: '#334155' }}>यहाँ अपना विज्ञापन दें</div>
+                <div className="text-xl lg:text-2xl font-black text-brand-navy font-serif mb-4 flex items-center gap-3">
+                    <span className="w-8 h-[1px] bg-brand-navy/20" /> 
+                    Reserve This Space 
+                    <span className="w-8 h-[1px] bg-brand-navy/20" />
+                </div>
                 <Link
                     href="/contact"
-                    style={{ display: 'inline-block', marginTop: 6, fontSize: '0.82rem', color: '#2563eb', fontWeight: 700, textDecoration: 'none', background: '#eff6ff', padding: '4px 12px', borderRadius: 4 }}
+                    className="bg-brand-navy text-white text-[10px] font-black uppercase tracking-widest px-8 py-3 rounded-full hover:bg-brand-gold transition-all shadow-lg hover:scale-105 active:scale-95"
                 >
-                    संपर्क करें
+                    Contact Bureau
                 </Link>
+                <div className="absolute bottom-4 right-8 text-[8px] font-bold uppercase tracking-widest text-brand-navy/10">
+                    Ref: {slot.toUpperCase()} - {finalWidth}x{finalHeight}
+                </div>
             </div>
         )
     }
@@ -127,28 +122,27 @@ export default async function AdBanner({
             alt={finalAlt}
             width={finalWidth}
             height={finalHeight}
-            style={{ width: '100%', height: 'auto', borderRadius: 8, boxShadow: '0 4px 6px -1px rgba(0,0,0,0.1)', display: 'block' }}
+            className="rounded-2xl shadow-xl hover:shadow-2xl transition-all duration-500 border border-gray-100"
+            style={{ width: '100%', height: 'auto', display: 'block' }}
             unoptimized   // Sanity CDN URLs don't need Next.js optimisation
         />
     )
 
     return (
         <div
-            className={className}
+            className={`my-12 text-center ${className}`}
             style={{
-                width: '100%',
                 maxWidth: finalWidth,
-                margin: '1.5rem auto',
-                textAlign: 'center',
+                margin: '3rem auto',
                 ...style
             }}
         >
-            <span style={{ display: 'block', fontSize: '0.65rem', color: '#94a3b8', marginBottom: 4, textTransform: 'uppercase', letterSpacing: '0.05em' }}>
-                Advertisement
+            <span className="inline-block text-[9px] font-black uppercase tracking-[0.3em] text-brand-gold mb-3 italic">
+                Strategic Partner Briefing
             </span>
             {/* Only wrap in <a> if we actually have a target URL */}
             {finalLink ? (
-                <a href={finalLink} target="_blank" rel="noopener noreferrer nofollow" style={{ display: 'block' }}>
+                <a href={finalLink} target="_blank" rel="noopener noreferrer nofollow" className="block transform hover:scale-[1.01] transition-transform duration-500">
                     {imgElement}
                 </a>
             ) : (

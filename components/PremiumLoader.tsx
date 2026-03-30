@@ -9,52 +9,27 @@ export default function PremiumLoader() {
     const [loading, setLoading] = useState(false)
 
     useEffect(() => {
-        // Whenever the route change starts (pathname or searchParams changes)
         setLoading(true)
-
-        // Simulate the loading time since Next.js app router doesn't have 
-        // native router events for complete load. This ensures the bar reaches 100%.
         const timer = setTimeout(() => {
             setLoading(false)
         }, 800)
-
         return () => clearTimeout(timer)
     }, [pathname, searchParams])
 
     if (!loading) return null
 
     return (
-        <div style={{
-            position: 'fixed',
-            top: 0,
-            left: 0,
-            width: '100%',
-            height: '3px',
-            backgroundColor: 'rgba(220, 38, 38, 0.2)', // Light red background
-            zIndex: 9999,
-            pointerEvents: 'none',
-            overflow: 'hidden'
-        }}>
+        <div className="fixed top-0 left-0 w-full h-[3px] bg-brand-gold/10 z-[9999] pointer-events-none overflow-hidden">
             <div
-                className="premium-loader-bar"
+                className="premium-loader-bar animate-load-progress"
                 style={{
                     width: '100%',
                     height: '100%',
-                    backgroundColor: '#dc2626', // Red-600 to match site theme
-                    boxShadow: '0 0 10px #dc2626, 0 0 5px #dc2626',
+                    backgroundColor: '#B45309', // Brand Gold
+                    boxShadow: '0 0 15px #B45309, 0 0 5px #B45309',
                     transformOrigin: 'left',
-                    animation: 'loadProgress 0.8s cubic-bezier(0.4, 0, 0.2, 1) forwards'
                 }}
             />
-            <style dangerouslySetInnerHTML={{
-                __html: `
-        @keyframes loadProgress {
-          0% { transform: scaleX(0); opacity: 1; }
-          40% { transform: scaleX(0.4); opacity: 1; }
-          80% { transform: scaleX(0.8); opacity: 1; }
-          100% { transform: scaleX(1); opacity: 0; }
-        }
-      `}} />
         </div>
     )
 }

@@ -2,40 +2,19 @@ import Link from 'next/link'
 
 export default function SectionHeading({ title, link }: { title: string; link?: string }) {
     return (
-        <div style={{
-            display: 'flex',
-            justifyContent: 'space-between',
-            alignItems: 'center',
-            marginBottom: '1.25rem',
-            borderBottom: '2px solid #e5e7eb',
-            paddingBottom: '0.5rem'
-        }}>
-            <h2 style={{
-                fontSize: '1.5rem',
-                fontWeight: 800,
-                color: '#111827',
-                position: 'relative',
-                display: 'inline-block'
-            }}>
-                {title}
-                <span style={{
-                    position: 'absolute',
-                    bottom: -10,
-                    left: 0,
-                    width: 40,
-                    height: 4,
-                    background: '#dc2626',
-                    borderRadius: 2
-                }} />
-            </h2>
+        <div className="flex justify-between items-end mb-8 border-b border-gray-100 pb-4">
+            <div className="relative">
+                <h2 className="text-2xl lg:text-3xl font-black text-brand-navy font-serif tracking-tight">
+                    {title}
+                </h2>
+                <div className="absolute -bottom-[17px] left-0 w-16 h-1 bg-brand-gold rounded-full" />
+            </div>
             {link && (
-                <Link href={link} style={{
-                    color: '#dc2626',
-                    textDecoration: 'none',
-                    fontSize: '0.88rem',
-                    fontWeight: 700
-                }} className="hover:underline">
-                    और देखें &rarr;
+                <Link 
+                    href={link} 
+                    className="text-[10px] lg:text-xs font-black uppercase tracking-[0.2em] text-brand-navy hover:text-brand-gold transition-colors flex items-center gap-2"
+                >
+                    View All Archives <span className="text-brand-gold text-lg">&rarr;</span>
                 </Link>
             )}
         </div>

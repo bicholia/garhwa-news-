@@ -1,15 +1,16 @@
 'use client'
 
 import { useEffect, useState } from 'react'
-import { DownloadCloud, X } from 'lucide-react'
+import { DownloadCloud, X, ShieldCheck } from 'lucide-react'
 
 export default function InstallPWA() {
+  const [mounted, setMounted] = useState(false)
   const [deferredPrompt, setDeferredPrompt] = useState<any>(null)
   const [showPrompt, setShowPrompt] = useState(false)
   const [isIOS, setIsIOS] = useState(false)
 
   useEffect(() => {
-    // Check if IOS
+    setMounted(true)
     const userAgent = window.navigator.userAgent.toLowerCase()
     setIsIOS(/iphone|ipad|ipod/.test(userAgent))
 
@@ -20,86 +21,47 @@ export default function InstallPWA() {
     }
 
     window.addEventListener('beforeinstallprompt', handler)
-
-    return () => {
-      window.removeEventListener('beforeinstallprompt', handler)
-    }
+    return () => window.removeEventListener('beforeinstallprompt', handler)
   }, [])
 
   const handleInstallClick = async () => {
     if (!deferredPrompt) return
     deferredPrompt.prompt()
     const { outcome } = await deferredPrompt.userChoice
-    if (outcome === 'accepted') {
-      setShowPrompt(false)
-    }
+    if (outcome === 'accepted') setShowPrompt(false)
     setDeferredPrompt(null)
   }
 
-  if (!showPrompt && !isIOS) return null
-
-  // For IOS, we just show instructions since they don't support beforeinstallprompt
-  if (isIOS && !showPrompt) {
-    // Only show IOS prompt if it's not already installed
-    if ((window.navigator as any).standalone) return null
-    // We could show it after a delay or scroll, but for now we wait for manual trigger or just return
-    return null 
-  }
+  if (!mounted || (!showPrompt && !isIOS)) return null
 
   return (
-    <div style={{
-      position: 'fixed',
-      bottom: '1rem',
-      left: '1rem',
-      right: '1rem',
-      background: 'white',
-      padding: '1rem',
-      borderRadius: '1rem',
-      boxShadow: '0 10px 25px rgba(0,0,0,0.2)',
-      zIndex: 9999,
-      display: 'flex',
-      alignItems: 'center',
-      justifyContent: 'space-between',
-      border: '2px solid #dc2626',
-      animation: 'slideUp 0.5s ease-out'
-    }}>
-      <style>{`
-        @keyframes slideUp {
-          from { transform: translateY(100%); opacity: 0; }
-          to { transform: translateY(0); opacity: 1; }
-        }
-      `}</style>
-      <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem' }}>
-        <div style={{ background: '#dc2626', padding: '0.5rem', borderRadius: '0.5rem', color: 'white' }}>
+    <div className="fixed bottom-4 left-4 right-4 md:left-auto md:right-8 md:w-96 bg-white p-6 rounded-3xl shadow-2xl z-[9999] border border-brand-gold/10 animate-in fade-in slide-in-from-bottom-5 duration-500">
+      <div className="flex items-start gap-5">
+        <div className="bg-brand-navy p-3 rounded-2xl text-brand-gold shrink-0">
           <DownloadCloud size={24} />
         </div>
-        <div>
-          <h4 style={{ margin: 0, fontSize: '1rem', fontWeight: 800, color: '#0f172a' }}>NR Daily App</h4>
-          <p style={{ margin: 0, fontSize: '0.8rem', color: '#64748b' }}>बेहतर अनुभव के लिए ऐप इंस्टॉल करें</p>
+        <div className="flex-1">
+          <div className="flex items-center justify-between mb-1">
+            <h4 className="text-xs font-black uppercase tracking-[0.2em] text-brand-navy italic">Agency Intelligence App</h4>
+            <button onClick={() => setShowPrompt(false)} className="text-gray-400 hover:text-brand-gold transition-colors">
+              <X size={16} />
+            </button>
+          </div>
+          <p className="text-[10px] font-bold text-gray-500 uppercase tracking-widest leading-relaxed mb-4">
+            Install the NR Global application for encrypted, real-time intelligence reports.
+          </p>
+          <div className="flex gap-3">
+            <button 
+              onClick={handleInstallClick}
+              className="flex-1 bg-brand-navy text-white text-[10px] font-black uppercase tracking-widest py-3 rounded-xl hover:bg-brand-gold transition-all shadow-lg shadow-brand-navy/10"
+            >
+              {isIOS ? 'Access Instructions' : 'Authenticate & Install'}
+            </button>
+          </div>
         </div>
       </div>
-      <div style={{ display: 'flex', gap: '0.5rem' }}>
-        <button 
-          onClick={handleInstallClick}
-          style={{
-            background: '#dc2626',
-            color: 'white',
-            border: 'none',
-            padding: '0.5rem 1rem',
-            borderRadius: '0.5rem',
-            fontWeight: 700,
-            cursor: 'pointer',
-            fontSize: '0.9rem'
-          }}
-        >
-          {isIOS ? 'Instructions' : 'Install'}
-        </button>
-        <button 
-          onClick={() => setShowPrompt(false)}
-          style={{ background: '#f1f5f9', border: 'none', padding: '0.5rem', borderRadius: '0.5rem', color: '#64748b' }}
-        >
-          <X size={20} />
-        </button>
+      <div className="mt-4 pt-4 border-t border-gray-50 flex items-center gap-2 text-[8px] font-black uppercase tracking-widest text-gray-400">
+        <ShieldCheck size={10} className="text-brand-gold" /> Verified NR Global Software System
       </div>
     </div>
   )
