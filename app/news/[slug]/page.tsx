@@ -9,7 +9,8 @@ import { Metadata } from 'next'
 import SectionHeading from '@/components/SectionHeading'
 import AdBanner from '@/components/AdBanner'
 import PublicLayout from '@/components/PublicLayout'
-import { Clock, MapPin, User, Bookmark, Share2, ShieldCheck, ArrowRight, TrendingUp } from 'lucide-react'
+import { Clock, MapPin, User, ShieldCheck, ArrowRight, TrendingUp } from 'lucide-react'
+import ArticleActions from '@/components/ArticleActions'
 
 export const revalidate = 0 // Fetch fresh news every time
 
@@ -185,21 +186,7 @@ export default async function ArticlePage({ params }: { params: Promise<{ slug: 
                             )}
 
                             {/* Action Bar */}
-                            <div className="flex items-center justify-between mb-12 py-6 border-y border-gray-50">
-                                <div className="flex items-center gap-6">
-                                    <button className="flex items-center gap-2 text-[10px] font-black uppercase tracking-widest text-brand-navy hover:text-brand-gold transition-colors">
-                                        <Bookmark size={16} /> Save Brief
-                                    </button>
-                                    <button className="flex items-center gap-2 text-[10px] font-black uppercase tracking-widest text-brand-navy hover:text-brand-gold transition-colors">
-                                        <Share2 size={16} /> Distribute
-                                    </button>
-                                </div>
-                                <div className="flex items-center gap-3">
-                                    <FaFacebookF className="text-gray-400 hover:text-brand-gold cursor-pointer" />
-                                    <FaTwitter className="text-gray-400 hover:text-brand-gold cursor-pointer" />
-                                    <FaWhatsapp className="text-gray-400 hover:text-brand-gold cursor-pointer" />
-                                </div>
-                            </div>
+                            <ArticleActions title={article.title} slug={slug} excerpt={article.excerpt} />
 
                             {/* Highlights */}
                             {Array.isArray(article.highlights) && article.highlights.length > 0 && (
