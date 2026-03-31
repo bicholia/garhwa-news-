@@ -5,6 +5,7 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { createClient } from '@sanity/client'
 import * as XLSX from 'xlsx'
+import { insertNews } from '@/lib/db'
 
 // ── Sanity Client ─────────────────────────────────────────────────────────────
 const client = createClient({
@@ -70,22 +71,36 @@ function detectCategory(title: string, body: string): { primary: string; all: st
     }
 }
 
+// ── Image Handling ───────────────────────────────────────────────────────────
+async function downloadAndUploadImage(title: string): Promise<string | null> {
+    try {
+        const seed = encodeURIComponent(title.slice(0, 50))
+        const imageUrl = `https://picsum.photos/seed/${seed}/1024/768`
+        const response = await fetch(imageUrl)
+        if (!response.ok) return null
+        
+        const arrayBuffer = await response.arrayBuffer()
+        const buffer = Buffer.from(arrayBuffer)
+        
+        const asset = await client.assets.upload('image', buffer, {
+            filename: `bulk-${Date.now()}.jpg`,
+            contentType: 'image/jpeg'
+        })
+        return asset._id
+    } catch (err) {
+        console.error('[Image Upload Error]', err)
+        return null
+    }
+}
+
 // ── Auto-Tag Generator ────────────────────────────────────────────────────────
 function generateTags(title: string, district: string, category: string): string[] {
     const tags: string[] = []
-
-    // Add location tags
     if (district) tags.push(district)
-
-    // Extract capitalized/Hindi words from title (likely proper nouns)
     const wordRegex = /[\u0900-\u097F]{3,}|[A-Z][a-z]{2,}/g
     const matches = title.match(wordRegex) || []
     tags.push(...matches.slice(0, 5))
-
-    // Add category as tag
     if (category) tags.push(category)
-
-    // Deduplicate, trim, and limit
     return [...new Set(tags.map(t => t.trim()).filter(Boolean))].slice(0, 8)
 }
 
@@ -205,7 +220,8 @@ function validateRow(row: ReturnType<typeof normalizeRow>, rowNum: number): RowE
 async function buildSanityDoc(
     row: ReturnType<typeof normalizeRow>,
     rowNum: number,
-    batchId: string
+    batchId: string,
+    isDryRun: boolean
 ) {
     // Category resolution
     let categorySlug = row.category.toLowerCase()
@@ -251,6 +267,12 @@ async function buildSanityDoc(
             children: [{ _type: 'span', _key: Math.random().toString(36).slice(2, 10), text: p.trim(), marks: [] }],
         }))
 
+    // Handle Image (skip actual upload on dry run)
+    let assetRef = null
+    if (!isDryRun) {
+        assetRef = await downloadAndUploadImage(row.title)
+    }
+
     const doc: Record<string, unknown> = {
         _type: 'article',
         title: row.title,
@@ -274,6 +296,16 @@ async function buildSanityDoc(
 
     if (categoryId) {
         doc.category = { _type: 'reference', _ref: categoryId }
+    }
+
+    if (assetRef) {
+        doc.featureImage = {
+            _type: 'image',
+            asset: { _type: 'reference', _ref: assetRef }
+        }
+    } else {
+        // Fallback placeholder ref if possible, or just skip
+        // (Schema requires it, so in dry run we return placeholder info)
     }
 
     return doc
@@ -331,7 +363,7 @@ export async function POST(req: NextRequest) {
         }
 
         // Parse + validate ALL rows first
-        const validRows: { doc: Record<string, unknown>; rowNum: number; title: string }[] = []
+        const validRows: { doc: Record<string, unknown>; rowNum: number; title: string; normalized: ReturnType<typeof normalizeRow> }[] = []
 
         for (let i = 0; i < rawRows.length; i++) {
             const normalized = normalizeRow(rawRows[i] as Record<string, unknown>)
@@ -343,8 +375,8 @@ export async function POST(req: NextRequest) {
                 continue
             }
 
-            const doc = await buildSanityDoc(normalized, i + 2, batchId)
-            validRows.push({ doc, rowNum: i + 2, title: normalized.title })
+            const doc = await buildSanityDoc(normalized, i + 2, batchId, isDryRun)
+            validRows.push({ doc, rowNum: i + 2, title: normalized.title, normalized })
 
             // For dry-run we return the built docs as preview
             if (isDryRun) {
@@ -364,7 +396,33 @@ export async function POST(req: NextRequest) {
             const batch = validRows.slice(b, b + BATCH_SIZE)
 
             const settled = await Promise.allSettled(
-                batch.map(({ doc }) => client.create(doc as Parameters<typeof client.create>[0]))
+                batch.map(async ({ doc, normalized }) => {
+                    // Create in Sanity
+                    const sanityResult = await client.create(doc as any)
+                    
+                    // Sync to Postgres (best effort)
+                    try {
+                        await insertNews({
+                            title: normalized.title,
+                            slug: (doc.slug as any).current,
+                            content: normalized.body,
+                            excerpt: doc.excerpt as string,
+                            image_url: null, // asset assigned in sanity
+                            category: normalized.category || (doc.category as any)?._ref || 'स्थानीय समाचार',
+                            district: normalized.district || 'jharkhand',
+                            original_source: 'bulk-upload',
+                            published_at: normalized.publishedAt,
+                            is_promoted: normalized.featured,
+                            priority: normalized.featured ? 100 : 0,
+                            highlights: [],
+                            seo_keywords: (doc.tags as string[]).join(', ')
+                        })
+                    } catch (pgErr) {
+                        console.warn('[Postgres Sync Failed]', pgErr)
+                    }
+                    
+                    return sanityResult
+                })
             )
 
             settled.forEach((outcome, idx) => {

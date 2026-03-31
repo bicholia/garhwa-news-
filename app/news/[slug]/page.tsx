@@ -249,20 +249,20 @@ export default async function ArticlePage({ params }: { params: Promise<{ slug: 
                         <div className="mt-12 p-8 lg:p-12 bg-white rounded-3xl shadow-xl border border-gray-100 flex flex-col md:flex-row items-center gap-8 group">
                             <div className="w-24 h-24 rounded-2xl overflow-hidden shrink-0 border-2 border-brand-gold/20 p-1 bg-white relative">
                                 {article.author?.image?.asset ? (
-                                    <Image src={urlFor(article.author.image).width(200).height(200).url()} alt={article.author.name} fill className="object-cover rounded-xl" />
+                                    <Image src={urlFor(article.author.image).width(200).height(200).url()} alt={article.author?.name || 'Author'} fill className="object-cover rounded-xl" />
                                 ) : (
-                                    <div className="w-full h-full bg-brand-navy flex items-center justify-center text-white font-serif text-3xl font-black rounded-xl">{article.author.name.charAt(0)}</div>
+                                    <div className="w-full h-full bg-brand-navy flex items-center justify-center text-white font-serif text-3xl font-black rounded-xl">{(article.author?.name || 'NR').charAt(0)}</div>
                                 )}
                             </div>
                             <div className="text-center md:text-left">
                                 <span className="text-[10px] font-black uppercase tracking-[0.3em] text-brand-gold mb-2 block italic">Authenticated Agent</span>
                                 <h3 className="text-2xl font-black text-brand-navy font-serif mb-3">
                                     <Link href={`/author/${article.author?.slug?.current || article.author?.slug || 'admin'}`} className="hover:text-brand-gold transition-colors">
-                                        {article.author.name}
+                                        {article.author?.name || 'NR Bureau Member'}
                                     </Link>
                                 </h3>
                                 <p className="text-sm text-gray-500 font-medium leading-relaxed max-w-2xl">
-                                    {article.author.bio || `${article.author.name} is a senior intelligence correspondent for NR Global Agency, specializing in regional geopolitical developments and sociopolitical analysis.`}
+                                    {article.author?.bio || `${article.author?.name || 'NR Bureau'} is a senior intelligence correspondent for NR Global Agency, specializing in regional geopolitical developments and sociopolitical analysis.`}
                                 </p>
                             </div>
                         </div>

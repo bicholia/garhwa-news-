@@ -17,22 +17,26 @@ export default async function BreakingNews() {
 
     if (!news || news.length === 0) return null
 
+    // Use a clean set of unique news
+    const displayNews = Array.from(new Map(news.map((item: any) => [item.slug, item])).values());
+
     return (
-        <div className="bg-brand-navy border-b border-brand-navy-light text-white h-12 flex items-center overflow-hidden">
-            <div className="container flex items-center h-full">
+        <div className="bg-brand-navy border-b border-white/5 text-white h-12 flex items-center overflow-hidden" suppressHydrationWarning>
+            <div className="container flex items-center h-full" suppressHydrationWarning>
                 <div className="flex items-center gap-2 bg-brand-gold px-6 h-full z-10 font-black text-[10px] uppercase tracking-[0.2em] italic shrink-0 whitespace-nowrap shadow-[10px_0_20px_rgba(0,0,0,0.3)]">
-                    <TrendingUp size={14} className="animate-pulse" />
-                    Global Alert
+                    <TrendingUp size={14} className="animate-pulse" strokeWidth={3} />
+                    Bureau Alert
                 </div>
                 
                 <div className="flex-1 overflow-hidden relative h-full flex items-center ml-6">
-                    <div className="animate-marquee whitespace-nowrap flex gap-12 text-sm font-bold tracking-tight">
-                        {[...news, ...news].map((item: any, i: number) => (
-                            <div key={i} className="flex items-center gap-4">
-                                <NextLink href={`/news/${item.slug}`} className="hover:text-brand-gold transition-colors duration-300">
+                    <div className="animate-marquee whitespace-nowrap flex gap-12 text-[13px] font-bold tracking-normal py-1">
+                        {/* Duplicate content for seamless infinite scroll effect */}
+                        {[...displayNews, ...displayNews, ...displayNews].map((item: any, i: number) => (
+                            <div key={i} className="flex items-center gap-8 group">
+                                <NextLink href={`/news/${item.slug}`} className="hover:text-brand-gold transition-colors duration-300 flex items-center gap-2">
+                                    <span className="w-1.5 h-1.5 rounded-full bg-brand-gold/40 group-hover:bg-brand-gold group-hover:scale-125 transition-all" />
                                     {item.title}
                                 </NextLink>
-                                <span className="text-brand-gold italic opacity-50 font-black">/ /</span>
                             </div>
                         ))}
                     </div>

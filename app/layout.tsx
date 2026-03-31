@@ -9,11 +9,11 @@ import { Analytics } from '@vercel/analytics/react'
 export const metadata: Metadata = {
   metadataBase: new URL('https://garhwapalamunews.com'),
   title: {
-    default: 'NR Global News | Truth & Integrity in Journalism',
-    template: '%s | NR Global News',
+    default: 'NR Regional News Bureau | Global Reporting Standards',
+    template: '%s | NR Regional News',
   },
   description:
-    'NR Global News is a leading international news agency providing real-time updates on politics, crime, sports, and local developments in Jharkhand, Garhwa, and Palamu.',
+    'NR Regional News Bureau delivers authoritative local reporting from Jharkhand, Garhwa, and Palamu, powered by the global standards of NR Global Agency.',
   keywords: [
     'NR Global News', 'NR Daily News', 'Jharkhand News', 'Garhwa News', 'Palamu News',
     'International News Agency', 'Latest Hindi News', 'Breaking News India'
@@ -21,8 +21,8 @@ export const metadata: Metadata = {
   openGraph: {
     type: 'website',
     locale: 'en_US',
-    siteName: 'NR Global News Agency',
-    images: [{ url: '/logo-new.png', width: 1200, height: 630, alt: 'NR Global News' }],
+    siteName: 'NR Regional News Bureau',
+    images: [{ url: '/logo-new.png', width: 1200, height: 630, alt: 'NR Regional News' }],
   },
   twitter: {
     card: 'summary_large_image',
@@ -54,7 +54,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
         <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
       </head>
       <body className="bg-news-paper min-h-screen antialiased selection:bg-brand-gold/30 selection:text-brand-navy" suppressHydrationWarning>
-        <div id="nr-daily-news-root" className="flex flex-col min-h-screen">
+        <div id="nr-daily-news-root" className="flex flex-col min-h-screen" suppressHydrationWarning>
           <ErrorHandler />
           <Suspense fallback={null}>
             <PremiumLoader />

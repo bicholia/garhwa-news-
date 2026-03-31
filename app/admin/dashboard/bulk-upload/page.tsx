@@ -5,6 +5,7 @@
 
 import React, { useState, useRef, useCallback } from 'react'
 import * as XLSX from 'xlsx'
+import { motion, AnimatePresence } from 'framer-motion'
 
 // ─── Types ────────────────────────────────────────────────────────────────────
 type ParsedRow = {
@@ -205,6 +206,7 @@ export default function BulkUploadPage() {
     const [result, setResult] = useState<UploadResult | null>(null)
     const [uploadProgress, setUploadProgress] = useState(0)
     const [editingIdx, setEditingIdx] = useState<number | null>(null)
+    const [autoGenImages, setAutoGenImages] = useState(true)
     const fileRef = useRef<HTMLInputElement>(null)
 
     const parseFile = useCallback((file: File) => {
@@ -260,6 +262,7 @@ export default function BulkUploadPage() {
             featured: r.featured,
             isBreaking: r.isBreaking,
             publishedAt: r.publishedAt,
+            autoGenImage: autoGenImages,
         }))
 
         const ws = XLSX.utils.json_to_sheet(toSend)
@@ -319,49 +322,69 @@ export default function BulkUploadPage() {
             </div>
 
             {/* Drop Zone */}
-            <div
+            <motion.div
+                initial={{ opacity: 0, y: 10 }}
+                animate={{ opacity: 1, y: 0 }}
                 onClick={() => fileRef.current?.click()}
                 onDrop={onDrop}
                 onDragOver={(e) => { e.preventDefault(); setIsDragging(true) }}
                 onDragLeave={() => setIsDragging(false)}
                 style={{
-                    border: `2.5px dashed ${isDragging ? '#3b82f6' : '#cbd5e1'}`,
-                    borderRadius: 16,
-                    padding: '2.5rem',
+                    border: `2.5px dashed ${isDragging ? '#6366f1' : '#e2e8f0'}`,
+                    borderRadius: 24,
+                    padding: '3.5rem 2rem',
                     textAlign: 'center',
                     cursor: 'pointer',
-                    background: isDragging ? '#eff6ff' : '#f8fafc',
-                    transition: 'all 0.2s',
-                    marginBottom: '1.5rem',
+                    background: isDragging ? 'linear-gradient(135deg, #f5f3ff 0%, #ede9fe 100%)' : 'white',
+                    boxShadow: isDragging ? '0 20px 40px -15px rgba(99, 102, 241, 0.15)' : '0 4px 6px -1px rgba(0,0,0,0.05)',
+                    transition: 'all 0.4s cubic-bezier(0.4, 0, 0.2, 1)',
+                    marginBottom: '2rem',
+                    position: 'relative',
+                    overflow: 'hidden'
                 }}
             >
-                <div style={{ fontSize: '3rem', marginBottom: '0.5rem' }}>📂</div>
-                <div style={{ fontWeight: 700, color: '#1e293b', fontSize: '1.05rem' }}>
-                    {fileName ? `✅ ${fileName}` : 'Excel या CSV file यहाँ drag करें'}
+                <div style={{ fontSize: '3.5rem', marginBottom: '1rem', filter: 'drop-shadow(0 10px 15px rgba(0,0,0,0.1))' }}>
+                    {fileName ? '📄' : '☁️'}
                 </div>
-                <div style={{ color: '#64748b', fontSize: '0.85rem', marginTop: '0.4rem' }}>
-                    या click करके file चुनें (.xlsx, .xls, .csv) — max 1000 rows
+                <div style={{ fontWeight: 800, color: '#1e293b', fontSize: '1.25rem', letterSpacing: '-0.02em' }}>
+                    {fileName ? fileName : 'एक्सेल या सीएसवी फाइल यहाँ डालें'}
                 </div>
+                <div style={{ color: '#64748b', fontSize: '0.95rem', marginTop: '0.5rem', fontWeight: 500 }}>
+                    {fileName ? 'फाइल सफलतापूर्वक लोड हो गई है' : 'या क्लिक करके फाइल चुनें (.xlsx, .xls, .csv)'}
+                </div>
+                
+                {!fileName && (
+                    <div style={{ marginTop: '1.5rem', display: 'flex', justifyContent: 'center', gap: '0.75rem' }}>
+                        <span style={{ padding: '4px 12px', background: '#f1f5f9', borderRadius: 8, fontSize: '0.75rem', fontWeight: 600, color: '#475569' }}>MAX 1000 ROWS</span>
+                        <span style={{ padding: '4px 12px', background: '#f1f5f9', borderRadius: 8, fontSize: '0.75rem', fontWeight: 600, color: '#475569' }}>AUTO-DETECT</span>
+                    </div>
+                )}
                 <input ref={fileRef} type="file" accept=".xlsx,.xls,.csv" onChange={onFileChange} style={{ display: 'none' }} />
-            </div>
+            </motion.div>
 
-            {/* Stats bar */}
+            {/* Controls Bar */}
             {rows.length > 0 && (
-                <div style={{ display: 'flex', gap: '1rem', marginBottom: '1.5rem', flexWrap: 'wrap' }}>
-                    <div style={{ background: '#f0fdf4', border: '1px solid #bbf7d0', borderRadius: 10, padding: '0.75rem 1.25rem', fontWeight: 700, color: '#15803d' }}>
-                        ✅ Valid: {validRows.length}
+                <div style={{ background: 'rgba(255,255,255,0.7)', backdropFilter: 'blur(10px)', borderRadius: 20, padding: '1.25rem', marginBottom: '1.5rem', border: '1px solid #e2e8f0', display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: '1.5rem', flexWrap: 'wrap' }}>
+                    <div style={{ display: 'flex', alignItems: 'center', gap: '1rem' }}>
+                        <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem', cursor: 'pointer' }} onClick={() => setAutoGenImages(!autoGenImages)}>
+                            <div style={{ width: 44, height: 24, background: autoGenImages ? '#6366f1' : '#cbd5e1', borderRadius: 99, position: 'relative', transition: 'background 0.3s' }}>
+                                <div style={{ width: 18, height: 18, background: 'white', borderRadius: '50%', position: 'absolute', top: 3, left: autoGenImages ? 23 : 3, transition: 'left 0.3s', boxShadow: '0 2px 4px rgba(0,0,0,0.2)' }} />
+                            </div>
+                            <span style={{ fontWeight: 700, fontSize: '0.9rem', color: '#1e293b' }}>Auto-generate Photos 🤖</span>
+                        </div>
                     </div>
-                    <div style={{ background: invalidRows.length > 0 ? '#fef2f2' : '#f0fdf4', border: '1px solid #fecaca', borderRadius: 10, padding: '0.75rem 1.25rem', fontWeight: 700, color: '#dc2626' }}>
-                        ❌ Invalid: {invalidRows.length}
-                    </div>
-                    <div style={{ background: '#eff6ff', border: '1px solid #bfdbfe', borderRadius: 10, padding: '0.75rem 1.25rem', fontWeight: 700, color: '#1d4ed8' }}>
-                        📋 Total: {rows.length}
-                    </div>
-                    <div style={{ background: '#f5f3ff', border: '1px solid #ddd6fe', borderRadius: 10, padding: '0.75rem 1.25rem', fontWeight: 700, color: '#7c3aed' }}>
-                        🤖 Auto-category: {rows.filter(r => !r.category && r._autoCategory).length}
-                    </div>
-                    <div style={{ background: '#fefce8', border: '1px solid #fde68a', borderRadius: 10, padding: '0.75rem 1.25rem', fontWeight: 700, color: '#854d0e' }}>
-                        🏷️ Auto-tags: {rows.filter(r => !r.tags && r._autoTags?.length).length}
+                    
+                    <div style={{ display: 'flex', gap: '0.75rem' }}>
+                        <div style={{ background: '#f8fafc', padding: '0.5rem 1rem', borderRadius: 12, border: '1px solid #e2e8f0', display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+                            <span style={{ width: 8, height: 8, borderRadius: '50%', background: '#22c55e' }} />
+                            <span style={{ fontWeight: 700, fontSize: '0.8rem', color: '#475569' }}>{validRows.length} Valid</span>
+                        </div>
+                        {invalidRows.length > 0 && (
+                            <div style={{ background: '#fef2f2', padding: '0.5rem 1rem', borderRadius: 12, border: '1px solid #fecaca', display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+                                <span style={{ width: 8, height: 8, borderRadius: '50%', background: '#ef4444' }} />
+                                <span style={{ fontWeight: 700, fontSize: '0.8rem', color: '#991b1b' }}>{invalidRows.length} Invalid</span>
+                            </div>
+                        )}
                     </div>
                 </div>
             )}
@@ -379,71 +402,95 @@ export default function BulkUploadPage() {
                         <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: '0.85rem' }}>
                             <thead>
                                 <tr style={{ background: '#f8fafc' }}>
-                                    {['#', 'Title', 'Category 🤖', 'Tags 🤖', 'District', 'Breaking', 'Status', ''].map(h => (
-                                        <th key={h} style={{ padding: '0.75rem 1rem', textAlign: 'left', color: '#64748b', fontWeight: 700, whiteSpace: 'nowrap', borderBottom: '1px solid #e2e8f0' }}>{h}</th>
+                                    {['#', 'Image 🤖', 'Title', 'Category 🤖', 'Tags 🤖', 'District', 'Status', ''].map(h => (
+                                        <th key={h} style={{ padding: '1rem', textAlign: 'left', color: '#64748b', fontWeight: 700, whiteSpace: 'nowrap', borderBottom: '1px solid #e2e8f0', fontSize: '0.75rem', textTransform: 'uppercase', letterSpacing: '0.05em' }}>{h}</th>
                                     ))}
                                 </tr>
                             </thead>
                             <tbody>
                                 {rows.map((row, idx) => (
-                                    <tr key={idx} style={{ background: row._errors.length > 0 ? '#fef2f2' : idx % 2 === 0 ? 'white' : '#f8fafc', borderBottom: '1px solid #f1f5f9' }}>
-                                        <td style={{ padding: '0.75rem 1rem', color: '#94a3b8', fontWeight: 600 }}>{row._rowNum}</td>
-                                        <td style={{ padding: '0.75rem 1rem', maxWidth: 260 }}>
-                                            <div style={{ fontWeight: 600, color: '#0f172a', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>{row.title || <span style={{ color: '#dc2626' }}>— missing —</span>}</div>
-                                            {row._warnings.map((w, wi) => <div key={wi} style={{ color: '#b45309', fontSize: '0.75rem', marginTop: 2 }}>⚠️ {w}</div>)}
+                                    <motion.tr 
+                                        initial={{ opacity: 0 }}
+                                        animate={{ opacity: 1 }}
+                                        key={idx} 
+                                        style={{ background: row._errors.length > 0 ? '#fff1f2' : idx % 2 === 0 ? 'white' : '#fcfdfe', borderBottom: '1px solid #f1f5f9' }}
+                                    >
+                                        <td style={{ padding: '1rem', color: '#94a3b8', fontWeight: 700 }}>{row._rowNum}</td>
+                                        <td style={{ padding: '1rem' }}>
+                                            <div style={{ width: 60, height: 45, borderRadius: 8, background: '#f1f5f9', overflow: 'hidden', border: '1px solid #e2e8f0', position: 'relative' }}>
+                                                {autoGenImages && row.title && (
+                                                    <img 
+                                                        src={`https://picsum.photos/seed/${encodeURIComponent(row.title.slice(0, 30))}/60/45`} 
+                                                        alt="preview" 
+                                                        style={{ width: '100%', height: '100%', objectFit: 'cover' }}
+                                                    />
+                                                )}
+                                                {!autoGenImages && <div style={{ width: '100%', height: '100%', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '1rem' }}>🖼️</div>}
+                                            </div>
                                         </td>
-                                        <td style={{ padding: '0.75rem 1rem', whiteSpace: 'nowrap' }}>
+                                        <td style={{ padding: '1rem', maxWidth: 280 }}>
+                                            <div style={{ fontWeight: 700, color: '#0f172a', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis', fontSize: '0.9rem' }}>{row.title || <span style={{ color: '#ef4444' }}>शीर्षक (Title) गायब है</span>}</div>
+                                            {row._warnings.map((w, wi) => <div key={wi} style={{ color: '#d97706', fontSize: '0.72rem', marginTop: 4, fontWeight: 600 }}>⚠️ {w}</div>)}
+                                        </td>
+                                        <td style={{ padding: '1rem', whiteSpace: 'nowrap' }}>
                                             {editingIdx === idx ? (
                                                 <select
                                                     value={row.category || row._autoCategory || ''}
                                                     onChange={e => { updateRow(idx, 'category', e.target.value); setEditingIdx(null) }}
-                                                    style={{ border: '1.5px solid #3b82f6', borderRadius: 6, padding: '2px 6px', fontSize: '0.82rem' }}
+                                                    style={{ border: '2px solid #6366f1', borderRadius: 8, padding: '4px 8px', fontSize: '0.8rem', background: 'white', fontWeight: 600 }}
                                                     autoFocus
                                                     onBlur={() => setEditingIdx(null)}
                                                 >
                                                     {['garhwa', 'palamu', 'jharkhand', 'rashtriya', 'apradh', 'rajniti', 'khel', 'swasthya', 'shiksha', 'vyapar', 'technology', 'manoranjan', 'dharm'].map(c => <option key={c} value={c}>{c}</option>)}
                                                 </select>
                                             ) : (
-                                                <span>
+                                                <div style={{ display: 'flex', alignItems: 'center', gap: '0.25rem' }}>
                                                     {row.category
                                                         ? <Badge color="green">{row.category}</Badge>
                                                         : row._autoCategory
                                                             ? <Badge color="blue">🤖 {row._autoCategory}</Badge>
                                                             : <Badge color="gray">—</Badge>
                                                     }
-                                                </span>
+                                                </div>
                                             )}
                                         </td>
-                                        <td style={{ padding: '0.75rem 1rem', maxWidth: 200 }}>
-                                            {(row.tags ? row.tags.split(/[,،;]/) : row._autoTags || []).map((t, ti) => (
-                                                <Badge key={ti} color={row.tags ? 'gray' : 'blue'}>{t.trim()}</Badge>
-                                            ))}
+                                        <td style={{ padding: '1rem', maxWidth: 180 }}>
+                                            <div style={{ display: 'flex', flexWrap: 'wrap', gap: '4px' }}>
+                                                {(row.tags ? row.tags.split(/[,،;]/) : row._autoTags || []).map((t, ti) => (
+                                                    <Badge key={ti} color={row.tags ? 'gray' : 'blue'}>{t.trim()}</Badge>
+                                                ))}
+                                            </div>
                                         </td>
-                                        <td style={{ padding: '0.75rem 1rem' }}>
-                                            <Badge color={row.district ? 'green' : 'yellow'}>{row.district || 'jharkhand'}</Badge>
+                                        <td style={{ padding: '1rem' }}>
+                                            <div style={{ display: 'flex', flexDirection: 'column', gap: '4px' }}>
+                                                <Badge color={row.district ? 'green' : 'yellow'}>{row.district || 'jharkhand'}</Badge>
+                                                {row.isBreaking === 'yes' && <Badge color="red">🔥 Breaking</Badge>}
+                                            </div>
                                         </td>
-                                        <td style={{ padding: '0.75rem 1rem' }}>
-                                            {row.isBreaking === 'yes' ? <Badge color="red">🔥 Breaking</Badge> : <Badge color="gray">No</Badge>}
-                                        </td>
-                                        <td style={{ padding: '0.75rem 1rem', whiteSpace: 'nowrap' }}>
+                                        <td style={{ padding: '1rem', whiteSpace: 'nowrap' }}>
                                             {row._errors.length > 0 ? (
-                                                <div>
+                                                <div style={{ display: 'flex', flexDirection: 'column', gap: '2px' }}>
                                                     {row._errors.map((e, ei) => (
-                                                        <div key={ei} style={{ color: '#dc2626', fontSize: '0.78rem' }}>❌ {e}</div>
+                                                        <div key={ei} style={{ color: '#ef4444', fontSize: '0.72rem', fontWeight: 700 }}>❌ {e}</div>
                                                     ))}
                                                 </div>
                                             ) : (
-                                                <span style={{ color: '#15803d', fontWeight: 700 }}>✅ Valid</span>
+                                                <div style={{ display: 'flex', alignItems: 'center', gap: '0.4rem', color: '#10b981', fontWeight: 800 }}>
+                                                    <span style={{ width: 6, height: 6, borderRadius: '50%', background: '#10b981' }} />
+                                                    Ready
+                                                </div>
                                             )}
                                         </td>
-                                        <td style={{ padding: '0.75rem 1rem' }}>
+                                        <td style={{ padding: '1rem' }}>
                                             <button
                                                 onClick={() => setEditingIdx(editingIdx === idx ? null : idx)}
-                                                style={{ background: 'none', border: 'none', cursor: 'pointer', fontSize: '1rem', color: '#3b82f6' }}
+                                                style={{ padding: '6px', borderRadius: 8, background: editingIdx === idx ? '#f1f5f9' : 'transparent', border: 'none', cursor: 'pointer', transition: 'all 0.2s' }}
                                                 title="Edit category"
-                                            >✏️</button>
+                                            >
+                                                <span style={{ filter: editingIdx === idx ? 'none' : 'grayscale(1)' }}>✏️</span>
+                                            </button>
                                         </td>
-                                    </tr>
+                                    </motion.tr>
                                 ))}
                             </tbody>
                         </table>

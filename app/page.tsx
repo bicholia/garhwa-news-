@@ -12,8 +12,8 @@ import { Metadata } from 'next'
 export const revalidate = 3600 // Revalidate every hour
 
 export const metadata: Metadata = {
-  title: 'NR Global News | Elite International News Agency',
-  description: 'NR Global News provides authoritative, real-time coverage of global and local events with unparalleled integrity.',
+  title: 'NR Regional News Bureau | Global Reporting Standards',
+  description: 'NR Regional News Bureau provides authoritative, real-time coverage of Jharkhand regional events with unparalleled integrity and precision.',
 }
 
 async function getHomepageData() {
@@ -32,7 +32,7 @@ async function getHomepageData() {
   const snCrime = await client.fetch(`*[_type == "article" && category->slug.current == "crime"] | order(publishedAt desc)[0...10] { _id, title, slug, excerpt, featureImage, publishedAt }`)
 
   return {
-    featured: mergeAndSortNews(pgFeatured, snFeatured, 4),
+    featured: mergeAndSortNews(pgFeatured, snFeatured, 8),
     garhwa: mergeAndSortNews(pgGarhwa, snGarhwa, 6),
     palamu: mergeAndSortNews(pgPalamu.articles || pgPalamu, snPalamu, 6),
     jobs: mergeAndSortNews(pgJobs, snJobs, 4),
@@ -42,65 +42,70 @@ async function getHomepageData() {
 
 export default async function Home() {
   const data = await getHomepageData()
-  const mainStory = data.featured?.[0]
-  const subStories = data.featured?.slice(1, 4)
+  const heroStories = data.featured?.slice(0, 2)
+  const subStories = data.featured?.slice(2, 8)
 
   return (
     <PublicLayout>
-      <BreakingNews />
       
       <div className="bg-news-paper min-h-screen">
         <div className="container py-10 lg:py-16">
           
-          {/* MASTER HERO SECTION: Cinematic & Powerful */}
-          {mainStory && (
-            <section className="group relative mb-10 lg:mb-16 rounded-3xl overflow-hidden bg-brand-navy shadow-2xl">
-              <div className="grid grid-cols-1 lg:grid-cols-12 min-h-[400px] lg:min-h-[500px]">
-                {/* Visual Side */}
-                <div className="lg:col-span-8 relative overflow-hidden">
-                  {mainStory.image_url || mainStory.featureImage?.asset ? (
-                    <img 
-                      src={mainStory.image_url || urlFor(mainStory.featureImage).width(1200).height(800).url()} 
-                      alt={mainStory.title} 
-                      className="w-full h-full object-cover transition-transform duration-1000 group-hover:scale-105"
-                    />
-                  ) : (
-                    <div className="w-full h-full bg-slate-800" />
-                  )}
-                  <div className="absolute inset-0 bg-gradient-to-t from-brand-navy via-brand-navy/20 to-transparent" />
-                  <div className="absolute top-8 left-8 flex items-center gap-3">
-                    <span className="bg-brand-gold text-white text-[10px] font-black uppercase tracking-[0.3em] px-4 py-2 rounded-full shadow-lg flex items-center gap-2">
-                        <ShieldCheck size={14} /> Global Priority
-                    </span>
-                  </div>
-                </div>
+          {/* DUAL HERO SECTION: Medium & Balanced */}
+          {heroStories && heroStories.length > 0 && (
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-12 lg:mb-16">
+              {heroStories.map((story: any, i: number) => {
+                const imageUrl = story.image_url || (story.featureImage?.asset ? urlFor(story.featureImage).width(800).height(500).url() : null);
+                
+                return (
+                  <section key={story._id || i} className="group relative rounded-3xl overflow-hidden bg-brand-navy shadow-2xl min-h-[380px] lg:min-h-[420px] flex flex-col border border-white/5">
+                    {/* Visual Background */}
+                    <div className="absolute inset-0 z-0">
+                      {imageUrl ? (
+                        <img 
+                          src={imageUrl} 
+                          alt={story.title} 
+                          className="w-full h-full object-cover transition-transform duration-1000 group-hover:scale-105"
+                        />
+                      ) : (
+                        <div className="w-full h-full bg-slate-800" />
+                      )}
+                      <div className="absolute inset-0 bg-gradient-to-t from-brand-navy via-brand-navy/40 to-transparent" />
+                      <div className="absolute inset-0 bg-brand-navy/20 group-hover:bg-transparent transition-colors duration-500" />
+                    </div>
 
-                {/* Content Side */}
-                <div className="lg:col-span-4 bg-brand-navy p-8 lg:p-12 flex flex-col justify-center border-l border-white/5">
-                  <div className="text-brand-gold font-black uppercase tracking-[0.4em] text-[10px] mb-6 flex items-center gap-2">
-                      <TrendingUp size={16} /> The Lead Report
-                  </div>
-                  <h1 className="text-2xl lg:text-4xl font-black text-white font-serif leading-[1.1] mb-4 tracking-tight">
-                    {mainStory.title}
-                  </h1>
-                  <p className="text-gray-400 text-base leading-relaxed mb-6 font-medium line-clamp-3">
-                    {mainStory.excerpt}
-                  </p>
-                  <Link 
-                    href={`/news/${typeof mainStory.slug === 'string' ? mainStory.slug : mainStory.slug?.current}`}
-                    className="inline-flex items-center justify-between w-full group/btn px-8 py-5 border border-white/20 text-white font-black uppercase tracking-widest rounded-2xl hover:bg-brand-gold hover:border-brand-gold transition-all duration-300"
-                  >
-                    Examine Full Report <ArrowRight className="group-hover/btn:translate-x-2 transition-transform" />
-                  </Link>
-                </div>
-              </div>
+                    {/* Content Overlay */}
+                    <div className="relative z-10 p-8 lg:p-10 flex flex-col justify-end h-full mt-auto">
+                      <div className="flex items-center gap-3 mb-4">
+                        <span className="bg-brand-gold text-white text-[9px] font-black uppercase tracking-[0.3em] px-3 py-1.5 rounded-full shadow-lg flex items-center gap-1.5">
+                            <ShieldCheck size={12} /> Bureau {i === 0 ? 'Primary' : 'Secondary'}
+                        </span>
+                      </div>
+                      
+                      <h2 className="text-xl lg:text-3xl font-black text-white font-serif leading-tight mb-4 group-hover:text-brand-gold transition-colors">
+                        {story.title}
+                      </h2>
+                      
+                      <p className="text-gray-300 text-sm leading-relaxed mb-6 font-medium line-clamp-2 max-w-md opacity-0 group-hover:opacity-100 transform translate-y-4 group-hover:translate-y-0 transition-all duration-500">
+                        {story.excerpt}
+                      </p>
 
-              {/* Secondary Hero Items (Absolute Pos on Desktop) */}
-              <div className="hidden lg:grid grid-cols-3 gap-1 absolute bottom-8 left-8 right-8 pointer-events-none">
-                 {/* This could be a summary bar or quick links */}
-              </div>
-            </section>
+                      <Link 
+                        href={`/news/${typeof story.slug === 'string' ? story.slug : story.slug?.current}`}
+                        className="inline-flex items-center gap-3 text-white font-black uppercase tracking-widest text-[10px] group/btn"
+                      >
+                        Examine Report <ArrowRight className="group-hover/btn:translate-x-2 transition-transform" />
+                      </Link>
+                    </div>
+                  </section>
+                );
+              })}
+            </div>
           )}
+
+          <div className="mb-12">
+            <BreakingNews />
+          </div>
 
           {/* SECONDARY STORIES: Grid of 3 */}
           {subStories && subStories.length > 0 && (
@@ -123,7 +128,7 @@ export default async function Home() {
                                         <Globe size={40} />
                                     </div>
                                 )}
-                                <div className="absolute top-3 left-3 bg-brand-navy/80 backdrop-blur-md text-brand-gold text-[8px] font-black uppercase px-2 py-1 rounded">Agency Intl.</div>
+                                <div className="absolute top-3 left-3 bg-brand-navy/80 backdrop-blur-md text-brand-gold text-[8px] font-black uppercase px-2 py-1 rounded">Bureau Dispatch</div>
                             </div>
                             <h3 className="text-xl font-black text-brand-navy font-serif leading-tight group-hover:text-brand-gold transition-colors line-clamp-2">
                                 {story.title}
@@ -138,11 +143,17 @@ export default async function Home() {
             </div>
           )}
 
-          <AdBanner slot="homepage_hero" width={728} height={90} />
+          <AdBanner slot="homepage_hero" width={728} height={90} hidePlaceholder={true} />
 
           {/* LATEST ARCHIVES SECTIONS */}
           <div className="space-y-24 mt-24">
-            <NewsGrid title="गढ़वा समाचार | Garhwa Reports" articles={data.garhwa} link="/garhwa" limit={6} />
+            <NewsGrid 
+              title="गढ़वा समाचार | Garhwa Reports" 
+              articles={data.garhwa} 
+              link="/garhwa" 
+              limit={6} 
+              moreText="Explore All Garhwa Reports"
+            />
             
             {/* SPECIAL DIVIDER: Agency Trust */}
             <div className="bg-brand-navy rounded-[40px] p-12 lg:p-20 text-center relative overflow-hidden shadow-2xl">
@@ -150,12 +161,12 @@ export default async function Home() {
                     <Globe size={400} className="absolute -top-20 -right-20 text-white" />
                 </div>
                 <div className="relative z-10 max-w-3xl mx-auto">
-                    <div className="text-brand-gold font-black uppercase tracking-[0.4em] text-xs mb-6">NR Global Integrity</div>
+                    <div className="text-brand-gold font-black uppercase tracking-[0.4em] text-xs mb-6">NR Bureau Integrity</div>
                     <h2 className="text-3xl lg:text-5xl font-black text-white font-serif mb-8 leading-tight">
                         Authoritative Reporting for a Global Community.
                     </h2>
                     <p className="text-gray-400 text-lg mb-10 font-medium">
-                        Since our inception, NR Global Agency has been at the forefront of investigative journalism, delivering unbiased reports that empower local and global citizens.
+                        Dedicated to uncompromised reporting, NR Regional News Bureau operates at the intersection of local expertise and international standards of integrity.
                     </p>
                     <div className="flex flex-wrap justify-center gap-6">
                         <div className="bg-white/5 border border-white/10 px-6 py-4 rounded-2xl text-white">
@@ -174,7 +185,13 @@ export default async function Home() {
                 </div>
             </div>
 
-            <NewsGrid title="पलामू समाचार | Palamu Reports" articles={data.palamu} link="/palamu" limit={6} />
+            <NewsGrid 
+              title="पलामू समाचार | Palamu Reports" 
+              articles={data.palamu} 
+              link="/palamu" 
+              limit={6} 
+              moreText="View All Palamu Archives"
+            />
 
             {/* JOBS HUB: Premium Style */}
             {data.jobs && data.jobs.length > 0 && (
@@ -184,7 +201,7 @@ export default async function Home() {
                     <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-6 mb-12">
                         <div>
                             <h2 className="text-3xl lg:text-4xl font-black text-brand-navy font-serif mb-2 italic">Global Opportunities 🔥</h2>
-                            <p className="text-gray-500 font-medium tracking-tight">Latest government & private sector openings monitored by NR Agency.</p>
+                            <p className="text-gray-500 font-medium tracking-tight">Latest government & private sector openings monitored by NR Regional Bureau.</p>
                         </div>
                         <Link href="/category/jobs" className="bg-brand-navy text-white px-8 py-3 rounded-full font-black text-xs uppercase tracking-widest hover:bg-brand-gold transition-colors self-start shadow-lg">
                             Access Opportunity Hub
@@ -202,10 +219,16 @@ export default async function Home() {
               </section>
             )}
 
-            <NewsGrid title="अपराध समीक्षा | Crime Analysis" articles={data.crime} link="/category/crime" limit={4} />
+            <NewsGrid 
+              title="अपराध समीक्षा | Crime Analysis" 
+              articles={data.crime} 
+              link="/category/crime" 
+              limit={4} 
+              moreText="Examine Full Crime Database"
+            />
           </div>
 
-          <AdBanner slot="homepage_middle" width={728} height={90} />
+          <AdBanner slot="homepage_middle" width={728} height={90} hidePlaceholder={true} />
           <MailButton />
         </div>
       </div>

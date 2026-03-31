@@ -38,7 +38,7 @@ export default function Footer() {
                     <div className="flex items-center gap-3">
                         <div className="w-1.5 h-8 bg-brand-gold rounded-full" />
                         <div>
-                            <div className="text-[9px] text-brand-gold font-black uppercase tracking-[0.4em]">NR Global Agency</div>
+                            <div className="text-[9px] text-brand-gold font-black uppercase tracking-[0.4em]">NR Regional Bureau</div>
                             <div className="text-[11px] text-white font-bold">Authoritative · Accurate · Independent</div>
                         </div>
                     </div>
@@ -70,7 +70,7 @@ export default function Footer() {
                         </Link>
 
                         <p className="text-[13px] leading-relaxed text-gray-500 font-medium">
-                            NR Global Agency delivers authoritative, ground-level journalism from Garhwa and Palamu districts — committed to truth, integrity, and community impact.
+                            NR Regional News Bureau delivers authoritative, ground-level journalism from Garhwa and Palamu districts — committed to truth, integrity, and community impact.
                         </p>
 
                         {/* Social Icons */}
@@ -179,7 +179,7 @@ export default function Footer() {
                 <div className="container py-6 flex flex-col lg:flex-row justify-between items-center gap-4">
                     <div className="flex items-center gap-2 text-[10px] font-bold text-gray-600 uppercase tracking-wider" suppressHydrationWarning>
                         <ShieldCheck size={12} className="text-brand-gold" />
-                        © {new Date().getFullYear()} NR Global Agency · All Rights Reserved
+                        © {new Date().getFullYear()} NR Regional Bureau · All Rights Reserved
                     </div>
                     <div className="flex flex-wrap justify-center gap-6 text-[10px] font-bold uppercase tracking-wider text-gray-600">
                         <Link href="/privacy-policy" className="hover:text-brand-gold transition-colors">Privacy</Link>

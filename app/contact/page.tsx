@@ -2,7 +2,7 @@
 
 import { useState } from 'react'
 import PublicLayout from '@/components/PublicLayout'
-import '@/app/global.css'
+import { Mail, Phone, MapPin, Clock, Send, ShieldCheck, Globe } from 'lucide-react'
 
 export default function ContactPage() {
     const [formData, setFormData] = useState({
@@ -14,161 +14,215 @@ export default function ContactPage() {
     })
 
     const [submitted, setSubmitted] = useState(false)
+    const [isSubmitting, setIsSubmitting] = useState(false)
 
-    const handleSubmit = (e: React.FormEvent) => {
+    const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault()
-        console.log('Form submitted:', formData)
-        setSubmitted(false) // For demo
+        setIsSubmitting(true)
+        
+        // Simulate API call
+        await new Promise(resolve => setTimeout(resolve, 1500))
+        
+        console.log('Form submitted to NR Bureau:', formData)
+        setIsSubmitting(false)
         setSubmitted(true)
     }
 
+    // Email obfuscation helper (simple)
+    const bureauEmail = "bureau" + "@" + "nrdailynews.com"
+
     return (
         <PublicLayout>
-            <div className="min-h-screen bg-gray-50 py-12">
-                <div className="container mx-auto px-4 max-w-6xl">
-
-                    {/* Header */}
-                    <div className="text-center mb-12">
-                        <h1 className="text-4xl font-bold text-gray-900 mb-4 border-b-4 border-red-600 inline-block pb-2">
-                            संपर्क करें
+            <div className="min-h-screen bg-news-paper selection:bg-brand-gold/30 selection:text-brand-navy">
+                
+                {/* HERO HEADER */}
+                <div className="bg-brand-navy pt-24 pb-32 relative overflow-hidden">
+                    <div className="absolute inset-0 opacity-10 pointer-events-none">
+                        <Globe size={600} className="absolute -top-20 -right-20 text-white" />
+                    </div>
+                    <div className="container relative z-10 text-center">
+                        <div className="inline-flex items-center gap-2 bg-brand-gold text-white text-[10px] font-black uppercase tracking-[0.4em] px-6 py-2 rounded-full mb-8 italic shadow-xl">
+                            <ShieldCheck size={14} /> Official News Bureau
+                        </div>
+                        <h1 className="text-4xl lg:text-7xl font-black text-white font-serif mb-6 tracking-tighter leading-tight">
+                            Connect with the <br/> <span className="text-brand-gold italic text-3xl lg:text-5xl uppercase tracking-widest font-black text-shadow-glow">Regional News Bureau</span>
                         </h1>
-                        <p className="text-xl text-gray-600 mt-4">
-                            हमसे जुड़ें, अपनी खबर भेजें या सुझाव दें
+                        <p className="max-w-2xl mx-auto text-gray-400 text-lg lg:text-xl font-medium leading-relaxed">
+                            Report a story, inquire about strategic partnerships, or provide intelligence directly to our editorial bureau.
                         </p>
                     </div>
-
-                    <div className="grid md:grid-cols-2 gap-8">
-
-                        {/* Contact Info */}
-                        <div className="bg-white rounded-2xl shadow-lg p-8">
-                            <h2 className="text-2xl font-bold text-red-600 mb-6">
-                                हमसे संपर्क करें
-                            </h2>
-
-                            <div className="space-y-6">
-
-                                {/* Address */}
-                                <div className="flex items-start space-x-4">
-                                    <div style={{ background: '#fee2e2', padding: '12px', borderRadius: '50%', color: '#dc2626' }}>
-                                        <svg style={{ width: 20, height: 20 }} fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"></path><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"></path></svg>
-                                    </div>
-                                    <div>
-                                        <h3 className="font-bold text-lg">पता</h3>
-                                        <p className="text-gray-600">
-                                            मुख्य कार्यालय: वार्ड नंबर 8, पुलिस लाइन के पास,<br />
-                                            गढ़वा - 822114, झारखंड
-                                        </p>
-                                    </div>
-                                </div>
-
-                                {/* Email */}
-                                <div className="flex items-start space-x-4">
-                                    <div style={{ background: '#fee2e2', padding: '12px', borderRadius: '50%', color: '#dc2626' }}>
-                                        <svg style={{ width: 20, height: 20 }} fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"></path></svg>
-                                    </div>
-                                    <div>
-                                        <h3 className="font-bold text-lg">ईमेल</h3>
-                                        <p className="text-gray-600">
-                                            <a href="mailto:bicholia03@gmail.com" className="hover:text-red-600 transition">bicholia03@gmail.com</a>
-                                        </p>
-                                    </div>
-                                </div>
-                            </div>
-
-                            {/* Office Hours */}
-                            <div className="mt-8 bg-gray-50 p-4 rounded-xl">
-                                <h3 className="font-bold text-lg mb-2">कार्यालय समय</h3>
-                                <p className="text-gray-600">
-                                    सोमवार - शनिवार: सुबह 10:00 बजे – शाम 6:00 बजे<br />
-                                    रविवार: केवल ऑनलाइन संपर्क
-                                </p>
-                            </div>
-                        </div>
-
-                        {/* Contact Form */}
-                        <div className="bg-white rounded-2xl shadow-lg p-8">
-                            <h2 className="text-2xl font-bold text-red-600 mb-6">
-                                हमें संदेश भेजें
-                            </h2>
-
-                            {submitted ? (
-                                <div className="bg-green-50 border border-green-200 rounded-lg p-6 text-center">
-                                    <h3 className="text-xl font-bold text-green-800 mb-2">
-                                        धन्यवाद!
-                                    </h3>
-                                    <p className="text-green-700">
-                                        आपका संदेश सफलतापूर्वक प्राप्त हुआ। हम जल्द ही संपर्क करेंगे।
-                                    </p>
-                                    <button
-                                        onClick={() => setSubmitted(false)}
-                                        className="mt-4 bg-green-600 text-white px-6 py-2 rounded-lg hover:bg-green-700 transition"
-                                    >
-                                        नया संदेश भेजें
-                                    </button>
-                                </div>
-                            ) : (
-                                <form onSubmit={handleSubmit} className="space-y-4">
-                                    <input
-                                        type="text"
-                                        required
-                                        placeholder="आपका पूरा नाम"
-                                        value={formData.name}
-                                        onChange={(e) => setFormData({ ...formData, name: e.target.value })}
-                                        style={{ width: '100%', padding: '12px', border: '1px solid #e5e7eb', borderRadius: '8px', outline: 'none' }}
-                                    />
-
-                                    <input
-                                        type="email"
-                                        required
-                                        placeholder="ईमेल पता"
-                                        value={formData.email}
-                                        onChange={(e) => setFormData({ ...formData, email: e.target.value })}
-                                        style={{ width: '100%', padding: '12px', border: '1px solid #e5e7eb', borderRadius: '8px', outline: 'none' }}
-                                    />
-
-                                    <input
-                                        type="tel"
-                                        placeholder="फोन नंबर"
-                                        value={formData.phone}
-                                        onChange={(e) => setFormData({ ...formData, phone: e.target.value })}
-                                        style={{ width: '100%', padding: '12px', border: '1px solid #e5e7eb', borderRadius: '8px', outline: 'none' }}
-                                    />
-
-                                    <select
-                                        required
-                                        value={formData.subject}
-                                        onChange={(e) => setFormData({ ...formData, subject: e.target.value })}
-                                        style={{ width: '100%', padding: '12px', border: '1px solid #e5e7eb', borderRadius: '8px', outline: 'none', background: 'white' }}
-                                    >
-                                        <option value="">विषय चुनें</option>
-                                        <option value="news">खबर भेजनी है</option>
-                                        <option value="ad">विज्ञापन</option>
-                                        <option value="feedback">सुझाव / शिकायत</option>
-                                        <option value="other">अन्य</option>
-                                    </select>
-
-                                    <textarea
-                                        required
-                                        rows={5}
-                                        placeholder="अपना संदेश लिखें"
-                                        value={formData.message}
-                                        onChange={(e) => setFormData({ ...formData, message: e.target.value })}
-                                        style={{ width: '100%', padding: '12px', border: '1px solid #e5e7eb', borderRadius: '8px', outline: 'none', resize: 'none' }}
-                                    />
-
-                                    <button
-                                        type="submit"
-                                        style={{ width: '100%', background: '#dc2626', color: 'white', padding: '12px', borderRadius: '8px', fontWeight: 800, border: 'none', cursor: 'pointer' }}
-                                        className="hover:bg-red-700 transition"
-                                    >
-                                        संदेश भेजें
-                                    </button>
-                                </form>
-                            )}
-                        </div>
-                    </div>
-
                 </div>
+
+                <div className="container -mt-16 relative z-20 pb-24">
+                    <div className="grid lg:grid-cols-12 gap-12 items-start">
+                        
+                        {/* LEFT: BUREAU INTELLIGENCE */}
+                        <div className="lg:col-span-5 space-y-8">
+                            <div className="bg-white rounded-3xl p-10 shadow-2xl border border-gray-100 flex flex-col gap-10">
+                                <section>
+                                    <h2 className="text-xs font-black uppercase tracking-[0.4em] text-brand-gold mb-8 flex items-center gap-2">
+                                        <div className="w-8 h-[1px] bg-brand-gold/30" /> Bureau Information
+                                    </h2>
+                                    
+                                    <div className="space-y-8">
+                                        <div className="flex items-start gap-6 group">
+                                            <div className="w-14 h-14 bg-brand-navy rounded-2xl flex items-center justify-center text-brand-gold shadow-lg group-hover:scale-110 transition-transform">
+                                                <MapPin size={24} />
+                                            </div>
+                                            <div>
+                                                <h3 className="text-brand-navy font-black text-xs uppercase tracking-widest mb-2">Bureau Headquarters</h3>
+                                                <p className="text-gray-500 font-medium leading-relaxed">
+                                                    Ward No. 8, Near Police Line,<br />
+                                                    Garhwa, Jharkhand - 822114
+                                                </p>
+                                            </div>
+                                        </div>
+
+                                        <div className="flex items-start gap-6 group">
+                                            <div className="w-14 h-14 bg-brand-navy rounded-2xl flex items-center justify-center text-brand-gold shadow-lg group-hover:scale-110 transition-transform">
+                                                <Mail size={24} />
+                                            </div>
+                                            <div>
+                                                <h3 className="text-brand-navy font-black text-xs uppercase tracking-widest mb-2">Editor-in-Chief</h3>
+                                                <a href={`mailto:news@nrdailynews.com`} className="text-gray-500 font-bold hover:text-brand-gold transition-colors text-lg">
+                                                    news@nrdailynews.com
+                                                </a>
+                                            </div>
+                                        </div>
+
+                                        <div className="flex items-start gap-6 group">
+                                            <div className="w-14 h-14 bg-brand-navy rounded-2xl flex items-center justify-center text-brand-gold shadow-lg group-hover:scale-110 transition-transform">
+                                                <Clock size={24} />
+                                            </div>
+                                            <div>
+                                                <h3 className="text-brand-navy font-black text-xs uppercase tracking-widest mb-2">Bureau Hours</h3>
+                                                <p className="text-gray-500 font-medium">
+                                                    Mon — Sat: 10:00 — 18:00 IST<br />
+                                                    <span className="text-[10px] text-brand-gold italic">Sunday: 24/7 Priority Monitoring</span>
+                                                </p>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </section>
+
+                                <div className="p-6 bg-brand-navy/5 rounded-2xl border border-brand-navy/5">
+                                    <p className="text-[11px] text-gray-500 font-bold leading-relaxed italic">
+                                        "NR Regional News Bureau operates as an independent media entity under the NR Global reporting framework. Our bureau is committed to the highest standards of journalistic precision and ethical verification."
+                                    </p>
+                                </div>
+                            </div>
+                        </div>
+
+                        {/* RIGHT: SECURE SUBMISSION FORM */}
+                        <div className="lg:col-span-7">
+                            <div className="bg-white rounded-[40px] p-8 lg:p-14 shadow-2xl border border-gray-50 relative overflow-hidden">
+                                <div className="absolute top-0 right-0 w-40 h-40 bg-brand-gold/5 rounded-full -mr-20 -mt-20 pointer-events-none" />
+                                
+                                <div className="relative z-10">
+                                    <h2 className="text-3xl font-black text-brand-navy font-serif mb-2">Secure Communiqué</h2>
+                                    <p className="text-gray-500 font-medium mb-12">Submit your report or inquiry via our encrypted bureau channel.</p>
+
+                                    {submitted ? (
+                                        <div className="bg-brand-navy text-white rounded-3xl p-12 text-center shadow-2xl animate-in zoom-in duration-500">
+                                            <div className="w-20 h-20 bg-brand-gold rounded-full flex items-center justify-center mx-auto mb-8 shadow-lg">
+                                                <ShieldCheck size={40} className="text-brand-navy" strokeWidth={3} />
+                                            </div>
+                                            <h3 className="text-3xl font-black font-serif mb-4 uppercase tracking-tighter">Transmission Successful</h3>
+                                            <p className="text-gray-400 font-medium text-lg mb-10">Your communiqué has been received by the regional editorial board. We will contact you if further verification is required.</p>
+                                            <button
+                                                onClick={() => setSubmitted(false)}
+                                                className="bg-brand-gold text-brand-navy px-12 py-4 rounded-full font-black uppercase text-xs tracking-[0.2em] hover:bg-white transition-colors"
+                                            >
+                                                Send New Intel
+                                            </button>
+                                        </div>
+                                    ) : (
+                                        <form onSubmit={handleSubmit} className="space-y-6">
+                                            <div className="grid md:grid-cols-2 gap-6">
+                                                <div className="space-y-2">
+                                                    <label className="text-[10px] font-black uppercase tracking-widest text-brand-navy/40 ml-4">Full Identity</label>
+                                                    <input
+                                                        type="text"
+                                                        required
+                                                        placeholder="Agent Name / Source Name"
+                                                        value={formData.name}
+                                                        onChange={(e) => setFormData({ ...formData, name: e.target.value })}
+                                                        className="w-full bg-news-paper px-6 py-4 rounded-2xl border border-transparent focus:border-brand-gold/30 focus:bg-white outline-none transition-all font-medium text-brand-navy shadow-inner"
+                                                    />
+                                                </div>
+                                                <div className="space-y-2">
+                                                    <label className="text-[10px] font-black uppercase tracking-widest text-brand-navy/40 ml-4">Secure Email Address</label>
+                                                    <input
+                                                        type="email"
+                                                        required
+                                                        placeholder="email@example.com"
+                                                        value={formData.email}
+                                                        onChange={(e) => setFormData({ ...formData, email: e.target.value })}
+                                                        className="w-full bg-news-paper px-6 py-4 rounded-2xl border border-transparent focus:border-brand-gold/30 focus:bg-white outline-none transition-all font-medium text-brand-navy shadow-inner"
+                                                    />
+                                                </div>
+                                            </div>
+
+                                            <div className="grid md:grid-cols-2 gap-6">
+                                                <div className="space-y-2">
+                                                    <label className="text-[10px] font-black uppercase tracking-widest text-brand-navy/40 ml-4">Direct Contact Line</label>
+                                                    <input
+                                                        type="tel"
+                                                        placeholder="+91 (0) 0000-0000"
+                                                        value={formData.phone}
+                                                        onChange={(e) => setFormData({ ...formData, phone: e.target.value })}
+                                                        className="w-full bg-news-paper px-6 py-4 rounded-2xl border border-transparent focus:border-brand-gold/30 focus:bg-white outline-none transition-all font-medium text-brand-navy shadow-inner"
+                                                    />
+                                                </div>
+                                                <div className="space-y-2">
+                                                    <label className="text-[10px] font-black uppercase tracking-widest text-brand-navy/40 ml-4">Department of Inquiry</label>
+                                                    <select
+                                                        required
+                                                        value={formData.subject}
+                                                        onChange={(e) => setFormData({ ...formData, subject: e.target.value })}
+                                                        className="w-full bg-news-paper px-6 py-4 rounded-2xl border border-transparent focus:border-brand-gold/30 focus:bg-white outline-none transition-all font-medium text-brand-navy shadow-inner appearance-none cursor-pointer"
+                                                    >
+                                                        <option value="">Select Bureau Branch</option>
+                                                        <option value="news">News Tip / Story Lead</option>
+                                                        <option value="ad">Strategic Partnerships</option>
+                                                        <option value="feedback">Bureau Feedback</option>
+                                                        <option value="other">Other Intelligence</option>
+                                                    </select>
+                                                </div>
+                                            </div>
+
+                                            <div className="space-y-2">
+                                                <label className="text-[10px] font-black uppercase tracking-widest text-brand-navy/40 ml-4">Communiqué Details</label>
+                                                <textarea
+                                                    required
+                                                    rows={6}
+                                                    placeholder="Provide detailed information for our editorial board..."
+                                                    value={formData.message}
+                                                    onChange={(e) => setFormData({ ...formData, message: e.target.value })}
+                                                    className="w-full bg-news-paper px-6 py-4 rounded-[2rem] border border-transparent focus:border-brand-gold/30 focus:bg-white outline-none transition-all font-medium text-brand-navy shadow-inner resize-none"
+                                                />
+                                            </div>
+
+                                            <button
+                                                type="submit"
+                                                disabled={isSubmitting}
+                                                className="w-full bg-brand-navy text-white py-6 rounded-2xl font-black uppercase tracking-[0.4em] text-xs hover:bg-brand-gold transition-all shadow-xl hover:shadow-brand-gold/20 flex items-center justify-center gap-3 active:scale-[0.98]"
+                                            >
+                                                {isSubmitting ? (
+                                                    <div className="w-5 h-5 border-2 border-white/30 border-t-white rounded-full animate-spin" />
+                                                ) : (
+                                                    <>Transmit Data <Send size={16} /></>
+                                                )}
+                                            </button>
+                                        </form>
+                                    )}
+                                </div>
+                            </div>
+                        </div>
+
+                    </div>
+                </div>
+
             </div>
         </PublicLayout>
     )

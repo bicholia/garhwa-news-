@@ -111,38 +111,38 @@ export default function Header() {
 
                 {/* Main Branding Section */}
                 <div className="py-4 lg:py-5 border-b border-gray-100">
-                    <div className="container flex items-center justify-between gap-4">
-                        {/* Left Meta — desktop only */}
-                        <div className="hidden lg:flex flex-col gap-0.5 items-start w-48 shrink-0">
-                            <div className="text-[9px] uppercase font-black tracking-[0.3em] text-brand-gold">Global Network</div>
-                            <div className="text-[10px] text-gray-400 font-bold uppercase flex items-center gap-1">
-                                <Globe size={9} /> NR Agency · Intl. Edition
-                            </div>
-                        </div>
-
-                        {/* Logo — Centered */}
-                        <div className="flex-1 flex justify-center">
-                            <Link href="/" className="group flex items-center">
+                    <div className="container flex items-center justify-between gap-8">
+                        {/* Logo and Meta Group — Left */}
+                        <div className="flex items-center gap-6 lg:gap-8">
+                            <Link href="/" className="group flex items-center shrink-0">
                                 <Image
                                     src="/logo-new.png"
                                     alt="NR Global News"
-                                    width={240}
-                                    height={72}
-                                    className="h-14 lg:h-16 w-auto transition-all duration-500 group-hover:scale-105 drop-shadow-sm"
+                                    width={220}
+                                    height={66}
+                                    className="h-12 lg:h-14 w-auto transition-all duration-500 group-hover:scale-105 drop-shadow-sm"
                                     priority
                                 />
                             </Link>
+
+                            {/* Meta Info — Next to Logo */}
+                            <div className="hidden lg:flex flex-col gap-0.5 items-start border-l border-gray-200 pl-6 lg:pl-8">
+                                <div className="text-[9px] uppercase font-black tracking-[0.3em] text-brand-gold">Bureau Network</div>
+                                <div className="text-[10px] text-brand-navy/60 font-bold uppercase flex items-center gap-1.5 mt-0.5">
+                                    <Globe size={11} className="text-brand-gold" /> NR Regional · Bureau Edition
+                                </div>
+                            </div>
                         </div>
 
-                        {/* Right Actions */}
-                        <div className="w-48 flex justify-end items-center gap-2 lg:gap-3 shrink-0">
+                        {/* Right Actions — Search & Subscribe */}
+                        <div className="flex items-center gap-2 lg:gap-4 shrink-0">
                             {/* Search Button */}
                             <button
                                 onClick={() => setSearchOpen(true)}
                                 className="p-2.5 rounded-full hover:bg-gray-50 transition-colors border border-transparent hover:border-gray-100"
                                 aria-label="Search"
                             >
-                                <Search size={20} className="text-brand-navy" strokeWidth={2.5} />
+                                <Search size={22} className="text-brand-navy" strokeWidth={2.5} />
                             </button>
 
                             {/* Mobile Menu Button — only after mount */}
@@ -159,9 +159,9 @@ export default function Header() {
                             {/* CTA — desktop */}
                             <Link
                                 href="/contact"
-                                className="hidden lg:flex px-5 py-2 bg-brand-navy text-white text-[10px] font-black uppercase tracking-widest rounded-full hover:bg-brand-gold transition-all shadow-md hover:-translate-y-0.5"
+                                className="hidden lg:flex px-6 py-2.5 bg-brand-navy text-white text-[10px] font-black uppercase tracking-[0.2em] rounded-xl hover:bg-brand-gold transition-all shadow-md hover:-translate-y-0.5"
                             >
-                                Subscribe
+                                Dispatch Desk
                             </Link>
                         </div>
                     </div>
@@ -230,7 +230,7 @@ export default function Header() {
                         <div className="mt-10 pt-6 border-t border-gray-100">
                             <div className="flex items-center gap-3 text-brand-gold mb-5">
                                 <TrendingUp size={20} />
-                                <span className="font-black text-sm uppercase tracking-widest">NR Global Agency</span>
+                                <span className="font-black text-sm uppercase tracking-widest">NR Regional Bureau</span>
                             </div>
                             <div className="grid grid-cols-2 gap-3 text-[11px] font-bold uppercase tracking-wider text-gray-400">
                                 <Link href="/about" className="hover:text-brand-gold transition-colors" onClick={() => setMobileOpen(false)}>About Agency</Link>

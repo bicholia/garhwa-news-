@@ -20,6 +20,7 @@ interface AdBannerProps {
     height?: number
     className?: string
     style?: React.CSSProperties
+    hidePlaceholder?: boolean
 }
 
 async function getGlobalBanner(slot: string) {
@@ -58,7 +59,8 @@ export default async function AdBanner({
     width = 728,
     height = 90,
     className = '',
-    style = {}
+    style = {},
+    hidePlaceholder = false
 }: AdBannerProps) {
 
     let finalImageUrl = imageUrl
@@ -84,6 +86,7 @@ export default async function AdBanner({
 
     // No ad found — show the placeholder block
     if (!finalImageUrl) {
+        if (hidePlaceholder) return null;
         return (
             <div
                 className={`flex flex-col items-center justify-center p-6 my-6 border border-brand-navy/10 rounded-3xl bg-brand-navy/[0.02] relative overflow-hidden group ${className}`}

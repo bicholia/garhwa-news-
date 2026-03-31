@@ -8,9 +8,10 @@ interface NewsGridProps {
     link?: string;
     limit?: number;
     showExcerpt?: boolean;
+    moreText?: string;
 }
 
-export default function NewsGrid({ title, articles, link, limit, showExcerpt = true }: NewsGridProps) {
+export default function NewsGrid({ title, articles, link, limit, showExcerpt = true, moreText = "Explore More Reports" }: NewsGridProps) {
     const displayArticles = limit ? articles.slice(0, limit) : articles;
 
     if (!displayArticles || displayArticles.length === 0) return null;
@@ -34,7 +35,7 @@ export default function NewsGrid({ title, articles, link, limit, showExcerpt = t
                         href={link} 
                         className="inline-flex items-center gap-2 px-8 py-3 bg-white border border-gray-200 text-brand-navy font-black text-xs uppercase tracking-[0.2em] rounded-full hover:bg-brand-navy hover:text-white transition-all duration-300 shadow-sm hover:shadow-md"
                     >
-                        Explore More Reports <span className="text-brand-gold">&rarr;</span>
+                        {moreText} <span className="text-brand-gold">&rarr;</span>
                     </Link>
                 </div>
             )}
