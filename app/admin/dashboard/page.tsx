@@ -12,14 +12,25 @@ const client = createClient({
 
 async function getStats() {
     try {
-        const total = await client.fetch(`count(*[_type == "article"])`)
-        const today = await client.fetch(
-            `count(*[_type == "article" && publishedAt >= $from])`,
-            { from: new Date(new Date().setHours(0, 0, 0, 0)).toISOString() }
-        )
-        return { total, today }
+        const [total, today, cmsCheck] = await Promise.all([
+            client.fetch(`count(*[_type == "article"])`),
+            client.fetch(
+                `count(*[_type == "article" && publishedAt >= $from])`,
+                { from: new Date(new Date().setHours(0, 0, 0, 0)).toISOString() }
+            ),
+            client.fetch(`count(*[_id == "nonexistent"])`).then(() => 'Online').catch(() => 'Offline')
+        ])
+        
+        const telegramStatus = process.env.TELEGRAM_BOT_TOKEN ? 'Connected' : 'Not Configured'
+        
+        return { 
+            total, 
+            today, 
+            cmsStatus: cmsCheck, 
+            telegramStatus 
+        }
     } catch {
-        return { total: 0, today: 0 }
+        return { total: 0, today: 0, cmsStatus: 'Offline', telegramStatus: 'Unknown' }
     }
 }
 
@@ -29,8 +40,8 @@ export default async function AdminDashboard() {
     const statCards = [
         { label: 'कुल खबरें', value: stats.total, color: '#2563eb', bg: '#eff6ff', icon: <Newspaper size={28} color="#2563eb" /> },
         { label: 'आज की खबरें', value: stats.today, color: '#059669', bg: '#f0fdf4', icon: <Sparkles size={28} color="#059669" /> },
-        { label: 'Telegram', value: 'Active', color: '#0088cc', bg: '#f0f9ff', icon: <Megaphone size={28} color="#0088cc" /> },
-        { label: 'CMS Status', value: 'Online', color: '#7c3aed', bg: '#f5f3ff', icon: <CheckCircle2 size={28} color="#7c3aed" /> },
+        { label: 'Telegram', value: stats.telegramStatus, color: stats.telegramStatus === 'Connected' ? '#0088cc' : '#f59e0b', bg: '#f0f9ff', icon: <Megaphone size={28} color={stats.telegramStatus === 'Connected' ? '#0088cc' : '#f59e0b'} /> },
+        { label: 'CMS Status', value: stats.cmsStatus, color: stats.cmsStatus === 'Online' ? '#7c3aed' : '#dc2626', bg: '#f5f3ff', icon: <CheckCircle2 size={28} color={stats.cmsStatus === 'Online' ? '#7c3aed' : '#dc2626'} /> },
     ]
 
     return (

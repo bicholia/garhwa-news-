@@ -1,7 +1,7 @@
 'use client'
 
+import React, { useState, useEffect } from 'react'
 import Link from 'next/link'
-import { useState, useEffect } from 'react'
 import { Menu, X, Search, Calendar, Globe, TrendingUp } from 'lucide-react'
 import { usePathname, useRouter } from 'next/navigation'
 import WeatherWidget from '@/components/WeatherWidget'
@@ -13,6 +13,7 @@ export default function Header() {
     const [searchOpen, setSearchOpen] = useState(false)
     const [isScrolled, setIsScrolled] = useState(false)
     const [isDesktop, setIsDesktop] = useState(true)
+    const [breakingNews, setBreakingNews] = useState<any[]>([])
     const [searchQuery, setSearchQuery] = useState('')
     const pathname = usePathname()
     const router = useRouter()
@@ -29,6 +30,14 @@ export default function Header() {
             window.removeEventListener('scroll', handleScroll)
         }
     }, [])
+
+    useEffect(() => {
+        if (!mounted) return
+        fetch('/api/news/breaking')
+            .then(res => res.json())
+            .then(data => setBreakingNews(data))
+            .catch(() => setBreakingNews([]))
+    }, [mounted])
 
     // Close mobile menu on route change
     useEffect(() => {
@@ -74,21 +83,27 @@ export default function Header() {
                         {/* Scrolling Ticker */}
                         <div className="flex-1 overflow-hidden relative h-full flex items-center">
                             <div className="ticker-track absolute whitespace-nowrap flex gap-16 text-[11px] font-medium items-center">
-                                <span>गढ़वा-पलामू में प्रशासन की बड़ी कार्रवाई, अवैध खनन पर लगाम...</span>
-                                <span className="text-brand-gold">◆</span>
-                                <span>झारखंड में नई भर्ती योजना का ऐलान, युवाओं में उत्साह...</span>
-                                <span className="text-brand-gold">◆</span>
-                                <span>पलामू विकास योजनाओं की समीक्षा के लिए पहुंचे मुख्यमंत्री...</span>
-                                <span className="text-brand-gold">◆</span>
-                                <span>गढ़वा पलामू न्यूज़ — सच्चाई और निष्पक्षता के साथ...</span>
-                                {/* Duplicate for seamless loop */}
-                                <span>गढ़वा-पलामू में प्रशासन की बड़ी कार्रवाई, अवैध खनन पर लगाम...</span>
-                                <span className="text-brand-gold">◆</span>
-                                <span>झारखंड में नई भर्ती योजना का ऐलान, युवाओं में उत्साह...</span>
-                                <span className="text-brand-gold">◆</span>
-                                <span>पलामू विकास योजनाओं की समीक्षा के लिए पहुंचे मुख्यमंत्री...</span>
-                                <span className="text-brand-gold">◆</span>
-                                <span>गढ़वा पलामू न्यूज़ — सच्चाई और निष्पक्षता के साथ...</span>
+                                {breakingNews.length > 0 ? (
+                                    <>
+                                        {/* Original and Duplicate for seamless loop */}
+                                        {[...breakingNews, ...breakingNews, ...breakingNews].map((item, idx) => (
+                                            <React.Fragment key={idx}>
+                                                {item.href ? (
+                                                    <Link href={item.href} className="hover:text-brand-gold transition-colors">{item.text}</Link>
+                                                ) : (
+                                                    <span>{item.text}</span>
+                                                )}
+                                                <span className="text-brand-gold">◆</span>
+                                            </React.Fragment>
+                                        ))}
+                                    </>
+                                ) : (
+                                    <>
+                                        <span>गढ़वा पलामू न्यूज़ ब्यूरो — ताज़ा और निष्पक्ष खबरें...</span>
+                                        <span className="text-brand-gold">◆</span>
+                                        <span>गढ़वा पलामू न्यूज़ ब्यूरो — ताज़ा और निष्पक्ष खबरें...</span>
+                                    </>
+                                )}
                             </div>
                         </div>
 

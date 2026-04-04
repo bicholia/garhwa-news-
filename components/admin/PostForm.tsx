@@ -154,6 +154,7 @@ export default function PostForm({ initialData, isEditing }: PostFormProps) {
             const data = await res.json()
             if (!res.ok) throw new Error(data.error || 'AI generation failed')
 
+            // Update Text Data
             setFormData(prev => ({
                 ...prev,
                 title: data.title || prev.title,
@@ -162,8 +163,33 @@ export default function PostForm({ initialData, isEditing }: PostFormProps) {
                 category: data.category || prev.category,
                 district: data.district || prev.district
             }))
+
+            // Logic for Auto-Image Generation
+            if (data.imagePrompt) {
+                setImgUploading(true)
+                try {
+                    // Using an AI image generation service for "Wow" factor
+                    const encodedPrompt = encodeURIComponent(data.imagePrompt)
+                    const genImageUrl = `https://pollinations.ai/p/${encodedPrompt}?width=1200&height=800&seed=${Math.floor(Math.random() * 100000)}&nologo=true`
+                    
+                    // We directly set the URL as a preview, 
+                    // the user can then "Publish" which will handle saving if needed 
+                    // or we can upload it to Sanity right now.
+                    // To ensure it's in Sanity, let's upload it to our media endpoint.
+                    
+                    const imgRes = await fetch(genImageUrl)
+                    const blob = await imgRes.blob()
+                    const file = new File([blob], 'ai-generated-image.jpg', { type: 'image/jpeg' })
+                    
+                    await handleFeatureImageUpload(file)
+                } catch (imgErr) {
+                    console.error('AI Image Fail:', imgErr)
+                } finally {
+                    setImgUploading(false)
+                }
+            }
             
-            setSuccess('AI ने खबर तैयार कर दी है! कृपया चेक करें।')
+            setSuccess('AI ने खबर और तस्वीर दोनों तैयार कर दी हैं! कृपया चेक करें।')
             setAiPrompt('')
         } catch (err: any) {
             setError('AI Error: ' + err.message)

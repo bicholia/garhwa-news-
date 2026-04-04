@@ -32,33 +32,35 @@ async function loadCategories() {
     categoryCache = map
 }
 
-// ── Weighted Category Detection ───────────────────────────────────────────────
+// ── Fuzzy Category Detection ─────────────────────────────────────────────────
 const CATEGORY_KEYWORDS: Record<string, { weight: number; keywords: string[] }> = {
-    garhwa: { weight: 5, keywords: ['गढ़वा', 'garhwa', 'Garhwa'] },
-    palamu: { weight: 5, keywords: ['पलामू', 'palamu', 'Palamu', 'डालटनगंज'] },
-    jharkhand: { weight: 4, keywords: ['झारखंड', 'jharkhand', 'रांची', 'ranchi'] },
-    apradh: { weight: 3, keywords: ['हत्या', 'चोरी', 'FIR', 'पुलिस', 'गिरफ्तार', 'crime', 'murder', 'arrested', 'theft', 'robbery', 'अपराध'] },
-    rajniti: { weight: 2, keywords: ['BJP', 'Congress', 'चुनाव', 'election', 'नेता', 'minister', 'CM', 'विधायक', 'सांसद', 'राजनीति'] },
-    khel: { weight: 2, keywords: ['cricket', 'IPL', 'football', 'खेल', 'match', 'tournament', 'खिलाड़ी', 'sports'] },
-    swasthya: { weight: 2, keywords: ['hospital', 'doctor', 'health', 'स्वास्थ्य', 'बीमारी', 'vaccine', 'अस्पताल', 'इलाज'] },
-    shiksha: { weight: 2, keywords: ['school', 'college', 'exam', 'शिक्षा', 'परीक्षा', 'university', 'result', 'scholarship'] },
-    vyapar: { weight: 2, keywords: ['business', 'economy', 'rupee', 'बाजार', 'व्यापार', 'price', 'market', 'महंगाई', 'tax'] },
-    technology: { weight: 2, keywords: ['mobile', 'internet', 'AI', 'tech', 'app', 'digital', 'phone', 'computer', 'software'] },
-    manoranjan: { weight: 2, keywords: ['film', 'bollywood', 'song', 'मनोरंजन', 'movie', 'actor', 'actress', 'music', 'song'] },
-    dharm: { weight: 2, keywords: ['temple', 'mandir', 'puja', 'धर्म', 'त्योहार', 'festival', 'mosque', 'church', 'pooja', 'eid', 'diwali'] },
-    rashtriya: { weight: 1, keywords: ['national', 'india', 'delhi', 'भारत', 'देश', 'राष्ट्रीय', 'New Delhi', 'Modi', 'PM'] },
+    garhwa: { weight: 10, keywords: ['गढ़वा', 'garhwa', 'Garhwa', 'मझिआंव', 'बंशीधर', 'रंका'] },
+    palamu: { weight: 8, keywords: ['पलामू', 'palamu', 'Palamu', 'डालटनगंज', 'मेदिनीनगर', 'चैनपुर'] },
+    jharkhand: { weight: 4, keywords: ['झारखंड', 'jharkhand', 'रांची', 'ranchi', 'झारखण्ड', 'जमशेदपुर'] },
+    apradh: { weight: 6, keywords: ['हत्या', 'चोरी', 'FIR', 'पुलिस', 'गिरफ्तार', 'crime', 'murder', 'arrested', 'theft', 'robbery', 'अपराध', 'जेल', 'पिटाई'] },
+    rajniti: { weight: 5, keywords: ['BJP', 'Congress', 'चुनाव', 'election', 'नेता', 'minister', 'CM', 'विधायक', 'सांसद', 'राजनीति', 'पीएम', 'मोदी'] },
+    khel: { weight: 5, keywords: ['cricket', 'IPL', 'football', 'खेल', 'match', 'tournament', 'खिलाड़ी', 'sports', 'टूर्नामेंट', 'खिलाडी'] },
+    swasthya: { weight: 5, keywords: ['hospital', 'doctor', 'health', 'स्वास्थ्य', 'बीमारी', 'vaccine', 'अस्पताल', 'इलाज', 'दवा', 'नर्स'] },
+    shiksha: { weight: 5, keywords: ['school', 'college', 'exam', 'शिक्षा', 'परीक्षा', 'university', 'result', 'scholarship', 'कॉलेज', 'यूनिवर्सिटी', 'रिजल्ट'] },
+    vyapar: { weight: 4, keywords: ['business', 'economy', 'rupee', 'बाजार', 'व्यापार', 'market', 'महंगाई', 'tax', 'पूंजी', 'निवेश'] },
+    technology: { weight: 4, keywords: ['mobile', 'internet', 'AI', 'tech', 'app', 'digital', 'phone', 'computer', 'software', 'डिजिटल', 'स्मार्टफोन'] },
+    manoranjan: { weight: 4, keywords: ['film', 'bollywood', 'song', 'मनोरंजन', 'movie', 'actor', 'actress', 'music', 'song', 'फिल्म', 'गाना'] },
+    dharm: { weight: 5, keywords: ['temple', 'mandir', 'puja', 'धर्म', 'त्योहार', 'festival', 'mosque', 'church', 'pooja', 'eid', 'diwali', 'मंदिर', 'मस्जिद', 'पूजा', 'उत्सव'] },
+    rashtriya: { weight: 2, keywords: ['national', 'india', 'delhi', 'भारत', 'देश', 'राष्ट्रीय', 'New Delhi', 'Modi', 'PM', 'दिल्ली', 'केंद्र सरकार'] },
 }
 
 function detectCategory(title: string, body: string): { primary: string; all: string[] } {
-    const text = `${title} ${body}`
+    const text = (`${title} ${body}`).toLowerCase()
     const scores: Record<string, number> = {}
 
     for (const [cat, data] of Object.entries(CATEGORY_KEYWORDS)) {
-        let matches = 0
+        let weightSum = 0
         for (const kw of data.keywords) {
-            if (text.toLowerCase().includes(kw.toLowerCase())) matches++
+            if (text.includes(kw.toLowerCase())) {
+                weightSum += data.weight
+            }
         }
-        if (matches > 0) scores[cat] = matches * data.weight
+        if (weightSum > 0) scores[cat] = weightSum
     }
 
     const sorted = Object.entries(scores)
@@ -74,17 +76,24 @@ function detectCategory(title: string, body: string): { primary: string; all: st
 // ── Image Handling ───────────────────────────────────────────────────────────
 async function downloadAndUploadImage(title: string): Promise<string | null> {
     try {
-        const seed = encodeURIComponent(title.slice(0, 50))
-        const imageUrl = `https://picsum.photos/seed/${seed}/1024/768`
+        // Extract keywords from title (English words or transliterated Hindi)
+        const keywords = title.match(/[A-Z][a-z]{3,}/g)?.join(',') || 'news,india'
+        const imageUrl = `https://loremflickr.com/1200/800/${encodeURIComponent(keywords)}`
+        
         const response = await fetch(imageUrl)
         if (!response.ok) return null
         
         const arrayBuffer = await response.arrayBuffer()
         const buffer = Buffer.from(arrayBuffer)
         
+        const seed = Math.random().toString(36).slice(2, 8)
+        
+        // Upload with Metadata
         const asset = await client.assets.upload('image', buffer, {
-            filename: `bulk-${Date.now()}.jpg`,
-            contentType: 'image/jpeg'
+            filename: `bulk-${Date.now()}-${seed}.jpg`,
+            contentType: 'image/jpeg',
+            title: title.slice(0, 100),
+            label: 'Bulk Uploaded Asset'
         })
         return asset._id
     } catch (err) {
@@ -97,21 +106,20 @@ async function downloadAndUploadImage(title: string): Promise<string | null> {
 function generateTags(title: string, district: string, category: string): string[] {
     const tags: string[] = []
     if (district) tags.push(district)
+    // Extract potential Hindi/English nouns/proper names
     const wordRegex = /[\u0900-\u097F]{3,}|[A-Z][a-z]{2,}/g
     const matches = title.match(wordRegex) || []
-    tags.push(...matches.slice(0, 5))
+    tags.push(...matches.slice(0, 6))
     if (category) tags.push(category)
-    return [...new Set(tags.map(t => t.trim()).filter(Boolean))].slice(0, 8)
+    return [...new Set(tags.map(t => t.trim()).filter(Boolean))].slice(0, 10)
 }
 
 // ── Sentence-Aware Excerpt ────────────────────────────────────────────────────
 function generateExcerpt(text: string, maxLength = 160): string {
     if (!text) return ''
-    // Strip any HTML
     const plain = text.replace(/<[^>]*>/g, ' ').replace(/\s+/g, ' ').trim()
     if (plain.length <= maxLength) return plain
 
-    // Find last complete sentence within limit
     const sentenceEnd = /[।.!?]+/g
     let lastEnd = 0
     let m: RegExpExecArray | null
@@ -123,29 +131,36 @@ function generateExcerpt(text: string, maxLength = 160): string {
     return lastEnd > 0 ? plain.slice(0, lastEnd) + '…' : plain.slice(0, maxLength - 1) + '…'
 }
 
-// ── Bullet-Proof Slug ─────────────────────────────────────────────────────────
+// ── Robust Slug Generator with Collision Management ──────────────────────────
 const usedSlugs = new Set<string>()
 
-function generateSlug(title: string, publishedAt: string): string {
+async function generateSlug(title: string, publishedAt: string): Promise<string> {
     const date = publishedAt ? new Date(publishedAt).toISOString().split('T')[0] : new Date().toISOString().split('T')[0]
     const base = title
         .toLowerCase()
         .trim()
         .replace(/[\u0900-\u097F]+/g, w => {
-            // Simple Hindi → latin transliteration trick: use unicode code point hex
-            return [...w].map(c => c.codePointAt(0)!.toString(16)).join('')
+            // Hindi transliteration based on simple hex mapping
+            return [...w].map(c => c.codePointAt(0)!.toString(16).slice(-3)).join('')
         })
         .replace(/[^\w-]/g, '-')
         .replace(/-+/g, '-')
         .replace(/^-|-$/g, '')
-        .slice(0, 60)
+        .slice(0, 50)
 
     let slug = `${base}-${date}`
 
-    if (usedSlugs.has(slug)) {
-        const suffix = Math.random().toString(36).slice(2, 6)
-        slug = `${slug}-${suffix}`
+    // Internal set check (for the current batch)
+    let internalConflict = usedSlugs.has(slug)
+    let suffix = ''
+    
+    if (internalConflict) {
+        suffix = '-' + Math.random().toString(36).slice(2, 6)
+        slug = `${slug}${suffix}`
     }
+
+    // We skip external Postgres check here to avoid N queries, 
+    // but the final insertion handles unique constraint violations.
     usedSlugs.add(slug)
     return slug
 }
@@ -248,7 +263,7 @@ async function buildSanityDoc(
     const excerpt = row.excerpt || generateExcerpt(row.body, 160)
 
     // Slug
-    const slug = generateSlug(row.title, row.publishedAt)
+    const slug = await generateSlug(row.title, row.publishedAt)
 
     // District normalization
     const district = (['garhwa', 'palamu', 'jharkhand', 'national'].includes(row.district?.toLowerCase()))

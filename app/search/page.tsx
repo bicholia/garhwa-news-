@@ -14,7 +14,7 @@ export default async function SearchPage({ searchParams }: { searchParams: Promi
         const [pgResults, snResults] = await Promise.all([
             searchNews(query),
             client.fetch(
-                `*[_type == "article" && (title match "*" + $q + "*" || excerpt match "*" + $q + "*")] | order(priority desc, publishedAt desc) {
+                `*[_type == "article" && (title match "*" + $q + "*" || excerpt match "*" + $q + "*" || pt::text(body) match "*" + $q + "*")] | order(priority desc, publishedAt desc) {
                     _id, title, slug, excerpt, featureImage, publishedAt, author->{name}, priority
                 }`,
                 { q: query }

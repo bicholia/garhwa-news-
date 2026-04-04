@@ -38,15 +38,17 @@ export default function WeatherWidget() {
             setLoading(true)
             try {
                 const apiKey = process.env.NEXT_PUBLIC_OPENWEATHER_API_KEY
-                if (!apiKey) throw new Error('No API Key')
+                if (!apiKey || apiKey === 'your_api_key_here') throw new Error('No API Key')
                 const res = await fetch(`https://api.openweathermap.org/data/2.5/weather?lat=${activeCity.lat}&lon=${activeCity.lon}&appid=${apiKey}&units=metric`)
+                if (!res.ok) throw new Error('API Error')
                 const data = await res.json()
                 setWeather({
                     temp: Math.round(data.main.temp),
                     condition: data.weather[0]?.main || 'Clear',
+                    isLive: true
                 })
             } catch {
-                setWeather(getMockData(activeCity.name))
+                setWeather({ ...getMockData(activeCity.name), isLive: false })
             } finally {
                 setLoading(false)
             }
@@ -64,10 +66,11 @@ export default function WeatherWidget() {
     if (!mounted || !activeCity || (!weather && loading)) return null
 
     return (
-        <div className="flex items-center gap-2 text-[11px] font-bold bg-white/10 px-3 py-1.5 rounded-full border border-white/10">
+        <div className={`flex items-center gap-2 text-[11px] font-bold bg-white/10 px-3 py-1.5 rounded-full border transition-colors ${weather?.isLive ? 'border-white/10' : 'border-brand-gold/30'}`} title={weather?.isLive ? 'Live Weather' : 'Demo Mode (Add API Key)'}>
             {getWeatherIcon(weather?.condition)}
             <span className="text-white/80">{activeCity.name}</span>
             <span className="text-brand-gold font-black">{weather?.temp}°C</span>
+            {!weather?.isLive && <span className="w-1.5 h-1.5 rounded-full bg-brand-gold animate-pulse" />}
         </div>
     )
 }

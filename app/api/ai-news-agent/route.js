@@ -1,11 +1,14 @@
 import { NextResponse } from 'next/server';
 import { createClient } from '@sanity/client';
 import { GoogleGenerativeAI } from '@google/generative-ai';
+import imageUrlBuilder from '@sanity/image-url';
 import { fetchNewsSmart } from '@/lib/smartNewsFetcher';
 import { insertNews, isNewsExists, cleanupOldNews } from '@/lib/db.js';
+import { sendToTelegram } from '@/lib/telegram';
+import { logAgentAction, initializeAgentLog } from '@/lib/apiUsageTracker';
 
-export const maxDuration = 60; // Max allowed duration for Hobby
-export const dynamic = 'force-dynamic'; // Prevent Vercel from caching the cron route
+export const maxDuration = 60; 
+export const dynamic = 'force-dynamic'; 
 
 const client = createClient({
     projectId: process.env.NEXT_PUBLIC_SANITY_PROJECT_ID,
@@ -15,15 +18,117 @@ const client = createClient({
     useCdn: false,
 });
 
+const builder = imageUrlBuilder(client);
+function urlFor(source) {
+    return builder.image(source);
+}
+
 const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY);
 
-function createSlug(title) {
-  return title
-    .toLowerCase()
-    .replace(/[^a-zA-Z0-9\u0900-\u097F\s]/g, '')
-    .replace(/\s+/g, '-')
-    .replace(/-+/g, '-')
-    .substring(0, 100);
+// --- BRAND SCRUBBER (Hardcoded Protection) ---
+function scrubBrandNames(text) {
+    if (!text) return text;
+    const agencies = [
+        /प्रभात खबर/g, /प्रभातखबर/g, /Prabhat Khabar/gi,
+        /दैनिक जागरण/g, /जागरण/g, /Dainik Jagran/gi, /Jagran/gi,
+        /हिंदुस्तान/g, /हिन्दुस्तान/g, /Live Hindustan/gi, /Hindustan/gi,
+        /दैनिक भास्कर/g, /भास्कर/g, /Dainik Bhaskar/gi, /Bhaskar/gi,
+        /आज तक/g, /Aaj Tak/gi, /Zee News/gi, /News18/gi, /ETV/gi,
+        /अमर उजाला/g, /Amar Ujala/gi, /NDTV/gi, /ABP News/gi
+    ];
+    let scrubbed = text;
+    agencies.forEach(regex => {
+        scrubbed = scrubbed.replace(regex, 'NR Daily News Bureau');
+    });
+    // Remove common source phrases
+    scrubbed = scrubbed.replace(/सूत्रों के अनुसार/g, 'हमारे सूत्रों के अनुसार');
+    scrubbed = scrubbed.replace(/खबरों के मुताबिक/g, 'NR Daily News की रिपोर्ट के मुताबिक');
+    return scrubbed;
+}
+
+// --- AGENT 1: PULSE (The Chief Reporter) ---
+async function AgentPulse(title, content) {
+    const now = new Date();
+    const todayHindi = now.toLocaleDateString('hi-IN', { timeZone: 'Asia/Kolkata', year: 'numeric', month: 'long', day: 'numeric', weekday: 'long' });
+    
+    const prompt = `[AGENT: PULSE | ROLE: INVESTIGATIVE REPORTER]
+CRITICAL IDENTITY: You are an exclusive investigator for "NR Daily News". 
+STRICT RULE: NEVER mention other news agencies (Prabhat Khabar, Jagran, Hindustan, etc.). 
+If the source mentions them, REMOVE THEM or act as if NR Daily News discovered the facts.
+
+Today: ${todayHindi}
+Mission: Draft a 600-WORD IN-DEPTH INVESTIGATIVE REPORT in Hindi.
+Structure: 6 paragraphs (Intro, Core, Context, Impact, Admin, Conclusion).
+Tone: Authoritative, Original Reporting, Empathic.
+
+Input: ${title} | ${content}
+Output: JSON object { title, content, leadDistrict }`;
+
+    const model = genAI.getGenerativeModel({ model: "gemini-2.0-flash" });
+    const result = await model.generateContent(prompt);
+    const text = (await result.response).text().trim();
+    const parsed = JSON.parse(text.substring(text.indexOf('{'), text.lastIndexOf('}') + 1));
+    
+    // Hard Scrub the output
+    parsed.title = scrubBrandNames(parsed.title);
+    parsed.content = scrubBrandNames(parsed.content);
+    return parsed;
+}
+
+// --- AGENT 2: STRATOS (SEO & Growth) ---
+async function AgentStratos(article) {
+    const prompt = `[AGENT: STRATOS | ROLE: SEO SPECIALIST]
+Mission: Optimize for Google #1. Detect Micro-Location (Village/Block).
+Input Title/Content: ${article.title}
+Output: JSON { slug, excerpts, seoKeywords, microLocation, tags }`;
+
+    const model = genAI.getGenerativeModel({ model: "gemini-2.0-flash" });
+    const result = await model.generateContent(prompt);
+    const text = (await result.response).text().trim();
+    const parsed = JSON.parse(text.substring(text.indexOf('{'), text.lastIndexOf('}') + 1));
+    parsed.excerpts = scrubBrandNames(parsed.excerpts);
+    return parsed;
+}
+
+// --- AGENT 3: ORACLE (Fact-Checker) ---
+async function AgentOracle(article) {
+    const prompt = `[AGENT: ORACLE | ROLE: ACCURACY & SENTIMENT]
+Mission: Evaluate news reliability and check for "Competitor Brand Leakage".
+STRICT CHECK: If any other agency name (Jagran, Prabhat, etc.) is mentioned, set isSafe=false.
+
+Input: ${article.content}
+Output: JSON { reliabilityScore (0-100), sentiment, isSafe (bool), highlights }`;
+
+    const model = genAI.getGenerativeModel({ model: "gemini-1.5-flash" });
+    const result = await model.generateContent(prompt);
+    const text = (await result.response).text().trim();
+    return JSON.parse(text.substring(text.indexOf('{'), text.lastIndexOf('}') + 1));
+}
+
+// --- AGENT 4: VISION (Creative Director) ---
+async function AgentVision(article) {
+    const prompt = `[AGENT: VISION | ROLE: VISUAL ARTIST]
+Mission: Design a High-Detail Cinematic Image Prompt for FLUX.
+Topic: ${article.title}
+Output: JSON { fluxPrompt, visualStyle }`;
+
+    const model = genAI.getGenerativeModel({ model: "gemini-1.5-flash" });
+    const result = await model.generateContent(prompt);
+    const text = (await result.response).text().trim();
+    return JSON.parse(text.substring(text.indexOf('{'), text.lastIndexOf('}') + 1));
+}
+
+// --- AGENT 5: SOCIAL (The Publicist) ---
+async function AgentSocial(article) {
+    const prompt = `[AGENT: SOCIAL | ROLE: PUBLICIST]
+Mission: Draft specialized viral messages for Telegram/Twitter.
+Input: ${article.title}
+Output: JSON { telegramMsg, twitterHook }`;
+
+    const model = genAI.getGenerativeModel({ model: "gemini-1.5-flash" });
+    const result = await model.generateContent(prompt);
+    const text = (await result.response).text().trim();
+    return JSON.parse(text.substring(text.indexOf('{'), text.lastIndexOf('}') + 1));
 }
 
 async function uploadImageToSanity(imageUrl, title) {
@@ -36,223 +141,124 @@ async function uploadImageToSanity(imageUrl, title) {
         });
         return asset._id;
     } catch (error) {
-        console.error('Sanity Upload Error:', error.message);
         return null;
     }
 }
 
-async function rewriteWithAI(title, content) {
-    const now = new Date();
-    const todayHindi = now.toLocaleDateString('hi-IN', { timeZone: 'Asia/Kolkata', year: 'numeric', month: 'long', day: 'numeric', weekday: 'long' });
-    const todayISO = now.toLocaleDateString('en-IN', { timeZone: 'Asia/Kolkata', year: 'numeric', month: '2-digit', day: '2-digit' });
-    const geoPrompt = `You are a BREAKING NEWS editor at "NR Daily News" (Garhwa & Palamu Jharkhand).
-Today's date (IST): ${todayHindi} (${todayISO}).
-
-CRITICAL RULES - FOLLOW STRICTLY:
-1. ✅ Write ONLY in present tense as if the news is happening TODAY (${todayISO}).
-2. ✅ The article MUST feel like fresh, breaking news published RIGHT NOW.
-3. ❌ NEVER use past events or references to things that happened months or years ago.
-4. ❌ NEVER write in past tense (घटना हुई, लगाया गया, था, थे, हुई, आई, गई).
-5. ✅ Use active, urgent language: "जारी है", "आ रही है", "हो रहा है", "मिल रही है".
-6. ✅ Always mention Garhwa, Palamu or Jharkhand in context.
-7. ✅ Response MUST be a single valid JSON object only, no other text.
-
-JSON Format:
-{
-    "title": "Breaking: आज का ताज़ा हिंदी शीर्षक",
-    "excerpt": "1-2 sentences - what is happening RIGHT NOW",
-    "content": "Detailed news in Hindi, present tense, 3-5 paragraphs",
-    "highlights": ["ताज़ा अपडेट 1", "ताज़ा अपडेट 2", "ताज़ा अपडेट 3"],
-    "englishImagePrompt": "News photo of [topic] in Jharkhand village setting, cinematic, 4k",
-    "seoKeywords": "Garhwa News Today, Palamu Breaking News, आज की खबर, [topic], झारखंड न्यूज़"
-}
-    शीर्षक: ${title}
-    संदर्भ: ${content}`;
-
-    const aiModels = [
-        { type: "gemini", name: "gemini-2.0-flash" },
-        { type: "pollinations", name: "openai" }, 
-        { type: "pollinations", name: "llama" },  
-        { type: "pollinations", name: "mistral" }, 
-        { type: "pollinations", name: "searchgpt" } 
-    ];
-
-    for (const modelInfo of aiModels) {
-        try {
-            let jsonStr = "";
-            if (modelInfo.type === "gemini") {
-                const model = genAI.getGenerativeModel({ model: modelInfo.name });
-                const result = await model.generateContent(geoPrompt);
-                const text = (await result.response).text().trim();
-                jsonStr = text.substring(text.indexOf('{'), text.lastIndexOf('}') + 1);
-            } else {
-                const url = `https://text.pollinations.ai/${encodeURIComponent(geoPrompt)}?model=${modelInfo.name}`;
-                const controller = new AbortController();
-                const timeoutId = setTimeout(() => controller.abort(), 12000); // 12s per AI
-                const res = await fetch(url, { signal: controller.signal });
-                clearTimeout(timeoutId);
-                const text = await res.text();
-                jsonStr = text.substring(text.indexOf('{'), text.lastIndexOf('}') + 1);
-            }
-            
-            const finalParsed = JSON.parse(jsonStr);
-            const findKey = (obj, key) => {
-                const entries = Object.entries(obj);
-                const found = entries.find(([k]) => k.toLowerCase() === key.toLowerCase());
-                return found ? found[1] : null;
-            };
-
-            const titleVal = findKey(finalParsed, 'title');
-            const contentVal = findKey(finalParsed, 'content');
-            
-            if (titleVal && contentVal) {
-                console.log(`✅ [AI Success] Model: ${modelInfo.name}`);
-                return {
-                    title: titleVal,
-                    excerpt: findKey(finalParsed, 'excerpt') || contentVal.substring(0, 160),
-                    content: contentVal,
-                    highlights: findKey(finalParsed, 'highlights') || [],
-                    englishImagePrompt: findKey(finalParsed, 'englishImagePrompt') || titleVal,
-                    seoKeywords: findKey(finalParsed, 'seoKeywords') || `${titleVal}, NR Daily News, Garhwa`
-                };
-            }
-            throw new Error('Incomplete JSON');
-        } catch (err) {
-            console.log(`⚠️ [AI Retry] ${modelInfo.name}: ${err.message}`);
-            await new Promise(r => setTimeout(r, 2000)); // Wait 2s before trying next AI
-        }
-    }
-    return { title, excerpt: content.substring(0, 100), content, highlights: [], englishImagePrompt: title };
+async function getImageUrl(prompt) {
+    const aiUrl = `https://pollinations.ai/p/${encodeURIComponent(prompt)}?width=1280&height=720&model=flux&nologo=true`;
+    return aiUrl;
 }
 
-async function getImageUrl(prompt, district) {
-    const cleanPrompt = prompt ? prompt.replace(/[^\w\s]/gi, '').split(' ').slice(0, 5).join(' ') : "Breaking News " + district;
-    
-    // Unsplash is much more reliable for high-quality news-stock images than free AI APIs in 2026
-    const stockUrl = `https://images.unsplash.com/photo-1504711434969-e33886168f5c?q=80&w=1200&h=630&auto=format&fit=crop&sig=${Math.floor(Math.random() * 100000)}`;
-    
-    // We try AI first, but immediately fallback to stock if anything is fishy
-    const aiUrl = `https://pollinations.ai/p/${encodeURIComponent(cleanPrompt)}?width=1200&height=630&model=flux&nologo=true`;
-    
-    try {
-        const controller = new AbortController();
-        const timeoutId = setTimeout(() => controller.abort(), 5000); // 5s aggressive timeout
-        const res = await fetch(aiUrl, {
-            headers: { 'User-Agent': 'Mozilla/5.0' },
-            signal: controller.signal
-        });
-        clearTimeout(timeoutId);
-        
-        // If it's a real image, use it, else return stock
-        if (res.ok && res.headers.get('content-type')?.includes('image')) {
-            return aiUrl;
-        }
-    } catch (e) {}
-
-    return stockUrl;
-}
-
-function detectDistrict(text, source) {
-  text = text.toLowerCase() + ' ' + (source || '').toLowerCase();
-  if (text.match(/गढ़वा|भवनाथपुर|मझिआंव|उंटारी|डंडा|खरौंधी|कांडी|रमना|विशुनपुरा/)) return 'garhwa';
-  if (text.match(/पलामू|मेदिनीनगर|डालटनगंज|हरिहरगंज|चैनपुर|लेस्लीगंज/)) return 'palamu';
-  if (text.match(/लातेहार|बरवाडीह|चंदवा/)) return 'latehar';
-  return 'jharkhand';
-}
-
-function detectCategory(text) {
-  text = text.toLowerCase();
-  if (text.match(/अपराध|हत्या|पुलिस|चोरी|गिरफ्तार|जहर|मर्डर/)) return 'अपराध';
-  if (text.match(/नौकरी|भर्ती|रोजगार|वैकेंसी/)) return 'सरकारी नौकरियां';
-  if (text.match(/शिक्षा|स्कूल|कॉलेज|परीक्षा|रिजल्ट|यूनिवर्सिटी/)) return 'शिक्षा';
-  if (text.match(/खेल|क्रिकेट|फुटबॉल|टूर्नामेंट|खिलाड़ी/)) return 'खेल';
-  if (text.match(/चु्नाव|राजनीति|नेता|मुख्यमंत्री|विधायक|पार्टी/)) return 'राजनीति';
-  if (text.match(/मौसम|बारिश|गर्मी|ठंड|तूफान|बाढ़/)) return 'मौसम';
-  return 'स्थानीय समाचार';
+function createSlug(title) {
+  return title.toLowerCase().replace(/[^a-zA-Z0-9\s]/g, '').replace(/\s+/g, '-');
 }
 
 export async function GET(request) {
-  const startTime = Date.now();
-  const authHeader = request.headers.get('authorization');
-  
-  if (authHeader !== `Bearer ${process.env.CRON_SECRET}`) {
-    return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
-  }
-
-  try {
-    await cleanupOldNews(2);
-
-    // 1. Regional Smart Fetch
-    const { searchParams } = new URL(request.url);
-    const limitParam = parseInt(searchParams.get('limit') || '60', 10);
+    const startTime = Date.now();
+    const isManual = request.nextUrl.searchParams.get('manual') === 'true';
+    const authHeader = request.headers.get('authorization');
     
-    const targetNews = (await fetchNewsSmart()).slice(0, limitParam);
-    console.log(`🚀 Regional Focus: Processing ${targetNews.length} articles (Limit: ${limitParam})...`);
-    
-    let publishedCount = 0;
-    const CHUNK_SIZE = 5;
-
-    for (let i = 0; i < targetNews.length; i += CHUNK_SIZE) {
-      if (Date.now() - startTime > 55000) break; // Timeout guard
-
-      const chunk = targetNews.slice(i, i + CHUNK_SIZE);
-      const results = await Promise.all(chunk.map(async (item) => {
-        try {
-          const baseSlug = createSlug(item.title);
-          if (await isNewsExists(baseSlug)) return null; // Early check on base slug if possible or just use unique slug
-          const finalSlug = baseSlug + '-' + Math.random().toString(36).substring(7);
-
-          const rewritten = await rewriteWithAI(item.title, item.content);
-          let imgUrl = item.image_url;
-          if (!imgUrl) {
-            imgUrl = await getImageUrl(rewritten.englishImagePrompt || rewritten.title, item.district);
-          }
-
-          const district = detectDistrict(rewritten.title + ' ' + rewritten.content, item.source);
-          let priority = 0;
-          if (district === 'garhwa') priority = 100;
-          else if (district === 'palamu') priority = 80;
-
-          const assetId = await uploadImageToSanity(imgUrl, rewritten.title);
-          
-          let highlights = [];
-          if (Array.isArray(rewritten.highlights)) {
-            highlights = rewritten.highlights;
-          } else if (typeof rewritten.highlights === 'string') {
-            highlights = [rewritten.highlights];
-          }
-
-          return await insertNews({
-            title: rewritten.title,
-            slug: finalSlug,
-            content: rewritten.content,
-            excerpt: rewritten.excerpt,
-            image_url: assetId,
-            category: detectCategory(rewritten.title + ' ' + rewritten.content),
-            district: district,
-            priority: priority,
-            is_promoted: priority > 0,
-            highlights: highlights,
-            seo_keywords: rewritten.seoKeywords || "",
-            original_source: item.url,
-            published_at: item.publishedAt || new Date().toISOString()
-          });
-        } catch (err) { return null; }
-      }));
-
-      publishedCount += results.filter(Boolean).length;
+    if (!isManual && authHeader !== `Bearer ${process.env.CRON_SECRET}`) {
+        return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
 
-    return NextResponse.json({
-      success: true,
-      published: publishedCount,
-      timeTaken: `${(Date.now() - startTime) / 1000}s`
-    });
+    let publishedCount = 0;
+    try {
+        await initializeAgentLog();
+        const rawNews = await fetchNewsSmart();
 
-  } catch (error) {
-    console.error('AI Agent Fatal Error:', error);
-    return NextResponse.json({ success: false, error: error.message }, { status: 500 });
-  }
+        for (const item of rawNews) {
+            if (Date.now() - startTime > 55000) break;
+
+            if (await isNewsExists(createSlug(item.title))) continue;
+
+            // --- Neural Agency Pipeline ---
+            
+            // 🎙️ PULSE
+            await logAgentAction({ agent_name: 'PULSE', type: 'WRITE', message: `Drafting investigative report: ${item.title.substring(0, 30)}...` });
+            const pulseDraft = await AgentPulse(item.title, item.content);
+            
+            // 📈 STRATOS
+            await logAgentAction({ agent_name: 'STRATOS', type: 'WRITE', message: `Optimizing architecture & SEO for: ${pulseDraft.title.substring(0, 30)}` });
+            const stratosSEO = await AgentStratos(pulseDraft);
+            
+            // ⚖️ ORACLE
+            await logAgentAction({ agent_name: 'ORACLE', type: 'WRITE', message: `Verifying news accuracy & safety score.` });
+            const oracleCheck = await AgentOracle(pulseDraft);
+            if (!oracleCheck.isSafe) {
+                await logAgentAction({ agent_name: 'ORACLE', type: 'FAIL', message: `News discarded: Safety/Policy violation detected.`, status: 'error' });
+                continue;
+            }
+
+            // 🎨 VISION
+            await logAgentAction({ agent_name: 'VISION', type: 'IMAGE', message: `Synthesizing cinematic visuals for the story.` });
+            const visionArt = await AgentVision(pulseDraft);
+            const imgUrl = await getImageUrl(visionArt.fluxPrompt);
+            const assetId = await uploadImageToSanity(imgUrl, pulseDraft.title);
+
+            // 📲 SOCIAL
+            await logAgentAction({ agent_name: 'SOCIAL', type: 'TELEGRAM', message: `Preparing distribution hook for Telegram & Social channels.` });
+            const socialHook = await AgentSocial(pulseDraft);
+
+            // PUBLICATION
+            const finalSlug = `${stratosSEO.slug}-${Math.random().toString(36).substring(7)}`;
+            const doc = {
+                _type: 'article',
+                title: pulseDraft.title,
+                slug: { _type: 'slug', current: finalSlug },
+                excerpt: stratosSEO.excerpts,
+                body: pulseDraft.content.split('\n').filter(p => p.trim()).map(p => ({
+                    _type: 'block',
+                    children: [{ _type: 'span', text: p.trim() }]
+                })),
+                district: pulseDraft.leadDistrict || 'garhwa',
+                category: { _type: 'reference', _ref: 'category-top-story' },
+                publishedAt: new Date().toISOString(),
+                featureImage: { _type: 'image', asset: { _type: 'reference', _ref: assetId } },
+                seoKeywords: stratosSEO.seoKeywords,
+                tags: stratosSEO.tags
+            };
+
+            const sanityResult = await client.create(doc);
+            const fullImageUrl = urlFor(sanityResult.featureImage).url();
+
+            await insertNews({
+                title: doc.title,
+                slug: finalSlug,
+                content: pulseDraft.content,
+                excerpt: doc.excerpt,
+                image_url: assetId,
+                category: 'top-story',
+                district: doc.district,
+                published_at: doc.publishedAt,
+                highlights: oracleCheck.highlights
+            });
+
+            await sendToTelegram({
+                ...doc,
+                image_url: fullImageUrl,
+                customMsg: socialHook.telegramMsg,
+                category: { name: 'SUPER AGENT REPORT' }
+            });
+
+            await logAgentAction({ agent_name: 'PULSE', type: 'PUBLISH', message: `MISSION SUCCESS: Multi-Agent collaborative report live on all channels.` });
+            publishedCount++;
+            if (publishedCount >= 5) break; 
+        }
+
+        return NextResponse.json({ success: true, published: publishedCount });
+    } catch (error) {
+        console.error('Agent Orchestration Error:', error);
+        await logAgentAction({ agent_name: 'ORACLE', type: 'FAIL', message: `Orchestration Fatal Error: ${error.message}`, status: 'error' });
+        
+        return NextResponse.json({ 
+            success: false, 
+            published: publishedCount,
+            error: error.message,
+            duration: `${(Date.now() - startTime) / 1000}s`
+        }, { status: 500 });
+    }
 }
 
 export async function OPTIONS() { return NextResponse.json({}, { status: 200 }); }

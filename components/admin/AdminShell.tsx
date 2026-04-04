@@ -4,10 +4,11 @@ import Link from 'next/link'
 import { usePathname, useRouter } from 'next/navigation'
 import { useProfile } from '@/lib/ProfileContext'
 
-import { LayoutDashboard, FileText, PlusCircle, Settings, LogOut } from 'lucide-react'
+import { LayoutDashboard, FileText, PlusCircle, Settings, LogOut, Radio } from 'lucide-react'
 
 const navigation = [
     { name: 'डैशबोर्ड', href: '/admin/dashboard', icon: <LayoutDashboard size={18} /> },
+    { name: 'ऑटो-पायलट', href: '/admin/dashboard/auto-pilot', icon: <Radio size={18} /> },
     { name: 'सभी न्यूज़', href: '/admin/dashboard/posts', icon: <FileText size={18} /> },
     { name: 'नई खबर लिखें', href: '/admin/dashboard/posts/new', icon: <PlusCircle size={18} /> },
     { name: 'सेटिंग्स', href: '/admin/dashboard/settings', icon: <Settings size={18} /> },
