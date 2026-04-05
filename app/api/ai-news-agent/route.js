@@ -27,9 +27,7 @@ function urlFor(source) {
 
 const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY);
 
-// AI AGENTS (Moved to @/lib/neural-agents.js)
-
-async function uploadImageToSanity(imageUrl, title) {
+// AI AGENTS (Shared logic moved to @/lib/neural-agents.js)
 
 async function uploadImageToSanity(imageUrl, title) {
     try {

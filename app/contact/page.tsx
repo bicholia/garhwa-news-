@@ -78,15 +78,16 @@ export default function ContactPage() {
                                             </div>
                                         </div>
 
+                                        {/* Contact blocks (Scrubbed for Brand Neutrality) */}
                                         <div className="flex items-start gap-6 group">
                                             <div className="w-14 h-14 bg-brand-navy rounded-2xl flex items-center justify-center text-brand-gold shadow-lg group-hover:scale-110 transition-transform">
-                                                <Mail size={24} />
+                                                <ShieldCheck size={24} />
                                             </div>
                                             <div>
-                                                <h3 className="text-brand-navy font-black text-xs uppercase tracking-widest mb-2">Editor-in-Chief</h3>
-                                                <a href={`mailto:news@nrdailynews.com`} className="text-gray-500 font-bold hover:text-brand-gold transition-colors text-lg">
-                                                    news@nrdailynews.com
-                                                </a>
+                                                <h3 className="text-brand-navy font-black text-xs uppercase tracking-widest mb-2">Independent Reporting</h3>
+                                                <p className="text-gray-500 font-medium leading-relaxed italic">
+                                                    Our bureau operates with 100% autonomy, ensuring unbiased journalistic precision.
+                                                </p>
                                             </div>
                                         </div>
 

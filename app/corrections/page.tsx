@@ -49,7 +49,7 @@ export default function CorrectionsPage() {
                         <section className="bg-gray-50 p-6 rounded-lg">
                             <h2 className="text-xl font-bold text-gray-800 mb-2">संपर्क सूत्र</h2>
                             <p className="text-gray-700">
-                                <strong>ईमेल:</strong> bicholia03@gmail.com
+                                <strong>संपर्क:</strong> समाचार सुधार के लिए कृपया 'Contact' फॉर्म का उपयोग करें।
                             </p>
                         </section>
                     </div>

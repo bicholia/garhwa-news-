@@ -149,25 +149,12 @@ export default function Footer() {
                                     <div className="text-[12px] font-semibold text-gray-400">Garhwa, Jharkhand — 822114</div>
                                 </div>
                             </div>
-                            <a
-                                href="mailto:bicholia03@gmail.com"
-                                className="flex items-start gap-3 p-4 rounded-2xl bg-white/5 border border-white/[0.06] hover:border-brand-gold/20 transition-colors group"
-                            >
-                                <Mail size={16} className="text-brand-gold shrink-0 mt-0.5" />
-                                <div>
-                                    <div className="text-[9px] font-black uppercase text-white tracking-widest mb-1">Press & Media</div>
-                                    <div className="text-[12px] font-semibold text-gray-400 group-hover:text-brand-gold transition-colors">
-                                        bicholia03@gmail.com
-                                    </div>
+                            {/* Agency verified badge */}
+                            <div className="pt-2">
+                                <div className="inline-flex items-center gap-2 px-4 py-2.5 rounded-xl bg-white/5 border border-white/10 text-[10px] font-bold text-gray-500 uppercase tracking-wider">
+                                    <ShieldCheck size={13} className="text-brand-gold" />
+                                    Verified Media House
                                 </div>
-                            </a>
-                        </div>
-
-                        {/* Trust Badge */}
-                        <div className="pt-2">
-                            <div className="inline-flex items-center gap-2 px-4 py-2.5 rounded-xl bg-white/5 border border-white/10 text-[10px] font-bold text-gray-500 uppercase tracking-wider">
-                                <ShieldCheck size={13} className="text-brand-gold" />
-                                Verified Media House
                             </div>
                         </div>
                     </div>

@@ -65,8 +65,8 @@ export default function QuickPostPage() {
             setSuccess(true);
             setStatus('✅ खबर सफलतापूर्वक प्रकाशित कर दी गई है!');
             setTimeout(() => router.push('/admin/dashboard/posts'), 2000);
-        } catch (err) {
-            setError(err.message);
+        } catch (err: any) {
+            setError(err.message || 'सॉफ्टवेयर त्रुटि: AI सिंथेसिस विफल रहा।');
         } finally {
             setIsSynthesizing(false);
         }

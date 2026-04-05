@@ -65,9 +65,7 @@ export default function PrivacyPolicyPage() {
                             <h2 className="text-2xl font-black mb-4">संपर्क सूत्र (Grievance Redressal)</h2>
                             <p className="mb-6 opacity-80">किसी भी प्रकार की आपत्ति या निजता संबंधी शिकायत के लिए हमें यहाँ लिखें:</p>
                             <div className="space-y-2 text-lg">
-                                <p><strong>ईमेल:</strong> bicholia03@gmail.com</p>
-
-                                <p><strong>स्थान:</strong> वार्ड नंबर 8, पुलिस लाइन के पास, गढ़वा, झारखंड - 822114</p>
+                                <p>हमारी टीम से संपर्क करने के लिए कृपया वेबसाइट के 'Contact' फॉर्म का उपयोग करें।</p>
                             </div>
                         </section>
                     </div>

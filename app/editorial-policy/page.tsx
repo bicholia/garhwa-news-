@@ -56,7 +56,7 @@ export default function EditorialPolicyPage() {
                             <p className="text-gray-700">
                                 संपादकीय सामग्री से संबंधित किसी भी शिकायत के लिए:
                                 <br />
-                                <strong>ईमेल:</strong> bicholia03@gmail.com
+                                <strong>संपर्क:</strong> हमारी वेबसाइट के 'Contact' फॉर्म के माध्यम से हमसे संपर्क करें।
                             </p>
                         </section>
                     </div>

@@ -110,7 +110,7 @@ async function seedPalamuNews() {
                         _type: 'block',
                         style: 'normal',
                         markDefs: [],
-                        children: [{ _type: 'span', text: `${item.title}: ${item.excerpt}। यह खबर पलामू जिले के स्थानीय संवाददाताओं द्वारा भेजी गई है। हमारी टीम पूरे जिले की खबरों पर नज़र बनाए हुए है। किसी भी समाचार या समस्या के लिए हमें bicholia03@gmail.com पर मेल करें।`, marks: [] }]
+                        children: [{ _type: 'span', text: `${item.title}: ${item.excerpt}। यह खबर न्यूज़ ब्यूरो के स्थानीय संवाददाताओं द्वारा भेजी गई है। हमारी टीम पूरे क्षेत्र की खबरों पर नज़र बनाए हुए है।`, marks: [] }]
                     }
                 ],
                 category: { _type: 'reference', _ref: categoryMap[item.category] || categoryMap['politics'] },
