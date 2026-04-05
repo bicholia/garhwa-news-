@@ -3,10 +3,11 @@
 import Link from 'next/link'
 import { usePathname, useRouter } from 'next/navigation'
 
-import { LayoutDashboard, FileText, PlusCircle, Settings, LogOut } from 'lucide-react'
+import { LayoutDashboard, FileText, PlusCircle, Settings, LogOut, Sparkles, Zap } from 'lucide-react'
 
 const navigation = [
     { name: 'डैशबोर्ड', href: '/admin/dashboard', icon: <LayoutDashboard size={18} /> },
+    { name: 'Neural Quick-Post', href: '/admin/dashboard/quick-post', icon: <Zap size={18} fill="#6366f1" color="#6366f1" /> },
     { name: 'सभी न्यूज़', href: '/admin/dashboard/posts', icon: <FileText size={18} /> },
     { name: 'नई न्यूज़ लिखें', href: '/admin/dashboard/posts/new', icon: <PlusCircle size={18} /> },
     { name: 'सेटिंग्स', href: '/admin/dashboard/settings', icon: <Settings size={18} /> },

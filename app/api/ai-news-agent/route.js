@@ -3,10 +3,11 @@ import { createClient } from '@sanity/client';
 import { GoogleGenerativeAI } from '@google/generative-ai';
 import imageUrlBuilder from '@sanity/image-url';
 import { fetchNewsSmart } from '@/lib/smartNewsFetcher';
-import { insertNews, isNewsExists, cleanupOldNews } from '@/lib/db.js';
+import { insertNews, isNewsExists, isTitleExists, cleanupOldNews } from '@/lib/db.js';
 import { sendToTelegram } from '@/lib/telegram';
 import { logAgentAction, initializeAgentLog } from '@/lib/apiUsageTracker';
-import { scrubBrandNames, STRICT_SYSTEM_PROMPT } from '@/lib/safety';
+import { scrubBrandNames } from '@/lib/safety';
+import { AgentPulse, AgentStratos, AgentOracle, AgentVision, AgentSocial } from '@/lib/neural-agents';
 
 export const maxDuration = 60; 
 export const dynamic = 'force-dynamic'; 
@@ -26,131 +27,9 @@ function urlFor(source) {
 
 const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY);
 
-// --- UNIVERSAL AI AUTO-FALLBACK SYSTEM (NEURAL NODES) ---
-async function generateWithNeuralNodes(agentPrompt, inputTitle, inputContent, defaultGeminiModel = "gemini-2.0-flash") {
-    const fullPrompt = `${STRICT_SYSTEM_PROMPT}\n\n${agentPrompt}\n\nTitle: ${inputTitle}\nContent: ${inputContent}`;
-    
-    const aiNodes = [
-        { id: "GEMINI_CORE", type: "gemini", name: "gemini-2.0-flash" },
-        { id: "NEURAL_NODE_1", type: "pollinations", name: "openai" }, 
-        { id: "NEURAL_NODE_2", type: "pollinations", name: "mistral" },
-        { id: "NEURAL_NODE_3", type: "pollinations", name: "llama" },
-        { id: "NEURAL_NODE_4", type: "pollinations", name: "nemotron" },
-        { id: "NEURAL_NODE_5", type: "pollinations", name: "p1" },
-        { id: "NEURAL_NODE_6", type: "airforce", name: "gpt-4o-mini" },
-        { id: "NEURAL_NODE_7", type: "airforce", name: "llama-3-8b" },
-        { id: "NEURAL_NODE_8", type: "airforce", name: "deepseek-llm-67b-chat" },
-        { id: "NEURAL_NODE_9", type: "hercai", name: "v3" },
-        { id: "NEURAL_NODE_10", type: "pollinations", name: "searchgpt" }
-    ];
+// AI AGENTS (Moved to @/lib/neural-agents.js)
 
-    for (const node of aiNodes) {
-        try {
-            console.log(`📡 [NEURAL SYNC] Engaging ${node.id} (${node.name})...`);
-            if (node.type === "gemini") {
-                const model = genAI.getGenerativeModel({ model: node.name });
-                const result = await model.generateContent(fullPrompt);
-                const text = (await result.response).text().trim();
-                if (!text) throw new Error('Empty Gemini response');
-                return text;
-            } else if (node.type === "pollinations") {
-                const url = `https://text.pollinations.ai/`;
-                const res = await fetch(url, {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ 
-                        messages: [
-                            { role: 'system', content: STRICT_SYSTEM_PROMPT }, 
-                            { role: 'user', content: `${agentPrompt}\n\nTitle: ${inputTitle}\nContent: ${inputContent}\nIMPORTANT: Respond with ONLY a valid JSON object.` }
-                        ], 
-                        model: node.name,
-                        jsonMode: true 
-                    })
-                });
-                if (!res.ok) throw new Error(`Pollinations Status ${res.status}`);
-                return await res.text();
-            } else if (node.type === "airforce") {
-                const url = `https://api.airforce/v1/chat/completions`;
-                const res = await fetch(url, {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({
-                        messages: [
-                            { role: 'system', content: STRICT_SYSTEM_PROMPT },
-                            { role: 'user', content: fullPrompt }
-                        ],
-                        model: node.name
-                    })
-                });
-                if (!res.ok) throw new Error(`Airforce Status ${res.status}`);
-                const data = await res.json();
-                return data.choices[0].message.content;
-            } else if (node.type === "hercai") {
-                const url = `https://hercai.onrender.com/v3/hercai?question=${encodeURIComponent(fullPrompt)}`;
-                const res = await fetch(url);
-                if (!res.ok) throw new Error(`Hercai Status ${res.status}`);
-                const data = await res.json();
-                return data.reply || data.content;
-            }
-        } catch (err) {
-            console.error(`❌ ${node.id} FAIL: ${err.message}`);
-            await new Promise(r => setTimeout(r, 500)); // Quick 500ms wait between nodes
-        }
-    }
-    throw new Error('CRITICAL: All Neural Nodes (Core & Fallbacks) are offline.');
-}
-
-// --- BRAND SCRUBBER (Delegated to @/lib/safety) ---
-
-// --- AGENT 1: PULSE (The Chief Reporter) ---
-async function AgentPulse(title, content) {
-    const now = new Date();
-    const todayHindi = now.toLocaleDateString('hi-IN', { timeZone: 'Asia/Kolkata', year: 'numeric', month: 'long', day: 'numeric', weekday: 'long' });
-    
-    const agentPrompt = `Today: ${todayHindi}\nMission: Draft a 600-WORD IN-DEPTH INVESTIGATIVE REPORT in Hindi.\nStructure: 6 paragraphs (Intro, Core, Context, Impact, Admin, Conclusion).\nTone: Authoritative, Original Reporting, Empathic.\nOutput: JSON object { title, content, leadDistrict }`;
-
-    const text = await generateWithNeuralNodes(agentPrompt, title, content, "gemini-2.0-flash");
-    const parsed = JSON.parse(text.substring(text.indexOf('{'), text.lastIndexOf('}') + 1));
-    
-    // Hard Scrub the output
-    parsed.title = scrubBrandNames(parsed.title);
-    parsed.content = scrubBrandNames(parsed.content);
-    return parsed;
-}
-
-// --- AGENT 2: STRATOS (SEO & Growth) ---
-async function AgentStratos(article) {
-    const agentPrompt = `Mission: Optimize for Google #1. Detect Micro-Location (Village/Block).\nOutput: JSON { slug, excerpts, seoKeywords, microLocation, tags }`;
-
-    const text = await generateWithNeuralNodes(agentPrompt, article.title, article.content, "gemini-2.0-flash");
-    const parsed = JSON.parse(text.substring(text.indexOf('{'), text.lastIndexOf('}') + 1));
-    parsed.excerpts = scrubBrandNames(parsed.excerpts);
-    return parsed;
-}
-
-// --- AGENT 3: ORACLE (Fact-Checker) ---
-async function AgentOracle(article) {
-    const agentPrompt = `Mission: Evaluate news reliability and check for "Competitor Brand Leakage".\nOutput: JSON { reliabilityScore (0-100), sentiment, isSafe (bool), highlights }`;
-
-    const text = await generateWithNeuralNodes(agentPrompt, article.title, article.content, "gemini-1.5-flash");
-    return JSON.parse(text.substring(text.indexOf('{'), text.lastIndexOf('}') + 1));
-}
-
-// --- AGENT 4: VISION (Creative Director) ---
-async function AgentVision(article) {
-    const agentPrompt = `Mission: Design a High-Detail Cinematic Image Prompt for FLUX.\nTopic: ${article.title}\nOutput: JSON { fluxPrompt, visualStyle }`;
-
-    const text = await generateWithNeuralNodes(agentPrompt, article.title, article.content, "gemini-1.5-flash");
-    return JSON.parse(text.substring(text.indexOf('{'), text.lastIndexOf('}') + 1));
-}
-
-// --- AGENT 5: SOCIAL (The Publicist) ---
-async function AgentSocial(article) {
-    const agentPrompt = `Mission: Draft specialized viral messages for Telegram/Twitter.\nOutput: JSON { telegramMsg, twitterHook }`;
-
-    const text = await generateWithNeuralNodes(agentPrompt, article.title, article.content, "gemini-1.5-flash");
-    return JSON.parse(text.substring(text.indexOf('{'), text.lastIndexOf('}') + 1));
-}
+async function uploadImageToSanity(imageUrl, title) {
 
 async function uploadImageToSanity(imageUrl, title) {
     try {
@@ -184,17 +63,10 @@ async function getImageUrl(prompt) {
             console.log(`🎨 [VISION SYNC] Synthesizing via ${node.id}...`);
             let finalUrl = node.url;
             
-            // Special handling for HuggingFace (POST request)
+            // Fix: Refined skipping logic for HF
             if (node.id === 'VISION_NODE_9') {
-                 const res = await fetch(node.url, {
-                    method: "POST",
-                    headers: { "Content-Type": "application/json" },
-                    body: JSON.stringify({ inputs: prompt })
-                });
-                if (!res.ok) throw new Error('HF Node Error');
-                // Return a generic fallback if direct HF buffer isn't easily linkable here
-                // For direct Sanity upload we'd need the buffer, but getImageUrl returns URL
-                throw new Error('HF Buffer mode reserved'); 
+                console.log(`📡 [VISION] VISION_NODE_9 (HF) requires buffer mode. Skipping...`);
+                continue; 
             }
 
             const res = await fetch(node.url, { method: 'HEAD' });
@@ -227,7 +99,10 @@ export async function GET(request) {
         for (const item of rawNews) {
             if (Date.now() - startTime > 55000) break;
 
-            if (await isNewsExists(createSlug(item.title))) continue;
+            if (await isNewsExists(createSlug(item.title)) || await isTitleExists(item.title)) {
+                console.log(`⏩ Skipping duplicate: ${item.title.substring(0, 30)}...`);
+                continue;
+            }
 
             // --- Neural Agency Pipeline ---
             
