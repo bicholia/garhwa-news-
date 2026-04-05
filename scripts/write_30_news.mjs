@@ -62,7 +62,9 @@ CRITICAL RULES - FOLLOW STRICTLY:
 4. ❌ NEVER write in past tense (घटना हुई, लगाया गया, था, थे, हुई, आई, गई).
 5. ✅ Use active, urgent language: "जारी है", "आ रही है", "हो रहा है", "मिल रही है".
 6. ✅ Always mention Garhwa, Palamu or Jharkhand in context.
-7. ✅ Response MUST be a single valid JSON object only, no other text.
+7. ❌ NEVER mention the name of ANY original source, news agency, media portal, newspaper, or news channel from A to Z (e.g., Prabhat Khabar, Jagran, Zee, Aaj Tak, BBC, Local Khabar, Lagatar, etc.). 
+8. ✅ Present all facts purely as an exclusive, on-ground report gathered by the "NR Daily News Bureau" or write "सूत्रों के अनुसार" (According to sources).
+9. ✅ Response MUST be a single valid JSON object only, no other text.
 
 JSON Format:
 {

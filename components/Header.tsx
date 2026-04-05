@@ -89,7 +89,7 @@ export default function Header() {
                                         {[...breakingNews, ...breakingNews, ...breakingNews].map((item, idx) => (
                                             <React.Fragment key={idx}>
                                                 {item.href ? (
-                                                    <Link href={item.href} className="hover:text-brand-gold transition-colors">{item.text}</Link>
+                                                    <Link href={item.href} className="transition-colors">{item.text}</Link>
                                                 ) : (
                                                     <span>{item.text}</span>
                                                 )}
@@ -194,7 +194,7 @@ export default function Header() {
                                             className={`relative inline-flex items-center px-4 py-4 text-[11px] uppercase font-black tracking-widest transition-all duration-200 group
                                                 ${pathname === item.href
                                                     ? 'text-brand-gold'
-                                                    : 'text-brand-navy hover:text-brand-gold'
+                                                    : 'text-brand-navy'
                                                 }`}
                                         >
                                             {item.name}
@@ -234,7 +234,7 @@ export default function Header() {
                                     href={item.href}
                                     onClick={() => setMobileOpen(false)}
                                     className={`text-2xl font-black py-3 border-b border-gray-50 transition-colors
-                                        ${pathname === item.href ? 'text-brand-gold' : 'text-brand-navy hover:text-brand-gold'}`}
+                                        ${pathname === item.href ? 'text-brand-gold' : 'text-brand-navy'}`}
                                 >
                                     {item.name}
                                 </Link>
@@ -248,10 +248,10 @@ export default function Header() {
                                 <span className="font-black text-sm uppercase tracking-widest">NR Regional Bureau</span>
                             </div>
                             <div className="grid grid-cols-2 gap-3 text-[11px] font-bold uppercase tracking-wider text-gray-400">
-                                <Link href="/about" className="hover:text-brand-gold transition-colors" onClick={() => setMobileOpen(false)}>About Agency</Link>
-                                <Link href="/contact" className="hover:text-brand-gold transition-colors" onClick={() => setMobileOpen(false)}>Contact Us</Link>
-                                <Link href="/privacy-policy" className="hover:text-brand-gold transition-colors" onClick={() => setMobileOpen(false)}>Privacy</Link>
-                                <Link href="/terms" className="hover:text-brand-gold transition-colors" onClick={() => setMobileOpen(false)}>Terms</Link>
+                                <Link href="/about" className="transition-colors" onClick={() => setMobileOpen(false)}>About Agency</Link>
+                                <Link href="/contact" className="transition-colors" onClick={() => setMobileOpen(false)}>Contact Us</Link>
+                                <Link href="/privacy-policy" className="transition-colors" onClick={() => setMobileOpen(false)}>Privacy</Link>
+                                <Link href="/terms" className="transition-colors" onClick={() => setMobileOpen(false)}>Terms</Link>
                             </div>
                         </div>
                     </div>
@@ -263,7 +263,7 @@ export default function Header() {
                 <div className="fixed inset-0 bg-brand-navy/97 backdrop-blur-xl z-[3000] flex flex-col items-center justify-center p-6">
                     <button
                         onClick={() => setSearchOpen(false)}
-                        className="absolute top-8 right-8 text-white/60 hover:text-brand-gold transition-colors p-3 rounded-full hover:bg-white/10"
+                        className="absolute top-8 right-8 text-white/60 transition-colors p-3 rounded-full hover:bg-white/10"
                         aria-label="Close search"
                     >
                         <X size={36} strokeWidth={1.5} />

@@ -11,6 +11,7 @@ import AdBanner from '@/components/AdBanner'
 import PublicLayout from '@/components/PublicLayout'
 import { Clock, MapPin, User, ShieldCheck, ArrowRight, TrendingUp } from 'lucide-react'
 import ArticleActions from '@/components/ArticleActions'
+import { scrubBrandNames, scrubSlug, scrubPortableText } from '@/lib/safety'
 
 export const revalidate = 0 // Fetch fresh news every time
 
@@ -61,6 +62,11 @@ async function getArticle(slug: string) {
     const sanityArticle: any = await client.fetch(query, { slug })
     
     if (sanityArticle) {
+        sanityArticle.title = scrubBrandNames(sanityArticle.title);
+        sanityArticle.excerpt = scrubBrandNames(sanityArticle.excerpt);
+        sanityArticle.slug = scrubSlug(sanityArticle.slug);
+        sanityArticle.body = scrubPortableText(sanityArticle.body);
+        
         const pgRelated = await getRelatedNews(sanityArticle.category?.name, sanityArticle.district, slug, 3)
         sanityArticle.related = mergeAndSortNews(pgRelated, sanityArticle.related, 3)
     }

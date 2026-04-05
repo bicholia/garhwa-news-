@@ -6,6 +6,7 @@ import { fetchNewsSmart } from '@/lib/smartNewsFetcher';
 import { insertNews, isNewsExists, cleanupOldNews } from '@/lib/db.js';
 import { sendToTelegram } from '@/lib/telegram';
 import { logAgentAction, initializeAgentLog } from '@/lib/apiUsageTracker';
+import { scrubBrandNames, STRICT_SYSTEM_PROMPT } from '@/lib/safety';
 
 export const maxDuration = 60; 
 export const dynamic = 'force-dynamic'; 
@@ -25,48 +26,90 @@ function urlFor(source) {
 
 const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY);
 
-// --- BRAND SCRUBBER (Hardcoded Protection) ---
-function scrubBrandNames(text) {
-    if (!text) return text;
-    const agencies = [
-        /प्रभात खबर/g, /प्रभातखबर/g, /Prabhat Khabar/gi,
-        /दैनिक जागरण/g, /जागरण/g, /Dainik Jagran/gi, /Jagran/gi,
-        /हिंदुस्तान/g, /हिन्दुस्तान/g, /Live Hindustan/gi, /Hindustan/gi,
-        /दैनिक भास्कर/g, /भास्कर/g, /Dainik Bhaskar/gi, /Bhaskar/gi,
-        /आज तक/g, /Aaj Tak/gi, /Zee News/gi, /News18/gi, /ETV/gi,
-        /अमर उजाला/g, /Amar Ujala/gi, /NDTV/gi, /ABP News/gi
+// --- UNIVERSAL AI AUTO-FALLBACK SYSTEM (NEURAL NODES) ---
+async function generateWithNeuralNodes(agentPrompt, inputTitle, inputContent, defaultGeminiModel = "gemini-2.0-flash") {
+    const fullPrompt = `${STRICT_SYSTEM_PROMPT}\n\n${agentPrompt}\n\nTitle: ${inputTitle}\nContent: ${inputContent}`;
+    
+    const aiNodes = [
+        { id: "GEMINI_CORE", type: "gemini", name: "gemini-2.0-flash" },
+        { id: "NEURAL_NODE_1", type: "pollinations", name: "openai" }, 
+        { id: "NEURAL_NODE_2", type: "pollinations", name: "mistral" },
+        { id: "NEURAL_NODE_3", type: "pollinations", name: "llama" },
+        { id: "NEURAL_NODE_4", type: "pollinations", name: "nemotron" },
+        { id: "NEURAL_NODE_5", type: "pollinations", name: "p1" },
+        { id: "NEURAL_NODE_6", type: "airforce", name: "gpt-4o-mini" },
+        { id: "NEURAL_NODE_7", type: "airforce", name: "llama-3-8b" },
+        { id: "NEURAL_NODE_8", type: "airforce", name: "deepseek-llm-67b-chat" },
+        { id: "NEURAL_NODE_9", type: "hercai", name: "v3" },
+        { id: "NEURAL_NODE_10", type: "pollinations", name: "searchgpt" }
     ];
-    let scrubbed = text;
-    agencies.forEach(regex => {
-        scrubbed = scrubbed.replace(regex, 'NR Daily News Bureau');
-    });
-    // Remove common source phrases
-    scrubbed = scrubbed.replace(/सूत्रों के अनुसार/g, 'हमारे सूत्रों के अनुसार');
-    scrubbed = scrubbed.replace(/खबरों के मुताबिक/g, 'NR Daily News की रिपोर्ट के मुताबिक');
-    return scrubbed;
+
+    for (const node of aiNodes) {
+        try {
+            console.log(`📡 [NEURAL SYNC] Engaging ${node.id} (${node.name})...`);
+            if (node.type === "gemini") {
+                const model = genAI.getGenerativeModel({ model: node.name });
+                const result = await model.generateContent(fullPrompt);
+                const text = (await result.response).text().trim();
+                if (!text) throw new Error('Empty Gemini response');
+                return text;
+            } else if (node.type === "pollinations") {
+                const url = `https://text.pollinations.ai/`;
+                const res = await fetch(url, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ 
+                        messages: [
+                            { role: 'system', content: STRICT_SYSTEM_PROMPT }, 
+                            { role: 'user', content: `${agentPrompt}\n\nTitle: ${inputTitle}\nContent: ${inputContent}\nIMPORTANT: Respond with ONLY a valid JSON object.` }
+                        ], 
+                        model: node.name,
+                        jsonMode: true 
+                    })
+                });
+                if (!res.ok) throw new Error(`Pollinations Status ${res.status}`);
+                return await res.text();
+            } else if (node.type === "airforce") {
+                const url = `https://api.airforce/v1/chat/completions`;
+                const res = await fetch(url, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        messages: [
+                            { role: 'system', content: STRICT_SYSTEM_PROMPT },
+                            { role: 'user', content: fullPrompt }
+                        ],
+                        model: node.name
+                    })
+                });
+                if (!res.ok) throw new Error(`Airforce Status ${res.status}`);
+                const data = await res.json();
+                return data.choices[0].message.content;
+            } else if (node.type === "hercai") {
+                const url = `https://hercai.onrender.com/v3/hercai?question=${encodeURIComponent(fullPrompt)}`;
+                const res = await fetch(url);
+                if (!res.ok) throw new Error(`Hercai Status ${res.status}`);
+                const data = await res.json();
+                return data.reply || data.content;
+            }
+        } catch (err) {
+            console.error(`❌ ${node.id} FAIL: ${err.message}`);
+            await new Promise(r => setTimeout(r, 500)); // Quick 500ms wait between nodes
+        }
+    }
+    throw new Error('CRITICAL: All Neural Nodes (Core & Fallbacks) are offline.');
 }
+
+// --- BRAND SCRUBBER (Delegated to @/lib/safety) ---
 
 // --- AGENT 1: PULSE (The Chief Reporter) ---
 async function AgentPulse(title, content) {
     const now = new Date();
     const todayHindi = now.toLocaleDateString('hi-IN', { timeZone: 'Asia/Kolkata', year: 'numeric', month: 'long', day: 'numeric', weekday: 'long' });
     
-    const prompt = `[AGENT: PULSE | ROLE: INVESTIGATIVE REPORTER]
-CRITICAL IDENTITY: You are an exclusive investigator for "NR Daily News". 
-STRICT RULE: NEVER mention other news agencies (Prabhat Khabar, Jagran, Hindustan, etc.). 
-If the source mentions them, REMOVE THEM or act as if NR Daily News discovered the facts.
+    const agentPrompt = `Today: ${todayHindi}\nMission: Draft a 600-WORD IN-DEPTH INVESTIGATIVE REPORT in Hindi.\nStructure: 6 paragraphs (Intro, Core, Context, Impact, Admin, Conclusion).\nTone: Authoritative, Original Reporting, Empathic.\nOutput: JSON object { title, content, leadDistrict }`;
 
-Today: ${todayHindi}
-Mission: Draft a 600-WORD IN-DEPTH INVESTIGATIVE REPORT in Hindi.
-Structure: 6 paragraphs (Intro, Core, Context, Impact, Admin, Conclusion).
-Tone: Authoritative, Original Reporting, Empathic.
-
-Input: ${title} | ${content}
-Output: JSON object { title, content, leadDistrict }`;
-
-    const model = genAI.getGenerativeModel({ model: "gemini-2.0-flash" });
-    const result = await model.generateContent(prompt);
-    const text = (await result.response).text().trim();
+    const text = await generateWithNeuralNodes(agentPrompt, title, content, "gemini-2.0-flash");
     const parsed = JSON.parse(text.substring(text.indexOf('{'), text.lastIndexOf('}') + 1));
     
     // Hard Scrub the output
@@ -77,14 +120,9 @@ Output: JSON object { title, content, leadDistrict }`;
 
 // --- AGENT 2: STRATOS (SEO & Growth) ---
 async function AgentStratos(article) {
-    const prompt = `[AGENT: STRATOS | ROLE: SEO SPECIALIST]
-Mission: Optimize for Google #1. Detect Micro-Location (Village/Block).
-Input Title/Content: ${article.title}
-Output: JSON { slug, excerpts, seoKeywords, microLocation, tags }`;
+    const agentPrompt = `Mission: Optimize for Google #1. Detect Micro-Location (Village/Block).\nOutput: JSON { slug, excerpts, seoKeywords, microLocation, tags }`;
 
-    const model = genAI.getGenerativeModel({ model: "gemini-2.0-flash" });
-    const result = await model.generateContent(prompt);
-    const text = (await result.response).text().trim();
+    const text = await generateWithNeuralNodes(agentPrompt, article.title, article.content, "gemini-2.0-flash");
     const parsed = JSON.parse(text.substring(text.indexOf('{'), text.lastIndexOf('}') + 1));
     parsed.excerpts = scrubBrandNames(parsed.excerpts);
     return parsed;
@@ -92,42 +130,25 @@ Output: JSON { slug, excerpts, seoKeywords, microLocation, tags }`;
 
 // --- AGENT 3: ORACLE (Fact-Checker) ---
 async function AgentOracle(article) {
-    const prompt = `[AGENT: ORACLE | ROLE: ACCURACY & SENTIMENT]
-Mission: Evaluate news reliability and check for "Competitor Brand Leakage".
-STRICT CHECK: If any other agency name (Jagran, Prabhat, etc.) is mentioned, set isSafe=false.
+    const agentPrompt = `Mission: Evaluate news reliability and check for "Competitor Brand Leakage".\nOutput: JSON { reliabilityScore (0-100), sentiment, isSafe (bool), highlights }`;
 
-Input: ${article.content}
-Output: JSON { reliabilityScore (0-100), sentiment, isSafe (bool), highlights }`;
-
-    const model = genAI.getGenerativeModel({ model: "gemini-1.5-flash" });
-    const result = await model.generateContent(prompt);
-    const text = (await result.response).text().trim();
+    const text = await generateWithNeuralNodes(agentPrompt, article.title, article.content, "gemini-1.5-flash");
     return JSON.parse(text.substring(text.indexOf('{'), text.lastIndexOf('}') + 1));
 }
 
 // --- AGENT 4: VISION (Creative Director) ---
 async function AgentVision(article) {
-    const prompt = `[AGENT: VISION | ROLE: VISUAL ARTIST]
-Mission: Design a High-Detail Cinematic Image Prompt for FLUX.
-Topic: ${article.title}
-Output: JSON { fluxPrompt, visualStyle }`;
+    const agentPrompt = `Mission: Design a High-Detail Cinematic Image Prompt for FLUX.\nTopic: ${article.title}\nOutput: JSON { fluxPrompt, visualStyle }`;
 
-    const model = genAI.getGenerativeModel({ model: "gemini-1.5-flash" });
-    const result = await model.generateContent(prompt);
-    const text = (await result.response).text().trim();
+    const text = await generateWithNeuralNodes(agentPrompt, article.title, article.content, "gemini-1.5-flash");
     return JSON.parse(text.substring(text.indexOf('{'), text.lastIndexOf('}') + 1));
 }
 
 // --- AGENT 5: SOCIAL (The Publicist) ---
 async function AgentSocial(article) {
-    const prompt = `[AGENT: SOCIAL | ROLE: PUBLICIST]
-Mission: Draft specialized viral messages for Telegram/Twitter.
-Input: ${article.title}
-Output: JSON { telegramMsg, twitterHook }`;
+    const agentPrompt = `Mission: Draft specialized viral messages for Telegram/Twitter.\nOutput: JSON { telegramMsg, twitterHook }`;
 
-    const model = genAI.getGenerativeModel({ model: "gemini-1.5-flash" });
-    const result = await model.generateContent(prompt);
-    const text = (await result.response).text().trim();
+    const text = await generateWithNeuralNodes(agentPrompt, article.title, article.content, "gemini-1.5-flash");
     return JSON.parse(text.substring(text.indexOf('{'), text.lastIndexOf('}') + 1));
 }
 
@@ -146,8 +167,43 @@ async function uploadImageToSanity(imageUrl, title) {
 }
 
 async function getImageUrl(prompt) {
-    const aiUrl = `https://pollinations.ai/p/${encodeURIComponent(prompt)}?width=1280&height=720&model=flux&nologo=true`;
-    return aiUrl;
+    const aiNodes = [
+        { id: 'VISION_NODE_1', url: `https://pollinations.ai/p/${encodeURIComponent(prompt)}?width=1280&height=720&model=flux&nologo=true` },
+        { id: 'VISION_NODE_2', url: `https://pollinations.ai/p/${encodeURIComponent(prompt)}?width=1280&height=720&model=midjourney&nologo=true` },
+        { id: 'VISION_NODE_3', url: `https://pollinations.ai/p/${encodeURIComponent(prompt)}?width=1280&height=720&model=sdxl&nologo=true` },
+        { id: 'VISION_NODE_4', url: `https://pollinations.ai/p/${encodeURIComponent(prompt)}?width=1280&height=720&model=dall-e-3&nologo=true` },
+        { id: 'VISION_NODE_5', url: `https://api.airforce/v1/image/generations?prompt=${encodeURIComponent(prompt)}&model=flux` },
+        { id: 'VISION_NODE_6', url: `https://api.airforce/v1/image/generations?prompt=${encodeURIComponent(prompt)}&model=sdxl` },
+        { id: 'VISION_NODE_7', url: `https://hercai.onrender.com/v3/text2image?prompt=${encodeURIComponent(prompt)}` },
+        { id: 'VISION_NODE_8', url: `https://hercai.onrender.com/v3-beta/text2image?prompt=${encodeURIComponent(prompt)}` },
+        { id: 'VISION_NODE_9', url: `https://api-inference.huggingface.co/models/runwayml/stable-diffusion-v1-5` }
+    ];
+
+    for (const node of aiNodes) {
+        try {
+            console.log(`🎨 [VISION SYNC] Synthesizing via ${node.id}...`);
+            let finalUrl = node.url;
+            
+            // Special handling for HuggingFace (POST request)
+            if (node.id === 'VISION_NODE_9') {
+                 const res = await fetch(node.url, {
+                    method: "POST",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify({ inputs: prompt })
+                });
+                if (!res.ok) throw new Error('HF Node Error');
+                // Return a generic fallback if direct HF buffer isn't easily linkable here
+                // For direct Sanity upload we'd need the buffer, but getImageUrl returns URL
+                throw new Error('HF Buffer mode reserved'); 
+            }
+
+            const res = await fetch(node.url, { method: 'HEAD' });
+            if (res.ok) return node.url;
+        } catch (e) {
+            console.error(`📸 ${node.id} FAIL: ${e.message}`);
+        }
+    }
+    return `https://images.unsplash.com/photo-1504711434969-e33886168f5c?auto=format&fit=crop&w=1280&h=720&q=80`;
 }
 
 function createSlug(title) {
@@ -196,6 +252,9 @@ export async function GET(request) {
             const visionArt = await AgentVision(pulseDraft);
             const imgUrl = await getImageUrl(visionArt.fluxPrompt);
             const assetId = await uploadImageToSanity(imgUrl, pulseDraft.title);
+            if (!assetId) {
+                await logAgentAction({ agent_name: 'VISION', type: 'FAIL', message: `Image synchronization failed. Continuing with text-only...`, status: 'warning' });
+            }
 
             // 📲 SOCIAL
             await logAgentAction({ agent_name: 'SOCIAL', type: 'TELEGRAM', message: `Preparing distribution hook for Telegram & Social channels.` });
@@ -215,24 +274,27 @@ export async function GET(request) {
                 district: pulseDraft.leadDistrict || 'garhwa',
                 category: { _type: 'reference', _ref: 'category-top-story' },
                 publishedAt: new Date().toISOString(),
-                featureImage: { _type: 'image', asset: { _type: 'reference', _ref: assetId } },
                 seoKeywords: stratosSEO.seoKeywords,
                 tags: stratosSEO.tags
             };
 
+            if (assetId) {
+                doc.featureImage = { _type: 'image', asset: { _type: 'reference', _ref: assetId } };
+            }
+
             const sanityResult = await client.create(doc);
-            const fullImageUrl = urlFor(sanityResult.featureImage).url();
+            const fullImageUrl = assetId ? urlFor(sanityResult.featureImage).url() : '';
 
             await insertNews({
                 title: doc.title,
                 slug: finalSlug,
                 content: pulseDraft.content,
                 excerpt: doc.excerpt,
-                image_url: assetId,
+                image_url: assetId || '',
                 category: 'top-story',
                 district: doc.district,
                 published_at: doc.publishedAt,
-                highlights: oracleCheck.highlights
+                highlights: oracleCheck.highlights || []
             });
 
             await sendToTelegram({

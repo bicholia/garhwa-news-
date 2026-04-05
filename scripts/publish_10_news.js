@@ -2,6 +2,7 @@ require('dotenv').config({ path: '.env.local' });
 const { createClient } = require('@sanity/client');
 const fs = require('fs');
 const path = require('path');
+const { scrubBrandNames } = require('../lib/safety-node');
 
 const client = createClient({
     projectId: process.env.NEXT_PUBLIC_SANITY_PROJECT_ID,
@@ -162,7 +163,11 @@ async function run() {
             const catId = await getCategory(data.categorySlug, data.categoryTitle);
             const imageAssetId = await uploadImage(data.imagePrefix);
 
-            const bodyBlocks = data.bodyText.split('।\n\n').map(p => ({
+            const scrubbedTitle = scrubBrandNames(data.title);
+            const scrubbedExcerpt = scrubBrandNames(data.excerpt);
+            const scrubbedBody = scrubBrandNames(data.bodyText);
+
+            const bodyBlocks = scrubbedBody.split('।\n\n').map(p => ({
                 _type: 'block',
                 style: 'normal',
                 children: [{ _type: 'span', marks: [], text: p + '।' }]
@@ -170,9 +175,9 @@ async function run() {
 
             const doc = {
                 _type: 'article',
-                title: data.title,
+                title: scrubbedTitle,
                 slug: { current: data.slug + '-' + Math.random().toString(36).substring(7), _type: 'slug' },
-                excerpt: data.excerpt,
+                excerpt: scrubbedExcerpt,
                 body: bodyBlocks,
                 category: { _type: 'reference', _ref: catId },
                 district: data.district,

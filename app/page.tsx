@@ -6,8 +6,9 @@ import MailButton from '@/components/MailButton'
 import PublicLayout from '@/components/PublicLayout'
 import AdBanner from '@/components/AdBanner'
 import Link from 'next/link'
-import { TrendingUp, ArrowRight, ShieldCheck, Globe } from 'lucide-react'
+import { ArrowRight, ShieldCheck, Globe } from 'lucide-react'
 import { Metadata } from 'next'
+import { scrubBrandNames, normalizeText, scrubSlug } from '@/lib/safety'
 
 export const revalidate = 3600 // Revalidate every hour
 
@@ -26,24 +27,68 @@ async function getHomepageData() {
   ])
 
   const snFeatured = await client.fetch(`*[_type == "article"] | order(publishedAt desc)[0...10] { _id, title, slug, excerpt, featureImage, publishedAt, author->{name} }`)
-  const snGarhwa = await client.fetch(`*[_type == "article" && district == "garhwa"] | order(publishedAt desc)[0...10] { _id, title, slug, excerpt, featureImage, publishedAt, author->{name} }`)
-  const snPalamu = await client.fetch(`*[_type == "article" && district == "palamu"] | order(publishedAt desc)[0...10] { _id, title, slug, excerpt, featureImage, publishedAt, author->{name} }`)
-  const snJobs = await client.fetch(`*[_type == "article" && category->slug.current == "jobs"] | order(publishedAt desc)[0...10] { _id, title, slug, excerpt, featureImage, publishedAt }`)
-  const snCrime = await client.fetch(`*[_type == "article" && category->slug.current == "crime"] | order(publishedAt desc)[0...10] { _id, title, slug, excerpt, featureImage, publishedAt }`)
+  const snGarhwa = await client.fetch(`*[_type == "article" && district == "garhwa"] | order(publishedAt desc)[0...15] { _id, title, slug, excerpt, featureImage, publishedAt, author->{name} }`)
+  const snPalamu = await client.fetch(`*[_type == "article" && district == "palamu"] | order(publishedAt desc)[0...15] { _id, title, slug, excerpt, featureImage, publishedAt, author->{name} }`)
+  const snJobs = await client.fetch(`*[_type == "article" && category->slug.current == "jobs"] | order(publishedAt desc)[0...15] { _id, title, slug, excerpt, featureImage, publishedAt }`)
+  const snCrime = await client.fetch(`*[_type == "article" && category->slug.current == "crime"] | order(publishedAt desc)[0...15] { _id, title, slug, excerpt, featureImage, publishedAt }`)
 
-  return {
+  const finalData = {
     featured: mergeAndSortNews(pgFeatured, snFeatured, 8),
     garhwa: mergeAndSortNews(pgGarhwa, snGarhwa, 6),
     palamu: mergeAndSortNews(pgPalamu.articles || pgPalamu, snPalamu, 6),
     jobs: mergeAndSortNews(pgJobs, snJobs, 4),
     crime: mergeAndSortNews(pgCrime, snCrime, 4),
   }
+
+  return finalData
 }
 
 export default async function Home() {
   const data = await getHomepageData()
-  const heroStories = data.featured?.slice(0, 2)
-  const subStories = data.featured?.slice(2, 8)
+  
+
+  // Deduplicate across sections by ID and Normalized Title
+  const shownIds = new Set<string>()
+  const shownTitles = new Set<string>()
+
+  const isDuplicate = (story: any) => {
+    const id = story._id || story.id
+    const normTitle = normalizeText(story.title)
+    if (shownIds.has(id) || (normTitle && shownTitles.has(normTitle))) return true
+    return false
+  }
+
+  const markAsShown = (story: any) => {
+    shownIds.add(story._id || story.id)
+    const normTitle = normalizeText(story.title)
+    if (normTitle) shownTitles.add(normTitle)
+  }
+
+  // 1. Featured / Hero Section
+  const heroStories: any[] = []
+  const availableFeatured = data.featured || []
+  for (const s of availableFeatured) {
+    if (heroStories.length >= 2) break
+    if (!isDuplicate(s)) {
+      heroStories.push(s)
+      markAsShown(s)
+    }
+  }
+  
+  const subStories: any[] = []
+  for (const s of availableFeatured) {
+    if (subStories.length >= 6) break
+    if (!isDuplicate(s)) {
+      subStories.push(s)
+      markAsShown(s)
+    }
+  }
+  
+  // 2. Category Sections
+  const filteredGarhwa = (data.garhwa || []).filter(s => !isDuplicate(s))
+  const filteredPalamu = (data.palamu || []).filter(s => !isDuplicate(s))
+  const filteredJobs = (data.jobs || []).filter(s => !isDuplicate(s))
+  const filteredCrime = (data.crime || []).filter(s => !isDuplicate(s))
 
   return (
     <PublicLayout>
@@ -82,7 +127,7 @@ export default async function Home() {
                         </span>
                       </div>
                       
-                      <h2 className="text-xl lg:text-3xl font-black text-white font-serif leading-tight mb-4 group-hover:text-brand-gold transition-colors">
+                      <h2 className="text-xl lg:text-3xl font-black text-white font-serif leading-tight mb-4 transition-colors">
                         {story.title}
                       </h2>
                       
@@ -130,7 +175,7 @@ export default async function Home() {
                                 )}
                                 <div className="absolute top-3 left-3 bg-brand-navy/80 backdrop-blur-md text-brand-gold text-[8px] font-black uppercase px-2 py-1 rounded">Bureau Dispatch</div>
                             </div>
-                            <h3 className="text-xl font-black text-brand-navy font-serif leading-tight group-hover:text-brand-gold transition-colors line-clamp-2">
+                            <h3 className="text-xl font-black text-brand-navy font-serif leading-tight transition-colors line-clamp-2">
                                 {story.title}
                             </h3>
                             <div className="mt-auto flex items-center justify-between text-[10px] font-black uppercase tracking-widest text-brand-navy/30">
@@ -149,7 +194,7 @@ export default async function Home() {
           <div className="space-y-24 mt-24">
             <NewsGrid 
               title="गढ़वा समाचार | Garhwa Reports" 
-              articles={data.garhwa} 
+              articles={filteredGarhwa} 
               link="/garhwa" 
               limit={6} 
               moreText="Explore All Garhwa Reports"
@@ -187,14 +232,14 @@ export default async function Home() {
 
             <NewsGrid 
               title="पलामू समाचार | Palamu Reports" 
-              articles={data.palamu} 
+              articles={filteredPalamu} 
               link="/palamu" 
               limit={6} 
               moreText="View All Palamu Archives"
             />
 
             {/* JOBS HUB: Premium Style */}
-            {data.jobs && data.jobs.length > 0 && (
+            {filteredJobs && filteredJobs.length > 0 && (
               <section className="bg-white rounded-3xl p-8 lg:p-12 border border-gray-100 shadow-xl overflow-hidden relative">
                 <div className="absolute top-0 right-0 w-32 h-32 bg-brand-gold/5 rounded-full -mr-16 -mt-16" />
                 <div className="relative z-10">
@@ -208,11 +253,11 @@ export default async function Home() {
                         </Link>
                     </div>
                     <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-                    {data.jobs.slice(0, 4).map((job: any) => (
-                        <NextLink key={job._id || job.id} href={`/news/${job.slug.current || job.slug}`} className="group p-6 rounded-2xl bg-news-paper border border-transparent hover:border-brand-gold/30 hover:shadow-lg transition-all">
-                            <h3 className="text-lg font-black text-brand-navy font-serif mb-3 line-clamp-2 leading-tight group-hover:text-brand-gold transition-colors italic">{job.title}</h3>
+                    {filteredJobs.slice(0, 4).map((job: any) => (
+                        <Link key={job._id || job.id} href={`/news/${job.slug.current || job.slug}`} className="group p-6 rounded-2xl bg-news-paper border border-transparent hover:border-brand-gold/30 hover:shadow-lg transition-all">
+                            <h3 className="text-lg font-black text-brand-navy font-serif mb-3 line-clamp-2 leading-tight transition-colors italic">{job.title}</h3>
                             <div className="text-[10px] font-black tracking-widest text-brand-navy/30 uppercase">Open Tracking Center &rarr;</div>
-                        </NextLink>
+                        </Link>
                     ))}
                     </div>
                 </div>
@@ -221,7 +266,7 @@ export default async function Home() {
 
             <NewsGrid 
               title="अपराध समीक्षा | Crime Analysis" 
-              articles={data.crime} 
+              articles={filteredCrime} 
               link="/category/crime" 
               limit={4} 
               moreText="Examine Full Crime Database"
@@ -235,5 +280,3 @@ export default async function Home() {
     </PublicLayout>
   )
 }
-
-const NextLink = Link

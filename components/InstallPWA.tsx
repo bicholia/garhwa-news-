@@ -35,7 +35,7 @@ export default function InstallPWA() {
   if (!mounted || (!showPrompt && !isIOS)) return null
 
   return (
-    <div className="fixed bottom-4 left-4 right-4 md:left-auto md:right-8 md:w-96 bg-white p-6 rounded-3xl shadow-2xl z-[9999] border border-brand-gold/10 animate-in fade-in slide-in-from-bottom-5 duration-500">
+    <div className="fixed top-6 left-4 right-4 md:top-auto md:bottom-32 md:left-auto md:right-6 md:w-[380px] bg-white p-6 rounded-3xl shadow-2xl z-[9999] border border-brand-gold/20 animate-in fade-in md:slide-in-from-bottom-5 slide-in-from-top-5 duration-500">
       <div className="flex items-start gap-5">
         <div className="bg-brand-navy p-3 rounded-2xl text-brand-gold shrink-0">
           <DownloadCloud size={24} />

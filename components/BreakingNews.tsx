@@ -1,15 +1,20 @@
 import { client } from '@/lib/sanity'
 import NextLink from 'next/link'
 import { TrendingUp } from 'lucide-react'
+import { scrubBrandNames, normalizeText, scrubSlug } from '@/lib/safety'
 
 async function getBreakingNews() {
     const news = await client.fetch(
-        `*[_type == "article"] | order(publishedAt desc)[0...10] {
+        `*[_type == "article"] | order(publishedAt desc)[0...20] {
         title,
         "slug": slug.current
       }`
     )
-    return news
+    return (news || []).map((item: any) => ({
+        ...item,
+        title: scrubBrandNames(item.title),
+        slug: scrubSlug(item.slug)
+    }))
 }
 
 export default async function BreakingNews() {
@@ -18,7 +23,19 @@ export default async function BreakingNews() {
     if (!news || news.length === 0) return null
 
     // Use a clean set of unique news
-    const displayNews = Array.from(new Map(news.map((item: any) => [item.slug, item])).values());
+    const displayNews: any[] = [];
+    const seenTitles = new Set();
+    const seenSlugs = new Set();
+
+    for (const item of news) {
+        if (displayNews.length >= 8) break;
+        const norm = normalizeText(item.title);
+        if (!seenTitles.has(norm) && !seenSlugs.has(item.slug)) {
+            displayNews.push(item);
+            seenTitles.add(norm);
+            seenSlugs.add(item.slug);
+        }
+    }
 
     return (
         <div className="bg-brand-navy border-b border-white/5 text-white h-12 flex items-center overflow-hidden" suppressHydrationWarning>
@@ -33,7 +50,7 @@ export default async function BreakingNews() {
                         {/* Duplicate content for seamless infinite scroll effect */}
                         {[...displayNews, ...displayNews, ...displayNews].map((item: any, i: number) => (
                             <div key={i} className="flex items-center gap-8 group">
-                                <NextLink href={`/news/${item.slug}`} className="hover:text-brand-gold transition-colors duration-300 flex items-center gap-2">
+                                <NextLink href={`/news/${item.slug}`} className="transition-colors duration-300 flex items-center gap-2">
                                     <span className="w-1.5 h-1.5 rounded-full bg-brand-gold/40 group-hover:bg-brand-gold group-hover:scale-125 transition-all" />
                                     {item.title}
                                 </NextLink>
