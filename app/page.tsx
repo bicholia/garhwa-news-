@@ -96,6 +96,14 @@ export default async function Home() {
       <div className="bg-news-paper min-h-screen">
         <div className="container py-10 lg:py-16">
           
+          {/* ALL NEWS CTA */}
+          <div className="flex flex-col sm:flex-row items-center justify-between mb-8 -mt-2 gap-4">
+            <div className="text-[10px] font-black uppercase tracking-[0.3em] text-brand-navy/40">ताज़ा ब्रेकिंग न्यूज़</div>
+            <Link href="/news" className="w-full sm:w-auto text-center inline-flex items-center justify-center gap-2 px-8 py-3 bg-brand-navy text-white text-[10px] font-black uppercase tracking-widest rounded-full hover:bg-brand-gold transition-all shadow-md">
+              सभी खबरें देखें <ArrowRight size={12} />
+            </Link>
+          </div>
+
           {/* DUAL HERO SECTION: Medium & Balanced */}
           {heroStories && heroStories.length > 0 && (
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-12 lg:mb-16">
@@ -127,7 +135,7 @@ export default async function Home() {
                         </span>
                       </div>
                       
-                      <h2 className="text-xl lg:text-3xl font-black text-white font-serif leading-tight mb-4 transition-colors">
+                      <h2 className="text-xl sm:text-2xl lg:text-3xl font-black text-white font-serif leading-[1.1] mb-4 group-hover:text-brand-gold transition-colors duration-300">
                         {story.title}
                       </h2>
                       

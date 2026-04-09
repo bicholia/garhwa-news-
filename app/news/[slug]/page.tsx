@@ -152,7 +152,7 @@ export default async function ArticlePage({ params }: { params: Promise<{ slug: 
                             </Link>
                             <span className="text-white/20 text-xs font-black uppercase tracking-widest hidden md:inline">NR Agency Intelligence</span>
                         </div>
-                        <h1 className="text-3xl md:text-5xl lg:text-6xl font-black text-white font-serif leading-[1.15] mb-8 tracking-tight">
+                        <h1 className="text-2xl md:text-5xl lg:text-6xl font-black text-white font-serif leading-[1.15] mb-8 tracking-tight">
                             {article.title}
                         </h1>
                         <div className="flex flex-wrap justify-center items-center gap-6 text-xs font-bold uppercase tracking-widest text-gray-400">

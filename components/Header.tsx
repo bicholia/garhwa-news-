@@ -58,6 +58,7 @@ export default function Header() {
 
     const navItems = [
         { name: 'होम', href: '/' },
+        { name: 'सभी खबरें', href: '/news' },
         { name: 'गढ़वा', href: '/garhwa' },
         { name: 'पलामू', href: '/palamu' },
         { name: 'झारखंड', href: '/jharkhand' },
@@ -135,7 +136,7 @@ export default function Header() {
                                     alt="NR Global News"
                                     width={220}
                                     height={66}
-                                    className="h-12 lg:h-14 w-auto transition-all duration-500 group-hover:scale-105 drop-shadow-sm"
+                                    className="h-14 lg:h-16 w-auto transition-all duration-500 group-hover:scale-105 drop-shadow-sm"
                                     priority
                                 />
                             </Link>
@@ -227,16 +228,17 @@ export default function Header() {
                         </div>
 
                         {/* Mobile Nav Links */}
-                        <nav className="flex flex-col gap-2 flex-1">
+                        <nav className="flex flex-col gap-1 flex-1">
                             {navItems.map(item => (
                                 <Link
                                     key={item.name}
                                     href={item.href}
                                     onClick={() => setMobileOpen(false)}
-                                    className={`text-2xl font-black py-3 border-b border-gray-50 transition-colors
+                                    className={`text-2xl font-black py-4 border-b border-gray-50 transition-colors flex items-center justify-between
                                         ${pathname === item.href ? 'text-brand-gold' : 'text-brand-navy'}`}
                                 >
                                     {item.name}
+                                    <span className="text-gray-200">→</span>
                                 </Link>
                             ))}
                         </nav>

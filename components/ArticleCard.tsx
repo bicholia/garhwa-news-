@@ -66,11 +66,11 @@ export default function ArticleCard({ article, priority = false }: Props) {
                         <span className="flex items-center gap-1"><User size={12} /> {article.author?.name || 'By NR Desk'}</span>
                     </div>
 
-                    <h2 className="text-xl lg:text-2xl font-black text-brand-navy font-serif leading-[1.2] mb-3 transition-colors duration-300 line-clamp-2">
+                    <h2 className="text-lg lg:text-2xl font-black text-brand-navy font-serif leading-[1.2] mb-3 transition-colors duration-300 line-clamp-2">
                         {truncate(article.title, 120)}
                     </h2>
 
-                    <p className="text-sm text-gray-500 leading-relaxed mb-6 line-clamp-3">
+                    <p className="text-xs sm:text-sm text-gray-500 leading-relaxed mb-6 line-clamp-3">
                         {truncate(article.excerpt || '', 180)}
                     </p>
 
