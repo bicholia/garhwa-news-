@@ -85,7 +85,7 @@ export default function ArticleActions({ title, slug, excerpt }: ArticleActionsP
                     whileHover={{ scale: 1.02 }}
                     whileTap={{ scale: 0.95 }}
                     onClick={handleSave}
-                    className={`flex items-center gap-3 text-[10px] font-black uppercase tracking-[0.2em] transition-all ${saved ? 'text-brand-gold' : 'text-brand-navy hover:text-brand-gold'}`}
+                    className={`flex items-center gap-3 text-[10px] font-bold uppercase tracking-[0.2em] transition-all ${saved ? 'text-brand-gold' : 'text-brand-navy hover:text-brand-gold'}`}
                 >
                     <Bookmark 
                         size={18} 
@@ -99,10 +99,10 @@ export default function ArticleActions({ title, slug, excerpt }: ArticleActionsP
                     whileHover={{ scale: 1.02 }}
                     whileTap={{ scale: 0.95 }}
                     onClick={handleShare}
-                    className={`flex items-center gap-3 text-[10px] font-black uppercase tracking-[0.2em] transition-all relative ${shared ? 'text-green-600' : 'text-brand-navy hover:text-brand-gold'}`}
+                    className="flex items-center gap-3 text-[10px] font-bold uppercase tracking-[0.2em] text-brand-navy hover:text-brand-gold transition-all"
                 >
-                    <Share2 size={18} className={shared ? 'scale-110' : ''} /> 
-                    {shared ? 'Intelligence Shared' : 'Distribute'}
+                    <Share2 size={18} className={shared ? 'text-brand-gold scale-110' : ''} /> 
+                    {shared ? 'Copied to Intelligence Grid' : 'Distribute Brief'}
                 </motion.button>
             </div>
             

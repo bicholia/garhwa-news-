@@ -38,9 +38,9 @@ export default async function BreakingNews() {
     }
 
     return (
-        <div className="bg-brand-navy border-b border-white/5 text-white h-12 flex items-center overflow-hidden" suppressHydrationWarning>
-            <div className="container flex items-center h-full" suppressHydrationWarning>
-                <div className="flex items-center gap-2 bg-brand-gold px-6 h-full z-10 font-black text-[10px] uppercase tracking-[0.2em] italic shrink-0 whitespace-nowrap shadow-[10px_0_20px_rgba(0,0,0,0.3)]">
+        <div className="bg-brand-navy border-b border-white/5 text-white h-12 flex items-center overflow-hidden w-screen relative left-1/2 right-1/2 -ml-[50vw] -mr-[50vw]" suppressHydrationWarning>
+            <div className="flex items-center h-full w-full" suppressHydrationWarning>
+                <div className="flex items-center gap-2 bg-brand-gold px-6 h-full z-10 font-bold text-[10px] uppercase tracking-[0.2em] shrink-0 whitespace-nowrap shadow-[10px_0_20px_rgba(0,0,0,0.3)]">
                     <TrendingUp size={14} className="animate-pulse" strokeWidth={3} />
                     Bureau Alert
                 </div>

@@ -2,7 +2,7 @@
 
 import React, { useState, useEffect } from 'react'
 import Link from 'next/link'
-import { Menu, X, Search, Calendar, Globe, TrendingUp } from 'lucide-react'
+import { Menu, X, Search, Calendar, Globe, TrendingUp, PlayCircle } from 'lucide-react'
 import { usePathname, useRouter } from 'next/navigation'
 import WeatherWidget from '@/components/WeatherWidget'
 import Image from 'next/image'
@@ -37,9 +37,16 @@ export default function Header() {
             .then(res => res.json())
             .then(data => setBreakingNews(data))
             .catch(() => setBreakingNews([]))
+
+        // LAZY CRON INTEGRATION
+        const lastLazyRun = localStorage.getItem('th_lazy_cron_agent');
+        const now = Date.now();
+        if (!lastLazyRun || now - parseInt(lastLazyRun) > 3 * 60 * 60 * 1000) {
+            localStorage.setItem('th_lazy_cron_agent', now.toString());
+            fetch('/api/ai-news-agent?manual=true').catch(() => {});
+        }
     }, [mounted])
 
-    // Close mobile menu on route change
     useEffect(() => {
         setMobileOpen(false)
         setSearchOpen(false)
@@ -56,263 +63,146 @@ export default function Header() {
         }
     }
 
-    const navItems = [
-        { name: 'होम', href: '/' },
-        { name: 'सभी खबरें', href: '/news' },
-        { name: 'गढ़वा', href: '/garhwa' },
-        { name: 'पलामू', href: '/palamu' },
-        { name: 'झारखंड', href: '/jharkhand' },
-        { name: 'अपराध', href: '/category/crime' },
-        { name: 'प्रशासन', href: '/category/administration' },
-        { name: 'शिक्षा-स्वास्थ्य', href: '/category/health-education' },
-        { name: 'ग्रामीण विकास', href: '/category/rural-development' },
-        { name: 'जनसमस्या', href: '/category/public-issues' },
+    const mainNav = [
+        { name: 'HOME', href: '/' },
+        { name: 'INDIA', href: '/india' },
+        { name: 'LATEST', href: '/news' },
+        { name: 'GARHWA', href: '/garhwa' },
+        { name: 'PALAMU', href: '/palamu' },
+        { name: 'JHARKHAND', href: '/jharkhand' },
+        { name: 'CRIME', href: '/category/crime' },
+        { name: 'EDUCATION', href: '/category/health-education' },
+    ]
+
+    const quickLinks = [
+        { name: 'Breaking News', href: '/news' },
+        { name: 'International News', href: '/category/international' },
+        { name: 'National News', href: '/category/national' },
+        { name: 'Life Update', href: '/category/life-update' },
+        { name: 'Weather Update', href: '/category/weather' },
+        { name: 'Crime Report', href: '/category/crime' }
     ]
 
     return (
         <>
-            <header className={`w-full z-[1000] bg-white transition-all duration-300 ${mounted && isScrolled ? 'shadow-lg' : 'border-b border-gray-100'}`}>
-                {/* Top Bar: Breaking News Ticker */}
-                <div className="bg-brand-navy text-white h-10 overflow-hidden relative flex items-center">
-                    <div className="container flex items-center h-full gap-0">
-                        {/* Breaking Badge */}
-                        <div className="flex items-center gap-2 bg-brand-gold px-4 h-full z-10 font-black text-[10px] uppercase tracking-widest italic shrink-0 whitespace-nowrap">
-                            <TrendingUp size={13} className="animate-pulse" />
-                            Breaking
-                        </div>
-
-                        {/* Scrolling Ticker */}
-                        <div className="flex-1 overflow-hidden relative h-full flex items-center">
-                            <div className="ticker-track absolute whitespace-nowrap flex gap-16 text-[11px] font-medium items-center">
-                                {breakingNews.length > 0 ? (
-                                    <>
-                                        {/* Original and Duplicate for seamless loop */}
-                                        {[...breakingNews, ...breakingNews, ...breakingNews].map((item, idx) => (
-                                            <React.Fragment key={idx}>
-                                                {item.href ? (
-                                                    <Link href={item.href} className="transition-colors">{item.text}</Link>
-                                                ) : (
-                                                    <span>{item.text}</span>
-                                                )}
-                                                <span className="text-brand-gold">◆</span>
-                                            </React.Fragment>
-                                        ))}
-                                    </>
-                                ) : (
-                                    <>
-                                        <span>गढ़वा पलामू न्यूज़ ब्यूरो — ताज़ा और निष्पक्ष खबरें...</span>
-                                        <span className="text-brand-gold">◆</span>
-                                        <span>गढ़वा पलामू न्यूज़ ब्यूरो — ताज़ा और निष्पक्ष खबरें...</span>
-                                    </>
-                                )}
-                            </div>
-                        </div>
-
-                        {/* Date & Weather — client only */}
-                        <div className="hidden lg:flex items-center gap-4 ml-4 shrink-0">
-                            {mounted && (
-                                <>
-                                    <div className="flex items-center gap-1.5 text-[11px] font-bold text-white/60 uppercase tracking-wider">
-                                        <Calendar size={11} />
-                                        <span suppressHydrationWarning>
-                                            {new Date().toLocaleDateString('hi-IN', { weekday: 'short', day: 'numeric', month: 'short' })}
-                                        </span>
-                                    </div>
-                                    <WeatherWidget />
-                                </>
-                            )}
-                        </div>
-                    </div>
-                </div>
-
-                {/* Main Branding Section */}
-                <div className="py-4 lg:py-5 border-b border-gray-100">
-                    <div className="container flex items-center justify-between gap-8">
-                        {/* Logo and Meta Group — Left */}
-                        <div className="flex items-center gap-6 lg:gap-8">
-                            <Link href="/" className="group flex items-center shrink-0">
-                                <Image
-                                    src="/logo-new.png"
-                                    alt="NR Global News"
-                                    width={220}
-                                    height={66}
-                                    className="h-14 lg:h-16 w-auto transition-all duration-500 group-hover:scale-105 drop-shadow-sm"
-                                    priority
-                                />
+            <header className={`w-full z-[1000] transition-all duration-300 ${isScrolled ? 'fixed top-0 shadow-xl' : 'relative'}`}>
+                {/* TIER 1: NDTV Black Bar */}
+                <div className="bg-ndtv-black text-white py-2 lg:py-0 border-b border-white/10">
+                    <div className="container flex items-center justify-between h-14 lg:h-16">
+                        {/* Logo */}
+                        <div className="flex items-center gap-6 lg:gap-10">
+                            <Link href="/" className="shrink-0 flex items-center">
+                                <span className="text-2xl lg:text-3xl font-black tracking-tighter flex items-center gap-1">
+                                    <span className="text-white">THINK</span>
+                                    <span className="text-brand-red">INDIA</span>
+                                </span>
                             </Link>
 
-                            {/* Meta Info — Next to Logo */}
-                            <div className="hidden lg:flex flex-col gap-0.5 items-start border-l border-gray-200 pl-6 lg:pl-8">
-                                <div className="text-[9px] uppercase font-black tracking-[0.3em] text-brand-gold">Bureau Network</div>
-                                <div className="text-[10px] text-brand-navy/60 font-bold uppercase flex items-center gap-1.5 mt-0.5">
-                                    <Globe size={11} className="text-brand-gold" /> NR Regional · Bureau Edition
-                                </div>
-                            </div>
+                            {/* Main Desktop Nav */}
+                            {isDesktop && (
+                                <nav className="hidden lg:block h-full">
+                                    <ul className="flex items-center gap-6 h-full text-[12px] font-bold tracking-wide">
+                                        {mainNav.map(item => (
+                                            <li key={item.name} className="h-full flex items-center">
+                                                <Link 
+                                                    href={item.href} 
+                                                    className={`hover:text-brand-red transition-colors ${pathname === item.href ? 'text-brand-red' : ''}`}
+                                                >
+                                                    {item.name}
+                                                </Link>
+                                            </li>
+                                        ))}
+                                    </ul>
+                                </nav>
+                            )}
                         </div>
 
-                        {/* Right Actions — Search & Subscribe */}
-                        <div className="flex items-center gap-2 lg:gap-4 shrink-0">
-                            {/* Search Button */}
-                            <button
+                        {/* Actions */}
+                        <div className="flex items-center gap-4">
+                            <button 
                                 onClick={() => setSearchOpen(true)}
-                                className="p-2.5 rounded-full hover:bg-gray-50 transition-colors border border-transparent hover:border-gray-100"
-                                aria-label="Search"
+                                className="p-2 hover:bg-white/10 rounded-full transition-colors"
                             >
-                                <Search size={22} className="text-brand-navy" strokeWidth={2.5} />
+                                <Search size={20} />
                             </button>
-
-                            {/* Mobile Menu Button — only after mount */}
-                            {mounted && !isDesktop && (
-                                <button
-                                    onClick={() => setMobileOpen(!mobileOpen)}
-                                    className="p-2.5 rounded-full bg-brand-navy text-white hover:bg-brand-gold transition-colors"
-                                    aria-label={mobileOpen ? 'Close menu' : 'Open menu'}
-                                >
-                                    {mobileOpen ? <X size={20} /> : <Menu size={20} />}
+                            {!isDesktop && (
+                                <button onClick={() => setMobileOpen(true)} className="p-2">
+                                    <Menu size={24} />
                                 </button>
                             )}
-
-                            {/* CTA — desktop */}
-                            <Link
-                                href="/contact"
-                                className="hidden lg:flex px-6 py-2.5 bg-brand-navy text-white text-[10px] font-black uppercase tracking-[0.2em] rounded-xl hover:bg-brand-gold transition-all shadow-md hover:-translate-y-0.5"
-                            >
-                                Dispatch Desk
-                            </Link>
                         </div>
                     </div>
                 </div>
 
-                {/* Desktop Navigation — only show after mount to prevent hydration flash */}
-                {mounted && isDesktop && (
-                    <nav className="bg-white border-b border-gray-100">
-                        <div className="container">
-                            <ul className="flex justify-center items-center gap-1 py-0">
-                                {navItems.map(item => (
-                                    <li key={item.name}>
-                                        <Link
-                                            href={item.href}
-                                            className={`relative inline-flex items-center px-4 py-4 text-[11px] uppercase font-black tracking-widest transition-all duration-200 group
-                                                ${pathname === item.href
-                                                    ? 'text-brand-gold'
-                                                    : 'text-brand-navy'
-                                                }`}
-                                        >
-                                            {item.name}
-                                            <span className={`absolute bottom-0 left-4 right-4 h-0.5 bg-brand-gold rounded-full transition-transform duration-300 origin-left
-                                                ${pathname === item.href ? 'scale-x-100' : 'scale-x-0 group-hover:scale-x-100'}`}
-                                            />
-                                        </Link>
-                                    </li>
+                {/* TIER 2: White Trending Bar */}
+                {!isScrolled && isDesktop && (
+                    <div className="bg-white border-b border-gray-200 py-2 overflow-hidden">
+                        <div className="container flex items-center gap-4">
+                            <div className="bg-brand-red text-white text-[10px] font-black px-2 py-1 rounded inline-flex shrink-0">
+                                QUICK LINKS
+                            </div>
+                            <div className="flex items-center gap-6 overflow-x-auto no-scrollbar scroll-smooth">
+                                {quickLinks.map((link, idx) => (
+                                    <Link 
+                                        key={idx} 
+                                        href={link.href}
+                                        className="whitespace-nowrap text-[12px] font-medium text-gray-600 hover:text-brand-red border-r border-gray-200 last:border-0 pr-6"
+                                    >
+                                        {link.name}
+                                    </Link>
                                 ))}
-                            </ul>
+                            </div>
                         </div>
-                    </nav>
+                    </div>
                 )}
             </header>
 
-            {/* Mobile Full-Screen Menu */}
-            {mounted && mobileOpen && !isDesktop && (
-                <div className="fixed inset-0 bg-white z-[2000] overflow-y-auto">
-                    <div className="p-6 min-h-screen flex flex-col">
-                        {/* Mobile Header */}
+            {/* Mobile Sidebar */}
+            {mobileOpen && (
+                <div className="fixed inset-0 z-[2000] lg:hidden">
+                    <div className="absolute inset-0 bg-black/60 backdrop-blur-sm" onClick={() => setMobileOpen(false)} />
+                    <div className="absolute top-0 right-0 w-[280px] h-full bg-ndtv-black text-white p-6 shadow-2xl flex flex-col">
                         <div className="flex justify-between items-center mb-10">
-                            <Image src="/logo-new.png" alt="NR Global News" width={140} height={44} className="h-10 w-auto" />
-                            <button
-                                onClick={() => setMobileOpen(false)}
-                                className="p-2.5 bg-gray-100 rounded-full hover:bg-brand-navy hover:text-white transition-colors"
-                                aria-label="Close menu"
-                            >
-                                <X size={22} />
-                            </button>
+                            <span className="text-xl font-black tracking-tighter">
+                                THINK<span className="text-brand-red">INDIA</span>
+                            </span>
+                            <button onClick={() => setMobileOpen(false)}><X size={24} /></button>
                         </div>
-
-                        {/* Mobile Nav Links */}
-                        <nav className="flex flex-col gap-1 flex-1">
-                            {navItems.map(item => (
-                                <Link
-                                    key={item.name}
-                                    href={item.href}
-                                    onClick={() => setMobileOpen(false)}
-                                    className={`text-2xl font-black py-4 border-b border-gray-50 transition-colors flex items-center justify-between
-                                        ${pathname === item.href ? 'text-brand-gold' : 'text-brand-navy'}`}
-                                >
+                        <nav className="flex flex-col gap-6 font-bold text-lg">
+                            {mainNav.map(item => (
+                                <Link key={item.name} href={item.href} onClick={() => setMobileOpen(false)}>
                                     {item.name}
-                                    <span className="text-gray-200">→</span>
                                 </Link>
                             ))}
                         </nav>
-
-                        {/* Mobile Footer Links */}
-                        <div className="mt-10 pt-6 border-t border-gray-100">
-                            <div className="flex items-center gap-3 text-brand-gold mb-5">
-                                <TrendingUp size={20} />
-                                <span className="font-black text-sm uppercase tracking-widest">NR Regional Bureau</span>
-                            </div>
-                            <div className="grid grid-cols-2 gap-3 text-[11px] font-bold uppercase tracking-wider text-gray-400">
-                                <Link href="/about" className="transition-colors" onClick={() => setMobileOpen(false)}>About Agency</Link>
-                                <Link href="/contact" className="transition-colors" onClick={() => setMobileOpen(false)}>Contact Us</Link>
-                                <Link href="/privacy-policy" className="transition-colors" onClick={() => setMobileOpen(false)}>Privacy</Link>
-                                <Link href="/terms" className="transition-colors" onClick={() => setMobileOpen(false)}>Terms</Link>
-                            </div>
+                        <div className="mt-auto space-y-4 pt-10 border-t border-white/10">
+                            <WeatherWidget />
+                            <div className="text-[10px] text-gray-500 uppercase font-bold">© 2026 Think India News</div>
                         </div>
                     </div>
                 </div>
             )}
 
-            {/* Search Full-Screen Overlay */}
+            {/* Search Overlay */}
             {searchOpen && (
-                <div className="fixed inset-0 bg-brand-navy/97 backdrop-blur-xl z-[3000] flex flex-col items-center justify-center p-6">
-                    <button
-                        onClick={() => setSearchOpen(false)}
-                        className="absolute top-8 right-8 text-white/60 transition-colors p-3 rounded-full hover:bg-white/10"
-                        aria-label="Close search"
-                    >
+                <div className="fixed inset-0 bg-ndtv-black/95 z-[3000] flex items-center justify-center p-6 backdrop-blur-md">
+                    <button onClick={() => setSearchOpen(false)} className="absolute top-8 right-8 text-white hover:rotate-90 transition-transform">
                         <X size={36} strokeWidth={1.5} />
                     </button>
                     <div className="w-full max-w-2xl">
-                        <p className="text-brand-gold font-black uppercase tracking-[0.4em] mb-8 text-center text-[10px]">
-                            Search NR Global Archives
-                        </p>
-                        <div className="relative">
-                            <input
-                                type="text"
-                                placeholder="खोजें..."
-                                autoFocus
-                                value={searchQuery}
-                                onChange={(e) => setSearchQuery(e.target.value)}
-                                onKeyDown={handleSearch}
-                                className="w-full bg-transparent border-b-2 border-white/20 pb-4 text-3xl lg:text-5xl text-white font-serif focus:outline-none focus:border-brand-gold transition-colors placeholder:text-white/20"
-                            />
-                            <button
-                                onClick={() => {
-                                    if (searchQuery.trim()) {
-                                        router.push(`/search?q=${encodeURIComponent(searchQuery.trim())}`)
-                                        setSearchOpen(false)
-                                        setSearchQuery('')
-                                    }
-                                }}
-                                className="absolute right-0 bottom-4 text-white/40 hover:text-brand-gold transition-colors"
-                            >
-                                <Search size={32} strokeWidth={1.5} />
-                            </button>
-                        </div>
-                        <p className="text-white/30 mt-5 text-center text-xs font-medium">Press Enter or click to search · Escape to close</p>
+                        <input
+                            type="text"
+                            placeholder="Type to search..."
+                            autoFocus
+                            value={searchQuery}
+                            onChange={(e) => setSearchQuery(e.target.value)}
+                            onKeyDown={handleSearch}
+                            className="w-full bg-transparent border-b-4 border-white pb-4 text-4xl lg:text-6xl text-white font-bold outline-none placeholder:text-white/20"
+                        />
+                        <p className="mt-6 text-white/40 font-medium">Press ENTER to reveal the news archives.</p>
                     </div>
                 </div>
             )}
-
-            {/* Ticker Animation — global style in Next.js App Router */}
-            <style>{`
-                .ticker-track {
-                    animation: ticker 60s linear infinite;
-                    will-change: transform;
-                }
-                @keyframes ticker {
-                    0% { transform: translateX(0); }
-                    100% { transform: translateX(-50%); }
-                }
-            `}</style>
         </>
     )
 }

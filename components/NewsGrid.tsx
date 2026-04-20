@@ -1,44 +1,146 @@
 import Link from 'next/link'
-import ArticleCard from './ArticleCard'
-import SectionHeading from './SectionHeading'
+import { ArrowRight, Clock } from 'lucide-react'
+import { urlFor } from '@/lib/sanity'
 
 interface NewsGridProps {
-    title: string;
-    articles: any[];
-    link?: string;
-    limit?: number;
-    showExcerpt?: boolean;
-    moreText?: string;
+    title: string
+    articles: any[]
+    link?: string
+    limit?: number
+    moreText?: string
+    variant?: 'standard' | 'mixed' | 'list'
 }
 
-export default function NewsGrid({ title, articles, link, limit, showExcerpt = true, moreText = "Explore More Reports" }: NewsGridProps) {
-    const displayArticles = limit ? articles.slice(0, limit) : articles;
+export default function NewsGrid({ 
+    title, 
+    articles, 
+    link, 
+    limit = 6, 
+    moreText = "View More",
+    variant = 'standard'
+}: NewsGridProps) {
+    if (!articles || articles.length === 0) return null
+    
+    const displayArticles = articles.slice(0, limit)
+    const featuredArticle = displayArticles[0]
+    const remainingArticles = displayArticles.slice(1)
 
-    if (!displayArticles || displayArticles.length === 0) return null;
+    const renderCard = (article: any, index: number, isSmall: boolean = false) => {
+        const imageUrl = article.image_url || (article.featureImage?.asset ? urlFor(article.featureImage).width(400).height(250).url() : null);
+        const date = article.publishedAt || article.published_at;
+
+        return (
+            <Link 
+                key={article._id || index} 
+                href={`/news/${article.slug?.current || article.slug}`}
+                className={`group flex ${isSmall ? 'flex-row gap-3 py-3 border-b border-gray-100 last:border-0' : 'flex-col'}`}
+            >
+                {/* Image Section */}
+                <div className={`shrink-0 overflow-hidden rounded-sm bg-gray-100 ${isSmall ? 'w-24 h-16' : 'aspect-video mb-4'}`}>
+                    {imageUrl ? (
+                        <img 
+                            src={imageUrl} 
+                            alt={article.title} 
+                            className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110" 
+                        />
+                    ) : (
+                        <div className="w-full h-full flex items-center justify-center bg-gray-50 text-gray-200">
+                            <Clock size={isSmall ? 16 : 32} />
+                        </div>
+                    )}
+                </div>
+
+                {/* Content Section */}
+                <div className="flex flex-col flex-1">
+                    <h3 className={`font-bold text-gray-900 leading-snug group-hover:text-brand-red transition-colors serif-font ${isSmall ? 'text-[13px] line-clamp-2' : 'text-[16px] line-clamp-3'}`}>
+                        {article.title}
+                    </h3>
+                    {!isSmall && (
+                        <div className="mt-3 flex items-center gap-2 text-[10px] text-gray-400 font-bold uppercase tracking-wider" suppressHydrationWarning>
+                            <span>Bureau</span>
+                            <span>•</span>
+                            <span>{date ? new Date(date).toLocaleDateString('hi-IN', { day: 'numeric', month: 'short' }) : 'Today'}</span>
+                        </div>
+                    )}
+                </div>
+            </Link>
+        )
+    }
 
     return (
-        <section className="mb-16">
-            <SectionHeading title={title} link={link} />
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-                {displayArticles.map((article: any, idx: number) => (
-                    <ArticleCard
-                        key={article._id || article.id}
-                        article={article}
-                        priority={idx < 3}
-                    />
-                ))}
-            </div>
-            
-            {limit && articles.length > limit && link && (
-                <div className="mt-10 text-center">
-                    <Link 
-                        href={link} 
-                        className="inline-flex items-center gap-2 px-8 py-3 bg-white border border-gray-200 text-brand-navy font-black text-xs uppercase tracking-[0.2em] rounded-full hover:bg-brand-navy hover:text-white transition-all duration-300 shadow-sm hover:shadow-md"
-                    >
-                        {moreText} <span className="text-brand-gold">&rarr;</span>
+        <div className="mb-16">
+            {/* Header */}
+            <div className="flex items-center justify-between border-b-2 border-brand-red mb-8 pb-3">
+                <h2 className="text-xl lg:text-2xl font-black text-black uppercase tracking-tight serif-font flex items-center gap-3">
+                    <span className="w-2 h-8 bg-brand-red inline-block" />
+                    {title}
+                </h2>
+                {link && (
+                    <Link href={link} className="text-[11px] font-black text-brand-red hover:underline flex items-center gap-1 uppercase tracking-widest">
+                        {moreText} <ArrowRight size={12} />
                     </Link>
+                )}
+            </div>
+
+            {/* Layout Variants */}
+            {variant === 'standard' && (
+                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-x-6 gap-y-10">
+                    {displayArticles.map((article, index) => renderCard(article, index))}
                 </div>
             )}
-        </section>
+
+            {variant === 'mixed' && (
+                <div className="grid grid-cols-1 lg:grid-cols-12 gap-8">
+                    {/* LHS: Large Featured */}
+                    <div className="lg:col-span-12 xl:col-span-8">
+                        <Link 
+                            href={`/news/${featuredArticle.slug?.current || featuredArticle.slug}`}
+                            className="group flex flex-col md:flex-row gap-6 bg-gray-50 p-6 rounded-sm border border-gray-100"
+                        >
+                            <div className="md:w-1/2 aspect-video overflow-hidden rounded-sm bg-gray-200 relative">
+                                {featuredArticle.image_url || featuredArticle.featureImage ? (
+                                    <img 
+                                        src={featuredArticle.image_url || urlFor(featuredArticle.featureImage).width(600).height(400).url()} 
+                                        className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105"
+                                    />
+                                ) : null}
+                                <div className="absolute top-3 left-3 bg-brand-red text-white text-[9px] font-black px-2 py-0.5 uppercase">Spotlight</div>
+                            </div>
+                            <div className="md:w-1/2 flex flex-col justify-center">
+                                <h3 className="text-xl md:text-2xl font-bold text-gray-900 leading-tight mb-4 group-hover:text-brand-red transition-colors serif-font">
+                                    {featuredArticle.title}
+                                </h3>
+                                <p className="text-[14px] text-gray-600 line-clamp-3 leading-relaxed mb-4">
+                                    {featuredArticle.excerpt || featuredArticle.description || "In-depth investigative report from Think India's special unit."}
+                                </p>
+                                <span className="text-[10px] font-black text-brand-red uppercase tracking-widest">Full Report &rarr;</span>
+                            </div>
+                        </Link>
+                    </div>
+
+                    {/* RHS: List */}
+                    <div className="lg:col-span-12 xl:col-span-4 flex flex-col divide-y divide-gray-100">
+                        {remainingArticles.slice(0, 5).map((article, index) => (
+                            <Link 
+                                key={index} 
+                                href={`/news/${article.slug?.current || article.slug}`}
+                                className="py-3 flex gap-4 group"
+                            >
+                                <span className="text-2xl font-black text-gray-200 group-hover:text-brand-red transition-colors italic w-8 shrink-0">{index + 2}</span>
+                                <h4 className="text-[13px] font-bold text-gray-800 leading-snug line-clamp-3 group-hover:text-brand-red transition-colors serif-font">
+                                    {article.title}
+                                </h4>
+                            </Link>
+                        ))}
+                    </div>
+                </div>
+            )}
+
+            {variant === 'list' && (
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-x-10 gap-y-2">
+                    {displayArticles.map((article, index) => renderCard(article, index, true))}
+                </div>
+            )}
+        </div>
     )
 }

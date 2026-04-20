@@ -1,27 +1,22 @@
-@import url('https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700;0,900;1,400&family=Inter:wght@300;400;500;600;700;800;900&family=Noto+Serif+Devanagari:wght@400;700;900&family=Noto+Sans+Devanagari:wght@400;500;600;700;800&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=PT+Serif:ital,wght@0,400;0,700;1,400&family=Roboto:wght@300;400;500;700;900&family=Noto+Serif+Devanagari:wght@400;700;900&family=Noto+Sans+Devanagari:wght@400;500;700&display=swap');
 
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
 
 :root {
-  --brand-navy: #0F172A;
-  --brand-navy-light: #1E293B;
-  --brand-gold: #B45309;
-  --brand-gold-light: #F59E0B;
-  --news-paper: #F8FAF9;
+  --ndtv-red: #E31E24;
+  --ndtv-black: #000000;
+  --ndtv-gray: #F5F5F5;
   --news-text: #1E293B;
   --news-text-muted: #64748B;
   --white: #ffffff;
-  --border: rgba(15, 23, 42, 0.08);
-  --radius: 12px;
-  --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.05);
-  --shadow: 0 4px 20px -2px rgba(15, 23, 42, 0.08);
-  --shadow-lg: 0 10px 30px -5px rgba(15, 23, 42, 0.12);
+  --border: rgba(0, 0, 0, 0.08);
+  --radius: 4px; /* NDTV is more boxy/less rounded */
   
   /* Font Stacks */
-  --font-serif: 'Playfair Display', 'Noto Serif Devanagari', serif;
-  --font-sans: 'Inter', 'Noto Sans Devanagari', -apple-system, sans-serif;
+  --font-serif: 'PT Serif', 'Noto Serif Devanagari', serif;
+  --font-sans: 'Roboto', 'Noto Sans Devanagari', -apple-system, sans-serif;
 }
 
 /* ============================================================
@@ -51,7 +46,7 @@ body {
   width: 100%;
 }
 
-h1, h2, h3, h4, .serif-font {
+.serif-font {
   font-family: var(--font-serif);
 }
 
@@ -103,20 +98,41 @@ button {
 .section-title {
   display: flex;
   align-items: center;
-  gap: 12px;
+  gap: 16px;
   font-family: var(--font-serif);
   font-weight: 900;
-  font-size: 1.5rem;
+  font-size: 1.75rem;
   color: var(--brand-navy);
-  margin-bottom: 2rem;
+  margin-bottom: 2.5rem;
+  letter-spacing: -0.02em;
 }
 
 .section-title::before {
   content: '';
   display: block;
-  width: 4px;
-  height: 24px;
+  width: 6px;
+  height: 32px;
   background: var(--brand-gold);
+}
+
+.lead-text {
+  font-family: var(--font-serif);
+  font-size: 1.5rem;
+  line-height: 1.6;
+  color: var(--brand-navy);
+  opacity: 0.9;
+  font-style: italic;
+}
+
+.article-body {
+  line-height: 1.8;
+  font-size: 1.125rem;
+}
+
+@media (min-width: 1024px) {
+  .article-body {
+    font-size: 1.25rem;
+  }
 }
 
 /* ============================================================

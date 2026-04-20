@@ -1,7 +1,7 @@
 'use client'
 
 import { useState, useEffect } from 'react'
-import { Sun, Cloud, CloudRain } from 'lucide-react'
+import { Sun, Cloud, CloudRain, MapPin } from 'lucide-react'
 
 const CITIES = [
     { name: 'गढ़वा', lat: 24.1754, lon: 83.8052 },
@@ -67,10 +67,16 @@ export default function WeatherWidget() {
 
     return (
         <div className={`flex items-center gap-2 text-[11px] font-bold bg-white/10 px-3 py-1.5 rounded-full border transition-colors ${weather?.isLive ? 'border-white/10' : 'border-brand-gold/30'}`} title={weather?.isLive ? 'Live Weather' : 'Demo Mode (Add API Key)'}>
-            {getWeatherIcon(weather?.condition)}
-            <span className="text-white/80">{activeCity.name}</span>
-            <span className="text-brand-gold font-black">{weather?.temp}°C</span>
-            {!weather?.isLive && <span className="w-1.5 h-1.5 rounded-full bg-brand-gold animate-pulse" />}
+            <div className="flex-1 min-w-0">
+                <div className="text-[10px] font-bold text-white tracking-widest uppercase mb-0.5 truncate flex items-center gap-1.5">
+                    <MapPin size={10} className="text-brand-gold" />
+                    {activeCity.name}
+                </div>
+                <div className="text-[9px] font-bold text-gray-500 uppercase tracking-[0.2em] flex items-center gap-2">
+                    <span className="w-1.5 h-1.5 rounded-full bg-brand-gold animate-pulse" />
+                    Live Bureau Alert
+                </div>
+            </div>
         </div>
     )
 }

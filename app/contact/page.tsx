@@ -23,13 +23,13 @@ export default function ContactPage() {
         // Simulate API call
         await new Promise(resolve => setTimeout(resolve, 1500))
         
-        console.log('Form submitted to NR Bureau:', formData)
+        console.log('Form submitted to Think India Bureau:', formData)
         setIsSubmitting(false)
         setSubmitted(true)
     }
 
     // Email obfuscation helper (simple)
-    const bureauEmail = "bureau" + "@" + "nrdailynews.com"
+    const bureauEmail = "bureau" + "@" + "thinkindia.press"
 
     return (
         <PublicLayout>
@@ -45,7 +45,7 @@ export default function ContactPage() {
                             <ShieldCheck size={14} /> Official News Bureau
                         </div>
                         <h1 className="text-4xl lg:text-7xl font-black text-white font-serif mb-6 tracking-tighter leading-tight">
-                            Connect with the <br/> <span className="text-brand-gold italic text-3xl lg:text-5xl uppercase tracking-widest font-black text-shadow-glow">Regional News Bureau</span>
+                            Connect with <br/> <span className="text-brand-gold italic text-3xl lg:text-5xl uppercase tracking-widest font-black text-shadow-glow">Think India News</span>
                         </h1>
                         <p className="max-w-2xl mx-auto text-gray-400 text-lg lg:text-xl font-medium leading-relaxed">
                             Report a story, inquire about strategic partnerships, or provide intelligence directly to our editorial bureau.
@@ -108,7 +108,7 @@ export default function ContactPage() {
 
                                 <div className="p-6 bg-brand-navy/5 rounded-2xl border border-brand-navy/5">
                                     <p className="text-[11px] text-gray-500 font-bold leading-relaxed italic">
-                                        "NR Regional News Bureau operates as an independent media entity under the NR Global reporting framework. Our bureau is committed to the highest standards of journalistic precision and ethical verification."
+                                        "Think India operates as an independent regional media entity. Our bureau is committed to the highest standards of journalistic precision and ethical verification."
                                     </p>
                                 </div>
                             </div>

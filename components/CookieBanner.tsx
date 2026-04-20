@@ -35,7 +35,7 @@ export default function CookieBanner() {
                     <ShieldCheck size={28} />
                 </div>
                 <div className="flex-1 text-center lg:text-left">
-                    <h3 className="text-white font-black text-xs uppercase tracking-[0.2em] mb-1 md:mb-2 italic">Data Privacy & Intelligence Sovereignty</h3>
+                    <h3 className="text-white font-bold text-xs uppercase tracking-[0.2em] mb-1 md:mb-2">Data Privacy & Intelligence Sovereignty</h3>
                     <p className="text-[9px] md:text-[10px] font-bold text-gray-400 uppercase tracking-widest leading-relaxed max-w-3xl mx-auto lg:mx-0">
                         We utilize advanced cookies to ensure the integrity of your intelligence feed. By proceeding, you acknowledge our <Link href="/privacy-policy" className="text-brand-gold hover:underline border-b border-brand-gold/30 pb-0.5">Global Privacy Protocols</Link>.
                     </p>
@@ -43,13 +43,13 @@ export default function CookieBanner() {
                 <div className="flex items-center justify-center gap-3 w-full lg:w-auto shrink-0">
                     <button
                         onClick={() => setIsVisible(false)}
-                        className="px-6 py-3 rounded-xl text-[10px] font-black uppercase tracking-widest text-gray-400 hover:bg-white/5 hover:text-white transition-colors"
+                        className="px-6 py-3 rounded-xl text-[10px] font-bold uppercase tracking-widest text-gray-400 hover:bg-white/5 hover:text-white transition-colors"
                     >
                         Decline
                     </button>
                     <button
                         onClick={handleAccept}
-                        className="px-8 py-3 bg-brand-gold text-white text-[10px] font-black uppercase tracking-widest rounded-xl hover:bg-white hover:text-brand-navy transition-all shadow-xl shadow-brand-gold/20"
+                        className="px-8 py-3 bg-brand-gold text-white text-[10px] font-bold uppercase tracking-widest rounded-xl hover:bg-white hover:text-brand-navy transition-all shadow-xl shadow-brand-gold/20"
                     >
                         Authorize
                     </button>

@@ -76,7 +76,7 @@ export default function LoginPage() {
                         एडमिन लॉगिन
                     </h1>
                     <p style={{ color: '#64748b', marginTop: '0.4rem', fontSize: '0.9rem' }}>
-                        NR Daily News — Secure Access
+                        Think India — Secure Access
                     </p>
                 </div>
 
@@ -186,7 +186,7 @@ export default function LoginPage() {
                 </form>
 
                 <p style={{ marginTop: '2rem', textAlign: 'center', fontSize: '0.75rem', color: '#94a3b8' }}>
-                    © {new Date().getFullYear()} NR Daily News. Unauthorized access is prohibited.
+                    © {new Date().getFullYear()} Think India. Unauthorized access is prohibited.
                 </p>
             </div>
         </div>

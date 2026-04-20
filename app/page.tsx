@@ -1,57 +1,76 @@
 import { client, urlFor } from '@/lib/sanity'
 import { getAllNews, getNewsByCategory, getNewsByDistrict, mergeAndSortNews } from '@/lib/db'
 import NewsGrid from '@/components/NewsGrid'
+import NDTVHero from '@/components/NDTVHero'
 import BreakingNews from '@/components/BreakingNews'
-import MailButton from '@/components/MailButton'
+import CityGrid from '@/components/CityGrid'
+import PhotoGallery from '@/components/PhotoGallery'
 import PublicLayout from '@/components/PublicLayout'
 import AdBanner from '@/components/AdBanner'
+import NewsStripe from '@/components/NewsStripe'
 import Link from 'next/link'
-import { ArrowRight, ShieldCheck, Globe } from 'lucide-react'
+import { ArrowRight, ShieldCheck, Globe, PlayCircle, TrendingUp } from 'lucide-react'
+import { Suspense } from 'react'
 import { Metadata } from 'next'
-import { scrubBrandNames, normalizeText, scrubSlug } from '@/lib/safety'
+import { normalizeText } from '@/lib/safety'
 
 export const revalidate = 3600 // Revalidate every hour
 
 export const metadata: Metadata = {
-  title: 'NR Regional News Bureau | Global Reporting Standards',
-  description: 'NR Regional News Bureau provides authoritative, real-time coverage of Jharkhand regional events with unparalleled integrity and precision.',
+  title: 'Think India | India News, Jharkhand Regional Updates',
+  description: 'Think India provides authoritative, real-time coverage of National Indian news and Jharkhand regional events with unparalleled integrity.',
 }
 
 async function getHomepageData() {
-  const [pgFeatured, pgGarhwa, pgPalamu, pgJobs, pgCrime] = await Promise.all([
-    getAllNews(10),
-    getNewsByCategory('स्थानीय समाचार', 10),
-    getNewsByDistrict('palamu', 10),
-    getNewsByCategory('सरकारी नौकरियां', 10),
-    getNewsByCategory('अपराध', 10),
+  // Max Density Fetching (NDTV Style)
+  const [
+    pgFeatured, 
+    pgGarhwa, 
+    pgPalamu, 
+    pgCrime, 
+    pgPolitics, 
+    pgSports, 
+    pgEducation,
+    pgLatehar,
+    pgChatra,
+    pgIndia
+  ] = await Promise.all([
+    getAllNews(30),
+    getNewsByDistrict('garhwa', 15),
+    getNewsByDistrict('palamu', 15),
+    getNewsByCategory('अपराध', 12),
+    getNewsByCategory('राजनीति', 12),
+    getNewsByCategory('खेल', 12),
+    getNewsByCategory('शिक्षा', 12),
+    getNewsByDistrict('latehar', 6),
+    getNewsByDistrict('chatra', 6),
+    getNewsByDistrict('india', 15),
   ])
 
-  const snFeatured = await client.fetch(`*[_type == "article"] | order(publishedAt desc)[0...10] { _id, title, slug, excerpt, featureImage, publishedAt, author->{name} }`)
-  const snGarhwa = await client.fetch(`*[_type == "article" && district == "garhwa"] | order(publishedAt desc)[0...15] { _id, title, slug, excerpt, featureImage, publishedAt, author->{name} }`)
-  const snPalamu = await client.fetch(`*[_type == "article" && district == "palamu"] | order(publishedAt desc)[0...15] { _id, title, slug, excerpt, featureImage, publishedAt, author->{name} }`)
-  const snJobs = await client.fetch(`*[_type == "article" && category->slug.current == "jobs"] | order(publishedAt desc)[0...15] { _id, title, slug, excerpt, featureImage, publishedAt }`)
-  const snCrime = await client.fetch(`*[_type == "article" && category->slug.current == "crime"] | order(publishedAt desc)[0...15] { _id, title, slug, excerpt, featureImage, publishedAt }`)
-
-  const finalData = {
-    featured: mergeAndSortNews(pgFeatured, snFeatured, 8),
-    garhwa: mergeAndSortNews(pgGarhwa, snGarhwa, 6),
-    palamu: mergeAndSortNews(pgPalamu.articles || pgPalamu, snPalamu, 6),
-    jobs: mergeAndSortNews(pgJobs, snJobs, 4),
-    crime: mergeAndSortNews(pgCrime, snCrime, 4),
+  const snFeatured = await client.fetch(`*[_type == "article"] | order(publishedAt desc)[0...60] { _id, title, "slug": slug.current, excerpt, featureImage, publishedAt, author->{name} }`)
+  
+  return {
+    featured: mergeAndSortNews(pgFeatured, snFeatured, 30),
+    garhwa: mergeAndSortNews(pgGarhwa.articles || pgGarhwa, [], 10),
+    palamu: mergeAndSortNews(pgPalamu.articles || pgPalamu, [], 10),
+    crime: mergeAndSortNews(pgCrime, [], 10),
+    politics: mergeAndSortNews(pgPolitics, [], 8),
+    sports: mergeAndSortNews(pgSports, [], 8),
+    education: mergeAndSortNews(pgEducation, [], 8),
+    latehar: pgLatehar.articles || pgLatehar,
+    chatra: pgChatra.articles || pgChatra,
+    india: mergeAndSortNews(pgIndia.articles || pgIndia, [], 10),
   }
-
-  return finalData
 }
 
 export default async function Home() {
   const data = await getHomepageData()
   
-
-  // Deduplicate across sections by ID and Normalized Title
   const shownIds = new Set<string>()
   const shownTitles = new Set<string>()
 
   const isDuplicate = (story: any) => {
+    if (!story) return true
     const id = story._id || story.id
     const normTitle = normalizeText(story.title)
     if (shownIds.has(id) || (normTitle && shownTitles.has(normTitle))) return true
@@ -59,231 +78,180 @@ export default async function Home() {
   }
 
   const markAsShown = (story: any) => {
+    if (!story) return
     shownIds.add(story._id || story.id)
     const normTitle = normalizeText(story.title)
     if (normTitle) shownTitles.add(normTitle)
   }
 
-  // 1. Featured / Hero Section
-  const heroStories: any[] = []
-  const availableFeatured = data.featured || []
-  for (const s of availableFeatured) {
-    if (heroStories.length >= 2) break
+  const allFeatured = data.featured || []
+  
+  // 1. Hero Setup
+  const mainStory = allFeatured.find(s => !isDuplicate(s))
+  if (mainStory) markAsShown(mainStory)
+
+  const topStories: any[] = []
+  for (const s of allFeatured) {
+    if (topStories.length >= 15) break
     if (!isDuplicate(s)) {
-      heroStories.push(s)
+      topStories.push(s)
       markAsShown(s)
     }
   }
-  
-  const subStories: any[] = []
-  for (const s of availableFeatured) {
-    if (subStories.length >= 6) break
+
+  const trendingStories: any[] = []
+  for (const s of allFeatured) {
+    if (trendingStories.length >= 6) break
     if (!isDuplicate(s)) {
-      subStories.push(s)
+      trendingStories.push(s)
       markAsShown(s)
     }
   }
-  
-  // 2. Category Sections
-  const filteredGarhwa = (data.garhwa || []).filter(s => !isDuplicate(s))
-  const filteredPalamu = (data.palamu || []).filter(s => !isDuplicate(s))
-  const filteredJobs = (data.jobs || []).filter(s => !isDuplicate(s))
-  const filteredCrime = (data.crime || []).filter(s => !isDuplicate(s))
+
+  // 2. Sections Filtering
+  const filterNews = (news: any[], limit: number) => {
+    const res: any[] = []
+    for (const s of (news || [])) {
+      if (res.length >= limit) break
+      if (!isDuplicate(s)) {
+        res.push(s)
+        markAsShown(s)
+      }
+    }
+    return res
+  }
+
+  const fGarhwa = filterNews(data.garhwa, 10)
+  const fPalamu = filterNews(data.palamu, 10)
+  const fIndia = filterNews(data.india, 10)
+  const fPolitics = filterNews(data.politics, 8)
+  const fCrime = filterNews(data.crime, 8)
+  const fSports = filterNews(data.sports, 8)
+  const fEducation = filterNews(data.education, 8)
+
+  // 3. Ad Replacement News (High Density)
+  const adTopNews = filterNews(allFeatured, 4)
+  const adIndiaNews = filterNews(allFeatured, 3)
+  const adGarhwaNews = filterNews(allFeatured, 3)
+  const adSecondaryNews = filterNews(allFeatured, 3)
+  const adSidebarNews = filterNews(allFeatured, 5)
 
   return (
     <PublicLayout>
-      
-      <div className="bg-news-paper min-h-screen">
-        <div className="container py-10 lg:py-16">
-          
-          {/* ALL NEWS CTA */}
-          <div className="flex flex-col sm:flex-row items-center justify-between mb-8 -mt-2 gap-4">
-            <div className="text-[10px] font-black uppercase tracking-[0.3em] text-brand-navy/40">ताज़ा ब्रेकिंग न्यूज़</div>
-            <Link href="/news" className="w-full sm:w-auto text-center inline-flex items-center justify-center gap-2 px-8 py-3 bg-brand-navy text-white text-[10px] font-black uppercase tracking-widest rounded-full hover:bg-brand-gold transition-all shadow-md">
-              सभी खबरें देखें <ArrowRight size={12} />
-            </Link>
-          </div>
-
-          {/* DUAL HERO SECTION: Medium & Balanced */}
-          {heroStories && heroStories.length > 0 && (
-            <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-12 lg:mb-16">
-              {heroStories.map((story: any, i: number) => {
-                const imageUrl = story.image_url || (story.featureImage?.asset ? urlFor(story.featureImage).width(800).height(500).url() : null);
-                
-                return (
-                  <section key={story._id || i} className="group relative rounded-3xl overflow-hidden bg-brand-navy shadow-2xl min-h-[380px] lg:min-h-[420px] flex flex-col border border-white/5">
-                    {/* Visual Background */}
-                    <div className="absolute inset-0 z-0">
-                      {imageUrl ? (
-                        <img 
-                          src={imageUrl} 
-                          alt={story.title} 
-                          className="w-full h-full object-cover transition-transform duration-1000 group-hover:scale-105"
-                        />
-                      ) : (
-                        <div className="w-full h-full bg-slate-800" />
-                      )}
-                      <div className="absolute inset-0 bg-gradient-to-t from-brand-navy via-brand-navy/40 to-transparent" />
-                      <div className="absolute inset-0 bg-brand-navy/20 group-hover:bg-transparent transition-colors duration-500" />
-                    </div>
-
-                    {/* Content Overlay */}
-                    <div className="relative z-10 p-8 lg:p-10 flex flex-col justify-end h-full mt-auto">
-                      <div className="flex items-center gap-3 mb-4">
-                        <span className="bg-brand-gold text-white text-[9px] font-black uppercase tracking-[0.3em] px-3 py-1.5 rounded-full shadow-lg flex items-center gap-1.5">
-                            <ShieldCheck size={12} /> Bureau {i === 0 ? 'Primary' : 'Secondary'}
-                        </span>
-                      </div>
-                      
-                      <h2 className="text-xl sm:text-2xl lg:text-3xl font-black text-white font-serif leading-[1.1] mb-4 group-hover:text-brand-gold transition-colors duration-300">
-                        {story.title}
-                      </h2>
-                      
-                      <p className="text-gray-300 text-sm leading-relaxed mb-6 font-medium line-clamp-2 max-w-md opacity-0 group-hover:opacity-100 transform translate-y-4 group-hover:translate-y-0 transition-all duration-500">
-                        {story.excerpt}
-                      </p>
-
-                      <Link 
-                        href={`/news/${typeof story.slug === 'string' ? story.slug : story.slug?.current}`}
-                        className="inline-flex items-center gap-3 text-white font-black uppercase tracking-widest text-[10px] group/btn"
-                      >
-                        Examine Report <ArrowRight className="group-hover/btn:translate-x-2 transition-transform" />
-                      </Link>
-                    </div>
-                  </section>
-                );
-              })}
-            </div>
-          )}
-
-          <div className="mb-12">
-            <BreakingNews />
-          </div>
-
-          {/* SECONDARY STORIES: Grid of 3 */}
-          {subStories && subStories.length > 0 && (
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 mb-16 -mt-8 lg:-mt-12 relative z-20 container">
-                {subStories.map((story: any) => {
-                    const imageUrl = story.image_url || (story.featureImage?.asset ? urlFor(story.featureImage).width(600).height(400).url() : null);
-                    const date = story.publishedAt || story.published_at;
-                    
-                    return (
-                        <Link 
-                            key={story._id || story.id}
-                            href={`/news/${typeof story.slug === 'string' ? story.slug : story.slug?.current}`}
-                            className="group bg-white p-6 rounded-2xl shadow-xl hover:-translate-y-2 transition-all duration-500 border border-gray-100 flex flex-col gap-4"
-                        >
-                            <div className="aspect-video rounded-xl overflow-hidden relative bg-slate-100">
-                                {imageUrl ? (
-                                    <img src={imageUrl} className="w-full h-full object-cover transition-transform group-hover:scale-110 duration-700" alt={story.title} />
-                                ) : (
-                                    <div className="w-full h-full flex items-center justify-center text-brand-navy/10">
-                                        <Globe size={40} />
-                                    </div>
-                                )}
-                                <div className="absolute top-3 left-3 bg-brand-navy/80 backdrop-blur-md text-brand-gold text-[8px] font-black uppercase px-2 py-1 rounded">Bureau Dispatch</div>
-                            </div>
-                            <h3 className="text-xl font-black text-brand-navy font-serif leading-tight transition-colors line-clamp-2">
-                                {story.title}
-                            </h3>
-                            <div className="mt-auto flex items-center justify-between text-[10px] font-black uppercase tracking-widest text-brand-navy/30">
-                                <span>{date ? new Date(date).toLocaleDateString() : 'Recent'}</span>
-                                <span>Analysis &rarr;</span>
-                            </div>
-                        </Link>
-                    );
-                })}
-            </div>
-          )}
-
-          <AdBanner slot="homepage_hero" width={728} height={90} hidePlaceholder={true} />
-
-          {/* LATEST ARCHIVES SECTIONS */}
-          <div className="space-y-24 mt-24">
-            <NewsGrid 
-              title="गढ़वा समाचार | Garhwa Reports" 
-              articles={filteredGarhwa} 
-              link="/garhwa" 
-              limit={6} 
-              moreText="Explore All Garhwa Reports"
-            />
-            
-            {/* SPECIAL DIVIDER: Agency Trust */}
-            <div className="bg-brand-navy rounded-[40px] p-12 lg:p-20 text-center relative overflow-hidden shadow-2xl">
-                <div className="absolute top-0 left-0 w-full h-full opacity-10 pointer-events-none">
-                    <Globe size={400} className="absolute -top-20 -right-20 text-white" />
+      <div className="bg-white min-h-screen">
+        {/* TIER 0: LEADERBOARD */}
+        <div className="bg-white border-b border-gray-100 py-3 hidden lg:flex justify-center flex-col items-center">
+            <AdBanner slot="top_max_leaderboard" width={970} height={90}>
+                <div className="container">
+                    <NewsStripe articles={adTopNews} title="Trending Now" />
                 </div>
-                <div className="relative z-10 max-w-3xl mx-auto">
-                    <div className="text-brand-gold font-black uppercase tracking-[0.4em] text-xs mb-6">NR Bureau Integrity</div>
-                    <h2 className="text-3xl lg:text-5xl font-black text-white font-serif mb-8 leading-tight">
-                        Authoritative Reporting for a Global Community.
-                    </h2>
-                    <p className="text-gray-400 text-lg mb-10 font-medium">
-                        Dedicated to uncompromised reporting, NR Regional News Bureau operates at the intersection of local expertise and international standards of integrity.
-                    </p>
-                    <div className="flex flex-wrap justify-center gap-6">
-                        <div className="bg-white/5 border border-white/10 px-6 py-4 rounded-2xl text-white">
-                            <div className="text-brand-gold font-black text-2xl mb-1">5M+</div>
-                            <div className="text-[10px] uppercase tracking-widest font-bold">Monthly Readers</div>
-                        </div>
-                        <div className="bg-white/5 border border-white/10 px-6 py-4 rounded-2xl text-white">
-                            <div className="text-brand-gold font-black text-2xl mb-1">200+</div>
-                            <div className="text-[10px] uppercase tracking-widest font-bold">Field Agents</div>
-                        </div>
-                        <div className="bg-white/5 border border-white/10 px-6 py-4 rounded-2xl text-white">
-                            <div className="text-brand-gold font-black text-2xl mb-1">24/7</div>
-                            <div className="text-[10px] uppercase tracking-widest font-bold">News Stream</div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-
-            <NewsGrid 
-              title="पलामू समाचार | Palamu Reports" 
-              articles={filteredPalamu} 
-              link="/palamu" 
-              limit={6} 
-              moreText="View All Palamu Archives"
-            />
-
-            {/* JOBS HUB: Premium Style */}
-            {filteredJobs && filteredJobs.length > 0 && (
-              <section className="bg-white rounded-3xl p-8 lg:p-12 border border-gray-100 shadow-xl overflow-hidden relative">
-                <div className="absolute top-0 right-0 w-32 h-32 bg-brand-gold/5 rounded-full -mr-16 -mt-16" />
-                <div className="relative z-10">
-                    <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-6 mb-12">
-                        <div>
-                            <h2 className="text-3xl lg:text-4xl font-black text-brand-navy font-serif mb-2 italic">Global Opportunities 🔥</h2>
-                            <p className="text-gray-500 font-medium tracking-tight">Latest government & private sector openings monitored by NR Regional Bureau.</p>
-                        </div>
-                        <Link href="/category/jobs" className="bg-brand-navy text-white px-8 py-3 rounded-full font-black text-xs uppercase tracking-widest hover:bg-brand-gold transition-colors self-start shadow-lg">
-                            Access Opportunity Hub
-                        </Link>
-                    </div>
-                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-                    {filteredJobs.slice(0, 4).map((job: any) => (
-                        <Link key={job._id || job.id} href={`/news/${job.slug.current || job.slug}`} className="group p-6 rounded-2xl bg-news-paper border border-transparent hover:border-brand-gold/30 hover:shadow-lg transition-all">
-                            <h3 className="text-lg font-black text-brand-navy font-serif mb-3 line-clamp-2 leading-tight transition-colors italic">{job.title}</h3>
-                            <div className="text-[10px] font-black tracking-widest text-brand-navy/30 uppercase">Open Tracking Center &rarr;</div>
-                        </Link>
-                    ))}
-                    </div>
-                </div>
-              </section>
-            )}
-
-            <NewsGrid 
-              title="अपराध समीक्षा | Crime Analysis" 
-              articles={filteredCrime} 
-              link="/category/crime" 
-              limit={4} 
-              moreText="Examine Full Crime Database"
-            />
-          </div>
-
-          <AdBanner slot="homepage_middle" width={728} height={90} hidePlaceholder={true} />
-          <MailButton />
+            </AdBanner>
         </div>
+
+        {/* TIER 1: BREAKING TICKER (Edge to Edge) */}
+        <Suspense fallback={<div className="h-12 bg-gray-50 animate-pulse rounded" />}>
+          <BreakingNews />
+        </Suspense>
+
+        <div className="container py-8">
+          
+          {/* TIER 2: NDTV PACKED HERO */}
+          <NDTVHero 
+            mainStory={mainStory} 
+            topStories={topStories} 
+            trendingStories={trendingStories} 
+          />
+
+          <div className="grid grid-cols-1 lg:grid-cols-12 gap-12">
+            {/* MAIN FEED (LHS) */}
+            <div className="lg:col-span-9">
+              
+              {/* NATIONAL SECTION */}
+              <NewsGrid title="India Intelligence" articles={fIndia} variant="mixed" link="/india" />
+
+              <div className="my-8">
+                <AdBanner slot="mid_home_india" width={728} height={90}>
+                    <NewsStripe articles={adIndiaNews} title="India Intelligence Feed" />
+                </AdBanner>
+              </div>
+
+              {/* BIG STORY GRID: GARHWA */}
+              <NewsGrid title="Garhwa Reports" articles={fGarhwa} variant="standard" link="/garhwa" />
+
+              <div className="my-8">
+                <AdBanner slot="mid_home_1" width={728} height={90}>
+                    <NewsStripe articles={adGarhwaNews} title="Garhwa Fast Track" />
+                </AdBanner>
+              </div>
+
+              {/* DENSE GRID: PALAMU */}
+              <NewsGrid title="Palamu Reports" articles={fPalamu} variant="standard" link="/palamu" />
+
+              {/* PHOTO GALLERY HOOK */}
+              <PhotoGallery articles={allFeatured.slice(15, 20)} />
+
+              {/* POLITICS & CRIME (DENSE LISTS) */}
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-12">
+                 <NewsGrid title="Politics" articles={fPolitics} variant="list" link="/category/politics" />
+                 <NewsGrid title="Crime Watch" articles={fCrime} variant="list" link="/category/crime" />
+              </div>
+
+              <div className="my-8">
+                <AdBanner slot="mid_home_2" width={728} height={90}>
+                    <NewsStripe articles={adSecondaryNews} title="National Briefing" />
+                </AdBanner>
+              </div>
+
+              {/* SECONDARY CATEGORIES */}
+              <NewsGrid title="Education & Career" articles={fEducation} variant="standard" limit={4} link="/category/education" />
+              <NewsGrid title="Sports Hub" articles={fSports} variant="mixed" limit={6} link="/category/sports" />
+
+            </div>
+
+            {/* SIDEBAR (RHS) */}
+            <aside className="lg:col-span-3 space-y-12">
+              <div className="sticky top-24 space-y-12">
+                  <AdBanner slot="sidebar_skyscraper" width={300} height={600}>
+                      <NewsStripe articles={adSidebarNews} title="Quick Updates" variant="vertical" />
+                  </AdBanner>
+                  
+                  {/* Sidebar Most Read */}
+                  <div className="bg-[#fcfcfc] border-t-2 border-ndtv-black p-5">
+                    <h3 className="text-[11px] font-black uppercase tracking-widest text-brand-red mb-4 flex items-center gap-2">
+                        <TrendingUp size={14} /> Most Shared Today
+                    </h3>
+                    <div className="space-y-4">
+                        {allFeatured.slice(20, 25).map((s, i) => (
+                            <Link key={i} href={`/news/${s.slug}`} className="group block">
+                                <h4 className="text-[12px] font-bold text-gray-800 leading-snug group-hover:text-brand-red transition-colors line-clamp-3">
+                                    {s.title}
+                                </h4>
+                            </Link>
+                        ))}
+                    </div>
+                  </div>
+
+                  <div className="bg-ndtv-black p-6 rounded-sm text-white">
+                    <h4 className="text-[12px] font-black uppercase tracking-widest text-brand-red mb-4">Bureau Alerts</h4>
+                    <p className="text-[13px] text-gray-400 font-medium leading-relaxed">Get the digital grid briefings delivered to your inbox daily.</p>
+                    <Link href="/contact" className="mt-6 block text-center py-3 bg-brand-red text-white text-[10px] font-black uppercase tracking-widest rounded hover:bg-white hover:text-brand-red transition-all">
+                        Subscribe Now
+                    </Link>
+                  </div>
+              </div>
+            </aside>
+          </div>
+        </div>
+
+        {/* TIER 3: CITY GRID (BOTTOM PACK) */}
+        <CityGrid 
+          cities={[
+            { name: 'Garhwa', articles: data.garhwa },
+            { name: 'Palamu', articles: data.palamu },
+            { name: 'Latehar', articles: data.latehar },
+            { name: 'Chatra', articles: data.chatra }
+          ]} 
+        />
       </div>
     </PublicLayout>
   )

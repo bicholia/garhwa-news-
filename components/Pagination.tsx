@@ -26,7 +26,7 @@ export default function Pagination({ currentPage, totalPages, basePath }: Pagina
 
     return (
         <div className="flex flex-col items-center gap-6 mt-16">
-            <div className="text-[10px] font-black uppercase tracking-[0.3em] text-brand-navy/30 flex items-center gap-2">
+            <div className="text-[10px] font-bold uppercase tracking-[0.3em] text-brand-navy/30 flex items-center gap-2">
                 <Hash size={10} /> Agency Archive Page {currentPage} of {totalPages}
             </div>
             
@@ -46,10 +46,10 @@ export default function Pagination({ currentPage, totalPages, basePath }: Pagina
 
                     return (
                         <div key={page} className="flex items-center gap-3">
-                            {showEllipsis && <span className="text-gray-300 font-black">...</span>}
+                            {showEllipsis && <span className="text-gray-300 font-bold">...</span>}
                             <Link
                                 href={`${basePath}?page=${page}`}
-                                className={`w-12 h-12 flex items-center justify-center rounded-2xl text-sm font-black transition-all shadow-sm ${page === currentPage
+                                className={`w-12 h-12 flex items-center justify-center rounded-2xl text-sm font-bold transition-all shadow-sm ${page === currentPage
                                         ? 'bg-brand-navy text-white shadow-brand-navy/20 shadow-xl scale-110 z-10'
                                         : 'bg-white border border-gray-100 text-brand-navy hover:border-brand-gold/30 hover:text-brand-gold hover:shadow-lg'
                                     }`}

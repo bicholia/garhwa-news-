@@ -6,7 +6,7 @@
         },
         {
             "path": "/api/ai-news-agent",
-            "schedule": "0 * * * *"
+            "schedule": "30 0 * * *"
         }
     ],
     "rewrites": [

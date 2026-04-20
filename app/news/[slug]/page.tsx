@@ -1,62 +1,43 @@
 import { client, urlFor } from '@/lib/sanity'
-import { getNewsBySlug, getRelatedNews, mergeAndSortNews } from '@/lib/db'
+import { getNewsBySlug, getRelatedNews, mergeAndSortNews, getAllNews } from '@/lib/db'
 import { notFound } from 'next/navigation'
-import { FaFacebookF, FaTwitter, FaWhatsapp, FaTelegramPlane, FaLinkedinIn } from 'react-icons/fa'
+import { FaFacebookF, FaTwitter, FaWhatsapp, FaTelegramPlane } from 'react-icons/fa'
 import Image from 'next/image'
 import Link from 'next/link'
 import { PortableText } from '@portabletext/react'
 import { Metadata } from 'next'
-import SectionHeading from '@/components/SectionHeading'
 import AdBanner from '@/components/AdBanner'
 import PublicLayout from '@/components/PublicLayout'
-import { Clock, MapPin, User, ShieldCheck, ArrowRight, TrendingUp } from 'lucide-react'
+import { Clock, MapPin, User, ShieldCheck, PlayCircle, TrendingUp } from 'lucide-react'
 import ArticleActions from '@/components/ArticleActions'
 import { scrubBrandNames, scrubSlug, scrubPortableText } from '@/lib/safety'
 
-export const revalidate = 0 // Fetch fresh news every time
+export const revalidate = 0 
 
 async function getArticle(slug: string) {
     const postgresArticle: any = await getNewsBySlug(slug)
     
     if (postgresArticle) {
         const [pgRelated, snRelated]: [any[], any[]] = await Promise.all([
-            getRelatedNews(postgresArticle.category, postgresArticle.district, slug, 3),
-            client.fetch(`*[_type == "article" && district == $district] | order(publishedAt desc)[0...3] {
+            getRelatedNews(postgresArticle.category, postgresArticle.district, slug, 6),
+            client.fetch(`*[_type == "article" && district == $district] | order(publishedAt desc)[0...6] {
                 _id, title, "slug": slug.current, featureImage, publishedAt
             }`, { district: postgresArticle.district })
         ])
         
         return {
             ...postgresArticle,
-            related: mergeAndSortNews(pgRelated, snRelated, 3)
+            related: mergeAndSortNews(pgRelated, snRelated, 6)
         }
     }
 
     const query = `* [_type == "article" && slug.current == $slug][0] {
-        title,
-        excerpt,
-        featureImage,
-        body,
-        location,
-        tags,
-        updates,
-        publishedAt,
-        _updatedAt,
-        localAd,
-        highlights,
+        title, excerpt, featureImage, body, location, tags, updates, publishedAt, _updatedAt, localAd, highlights,
         "author": author -> { name, slug, image, bio },
-        "category": category -> {
-            "slug": slug.current,
-            "name": name
-        },
-        district,
-        seoKeywords,
-        "related": * [_type == "article" && category._ref == ^.category._ref && slug.current != $slug] | order(publishedAt desc)[0...3] {
-            _id,
-            title,
-            "slug": slug.current,
-            featureImage,
-            publishedAt
+        "category": category -> { "slug": slug.current, "name": name },
+        district, seoKeywords,
+        "related": * [_type == "article" && category._ref == ^.category._ref && slug.current != $slug] | order(publishedAt desc)[0...6] {
+            _id, title, "slug": slug.current, featureImage, publishedAt
         }
     } `
     const sanityArticle: any = await client.fetch(query, { slug })
@@ -64,11 +45,9 @@ async function getArticle(slug: string) {
     if (sanityArticle) {
         sanityArticle.title = scrubBrandNames(sanityArticle.title);
         sanityArticle.excerpt = scrubBrandNames(sanityArticle.excerpt);
-        sanityArticle.slug = scrubSlug(sanityArticle.slug);
         sanityArticle.body = scrubPortableText(sanityArticle.body);
-        
-        const pgRelated = await getRelatedNews(sanityArticle.category?.name, sanityArticle.district, slug, 3)
-        sanityArticle.related = mergeAndSortNews(pgRelated, sanityArticle.related, 3)
+        const pgRelated = await getRelatedNews(sanityArticle.category?.name, sanityArticle.district, slug, 6)
+        sanityArticle.related = mergeAndSortNews(pgRelated, sanityArticle.related, 6)
     }
     
     return sanityArticle
@@ -79,218 +58,133 @@ export async function generateMetadata({ params }: { params: Promise<{ slug: str
     const decodedSlug = decodeURIComponent(slug)
     const article = await getArticle(decodedSlug)
     if (!article) return {}
-    
-    const domain = 'https://garhwapalamunews.com'
-    const imageUrl = (article.image_url || (article.featureImage?.asset ? urlFor(article.featureImage).width(1200).height(630).url() : `${domain}/og-image.png`))
+    const domain = 'https://thinkindia.press'
+    const imageUrl = article.image_url || (article.featureImage?.asset ? urlFor(article.featureImage).width(1200).height(630).url() : `${domain}/og-image.png`)
 
     return {
-        title: `${article.title} | NR Global Agency`,
+        title: `${article.title} | Think India`,
         description: article.excerpt?.substring(0, 160),
-        keywords: article.seoKeywords || article.seo_keywords || `NR Global News, ${article.district}, ${article.category?.name}`,
-        alternates: { canonical: `${domain}/news/${slug}` },
-        openGraph: {
-            title: article.title,
-            description: article.excerpt,
-            url: `${domain}/news/${slug}`,
-            siteName: 'NR Global News',
-            type: 'article',
-            images: [{ url: imageUrl }],
-        },
+        openGraph: { title: article.title, images: [{ url: imageUrl }] },
     }
 }
 
-export default async function ArticlePage({ params }: { params: Promise<{ slug: string }> }) {
+export default async function Page({ params }: { params: Promise<{ slug: string }> }) {
     const { slug } = await params
     const decodedSlug = decodeURIComponent(slug)
     const article = await getArticle(decodedSlug)
+    const sidebarNews = await getAllNews(10)
+
     if (!article) notFound()
 
-    const publishedDate = article.publishedAt || article.published_at
-    const formattedDate = new Date(publishedDate || Date.now()).toLocaleDateString('hi-IN', {
-        weekday: 'long',
-        year: 'numeric',
-        month: 'long',
-        day: 'numeric',
-    })
-
-    const jsonLd = {
-        '@context': 'https://schema.org',
-        '@graph': [
-            {
-                '@type': 'NewsArticle',
-                headline: article.title,
-                description: article.excerpt,
-                image: (article.featureImage?.asset || article.image_url) ? [
-                    article.image_url || urlFor(article.featureImage).width(1200).height(630).url()
-                ] : [],
-                datePublished: article.publishedAt || article.published_at,
-                author: [{
-                    '@type': 'Person',
-                    name: article.author?.name || 'संवाददाता',
-                }],
-                publisher: {
-                    '@type': 'NewsMediaOrganization',
-                    name: 'NR Global News',
-                    logo: 'https://garhwapalamunews.com/logo-new.png',
-                }
-            }
-        ]
-    }
+    const imageUrl = article.image_url || (article.featureImage?.asset ? urlFor(article.featureImage).width(1200).height(630).url() : null)
+    const date = article.publishedAt || article.published_at
 
     return (
         <PublicLayout>
-            <div className="bg-news-paper min-h-screen pb-20">
-                <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }} />
-                
-                {/* Hero Banner Area */}
-                <div className="bg-brand-navy pt-10 pb-20 lg:pt-16 lg:pb-32 px-4">
-                    <div className="container max-w-4xl mx-auto text-center">
-                        <div className="flex justify-center items-center gap-4 mb-8">
-                             <Link href={`/category/${article.category?.slug?.current || article.category?.slug || 'news'}`} 
-                                className="bg-brand-gold text-white text-[10px] font-black uppercase tracking-[0.3em] px-6 py-2 rounded-full shadow-lg">
-                                {typeof article.category === 'string' ? article.category : article.category?.name || 'REPORT'}
-                            </Link>
-                            <span className="text-white/20 text-xs font-black uppercase tracking-widest hidden md:inline">NR Agency Intelligence</span>
-                        </div>
-                        <h1 className="text-2xl md:text-5xl lg:text-6xl font-black text-white font-serif leading-[1.15] mb-8 tracking-tight">
-                            {article.title}
-                        </h1>
-                        <div className="flex flex-wrap justify-center items-center gap-6 text-xs font-bold uppercase tracking-widest text-gray-400">
-                             <div className="flex items-center gap-2"><Clock size={14} className="text-brand-gold" /> {formattedDate}</div>
-                             <div className="flex items-center gap-2"><MapPin size={14} className="text-brand-gold" /> {article.location || article.district}</div>
-                             <div className="flex items-center gap-2"><User size={14} className="text-brand-gold" /> {article.author?.name || 'By NR Desk'}</div>
-                        </div>
-                    </div>
+            <div className="bg-white min-h-screen">
+                <div className="bg-gray-50 border-b border-gray-100 py-4 hidden lg:flex justify-center">
+                    <AdBanner slot="article_top" width={728} height={90} />
                 </div>
 
-                <main className="container max-w-4xl mx-auto -mt-16 lg:-mt-24 px-4 relative z-10">
-                    <article className="bg-white rounded-3xl shadow-2xl overflow-hidden border border-gray-100">
-                        {/* Featured Image */}
-                        {(article.featureImage?.asset || article.image_url) && (
-                            <div className="relative aspect-[16/9] w-full group">
-                                <Image
-                                    src={article.image_url || urlFor(article.featureImage).width(1200).height(675).url()}
-                                    alt={article.title}
-                                    fill
-                                    priority
-                                    className="object-cover"
-                                />
-                                <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent opacity-0 group-hover:opacity-100 transition-opacity flex items-end p-8">
-                                    <div className="text-white text-[10px] font-black uppercase tracking-widest flex items-center gap-2">
-                                        <ShieldCheck size={14} className="text-brand-gold" /> Authenticated Agency Media
+                <div className="container max-w-7xl mx-auto py-8 lg:py-12">
+                    <div className="grid grid-cols-1 lg:grid-cols-12 gap-12">
+                        {/* MAIN CONTENT (LHS) */}
+                        <article className="lg:col-span-8 flex flex-col">
+                            {/* Breadcrumbs */}
+                            <div className="flex items-center gap-2 text-[11px] font-bold text-gray-400 uppercase tracking-widest mb-6">
+                                <Link href="/" className="hover:text-brand-red">Home</Link>
+                                <span>&rarr;</span>
+                                <Link href={`/news`} className="hover:text-brand-red">News</Link>
+                                <span>&rarr;</span>
+                                <span className="text-brand-red">{article.district || 'India'}</span>
+                            </div>
+
+                            <h1 className="text-3xl md:text-5xl font-bold text-black leading-[1.15] mb-6 serif-font">
+                                {article.title}
+                            </h1>
+
+                            <div className="flex flex-wrap items-center gap-6 border-y border-gray-100 py-4 mb-8">
+                                <div className="flex items-center gap-2">
+                                    <div className="w-10 h-10 rounded-full bg-brand-red/10 flex items-center justify-center text-brand-red">
+                                        <User size={20} />
+                                    </div>
+                                    <div className="flex flex-col">
+                                        <span className="text-[12px] font-black uppercase text-black">{article.author?.name || 'Think India Bureau'}</span>
+                                        <span className="text-[10px] text-gray-500 font-bold uppercase tracking-wider">News Correspondent</span>
                                     </div>
                                 </div>
+                                <div className="h-8 w-[1px] bg-gray-100 hidden sm:block" />
+                                <div className="flex items-center gap-2 text-gray-500 text-[11px] font-bold uppercase tracking-widest" suppressHydrationWarning>
+                                    <Clock size={14} /> 
+                                    Updated: {new Date(date).toLocaleString('hi-IN', { day: 'numeric', month: 'long', year: 'numeric', hour: '2-digit', minute: '2-digit' })}
+                                </div>
                             </div>
-                        )}
 
-                        <div className="p-8 lg:p-16">
-                            {/* Short Intro / Excerpt */}
-                            {article.excerpt && (
-                                <p className="text-xl lg:text-2xl font-black text-brand-navy font-serif leading-relaxed mb-12 italic border-l-4 border-brand-gold pl-8">
-                                    {article.excerpt}
-                                </p>
-                            )}
-
-                            {/* Action Bar */}
-                            <ArticleActions title={article.title} slug={slug} excerpt={article.excerpt} />
-
-                            {/* Highlights */}
-                            {Array.isArray(article.highlights) && article.highlights.length > 0 && (
-                                <div className="bg-brand-navy/5 rounded-2xl p-8 lg:p-12 mb-12 border border-brand-gold/10">
-                                    <h2 className="text-xs font-black uppercase tracking-[0.4em] text-brand-gold mb-8 flex items-center gap-3">
-                                        <TrendingUp size={16} /> Intelligence Summary
-                                    </h2>
-                                    <ul className="space-y-6">
-                                        {article.highlights.map((h: string, idx: number) => (
-                                            <li key={idx} className="flex items-start gap-4 text-brand-navy font-bold leading-relaxed italic">
-                                                <span className="w-2 h-2 mt-2 bg-brand-gold rounded-full shrink-0" /> {h}
-                                            </li>
-                                        ))}
-                                    </ul>
+                            {imageUrl && (
+                                <div className="relative aspect-video rounded-sm overflow-hidden mb-8 bg-gray-100">
+                                    <Image src={imageUrl} alt={article.title} fill className="object-cover" priority />
+                                    <div className="absolute bottom-0 left-0 right-0 bg-black/60 backdrop-blur-md p-4 text-white text-[12px] font-medium italic">
+                                        Representative Image — Think India Bureau
+                                    </div>
                                 </div>
                             )}
 
-                            {/* Main Body */}
-                            <div className="prose prose-lg max-w-none text-gray-700 leading-[1.8] font-medium selection:bg-brand-gold/20">
-                                {article.content ? (
-                                    article.content.split('\n').map((para: string, i: number) => (
-                                        <p key={i} className="mb-8">{para}</p>
-                                    ))
-                                ) : article.body?.length > 0 && typeof article.body[0]?.children?.[0]?.text === 'string' && article.body[0].children[0].text.trimStart().startsWith('<') ? (
-                                    <div dangerouslySetInnerHTML={{ __html: article.body.map((b: any) => b.children?.map((c: any) => c.text).join('') ?? '').join('\n') }} />
-                                ) : (
+                            <div className="prose prose-lg max-w-none text-gray-900 leading-[1.8] serif-font article-body">
+                                {article.body ? (
                                     <PortableText value={article.body} />
-                                )}
-                            </div>
-
-                            {/* Tags Section */}
-                            {Array.isArray(article.tags) && article.tags.length > 0 && (
-                                <div className="mt-20 pt-10 border-t border-gray-50 flex flex-wrap gap-3">
-                                    <span className="text-[10px] font-black uppercase tracking-widest text-brand-gold w-full mb-2 italic">Classified Data Tags</span>
-                                    {article.tags.map((tag: string, idx: number) => (
-                                        <span key={idx} className="bg-news-paper px-4 py-2 rounded-lg text-xs font-black text-brand-navy uppercase tracking-widest border border-gray-100 hover:bg-brand-navy hover:text-white transition-all cursor-default">
-                                            #{tag}
-                                        </span>
-                                    ))}
-                                </div>
-                            )}
-                        </div>
-                    </article>
-
-                    {/* Author Ecosystem Box */}
-                    {article.author && (
-                        <div className="mt-12 p-8 lg:p-12 bg-white rounded-3xl shadow-xl border border-gray-100 flex flex-col md:flex-row items-center gap-8 group">
-                            <div className="w-24 h-24 rounded-2xl overflow-hidden shrink-0 border-2 border-brand-gold/20 p-1 bg-white relative">
-                                {article.author?.image?.asset ? (
-                                    <Image src={urlFor(article.author.image).width(200).height(200).url()} alt={article.author?.name || 'Author'} fill className="object-cover rounded-xl" />
                                 ) : (
-                                    <div className="w-full h-full bg-brand-navy flex items-center justify-center text-white font-serif text-3xl font-black rounded-xl">{(article.author?.name || 'NR').charAt(0)}</div>
+                                    <div dangerouslySetInnerHTML={{ __html: article.content || '' }} />
                                 )}
                             </div>
-                            <div className="text-center md:text-left">
-                                <span className="text-[10px] font-black uppercase tracking-[0.3em] text-brand-gold mb-2 block italic">Authenticated Agent</span>
-                                <h3 className="text-2xl font-black text-brand-navy font-serif mb-3">
-                                    <Link href={`/author/${article.author?.slug?.current || article.author?.slug || 'admin'}`} className="hover:text-brand-gold transition-colors">
-                                        {article.author?.name || 'NR Bureau Member'}
-                                    </Link>
-                                </h3>
-                                <p className="text-sm text-gray-500 font-medium leading-relaxed max-w-2xl">
-                                    {article.author?.bio || `${article.author?.name || 'NR Bureau'} is a senior intelligence correspondent for NR Global Agency, specializing in regional geopolitical developments and sociopolitical analysis.`}
-                                </p>
-                            </div>
-                        </div>
-                    )}
 
-                    {/* Related Archives */}
-                    {article.related && article.related.length > 0 && (
-                        <section className="mt-24">
-                            <SectionHeading title="System Related Archives" />
-                            <div className="grid grid-cols-1 md:grid-cols-3 gap-8 mt-12">
-                                {article.related.map((item: any) => (
-                                    <Link key={item._id || item.id} href={`/news/${item.slug.current || item.slug}`} className="group bg-white rounded-2xl p-4 shadow-lg hover:-translate-y-2 transition-all duration-500 border border-gray-50">
-                                        {(item.featureImage?.asset || item.image_url) && (
-                                            <div className="relative aspect-video rounded-xl overflow-hidden mb-4">
-                                                <Image
-                                                    src={item.image_url || urlFor(item.featureImage).width(400).height(225).url()}
-                                                    alt={item.title}
-                                                    fill
-                                                    className="object-cover group-hover:scale-110 transition-transform duration-700"
-                                                />
-                                            </div>
-                                        )}
-                                        <h3 className="text-sm font-black text-brand-navy font-serif leading-tight group-hover:text-brand-gold transition-colors italic">
-                                            {item.title}
-                                        </h3>
-                                        <div className="mt-4 flex items-center justify-between text-[8px] font-black uppercase tracking-widest text-brand-navy/30">
-                                            <span>{new Date(item.publishedAt).toLocaleDateString()}</span>
-                                            <span className="flex items-center gap-1">Open <ArrowRight size={8} /></span>
-                                        </div>
-                                    </Link>
-                                ))}
+                            {/* Share & Actions */}
+                            <div className="mt-12 pt-8 border-t border-gray-100 flex flex-col sm:flex-row justify-between items-center gap-6">
+                                <div className="flex items-center gap-4">
+                                    <span className="text-[10px] font-black uppercase tracking-widest text-gray-400">Share This:</span>
+                                    <div className="flex gap-2">
+                                        <button className="w-8 h-8 rounded-full bg-[#1877F2] text-white flex items-center justify-center hover:scale-110 transition-transform"><FaFacebookF size={14} /></button>
+                                        <button className="w-8 h-8 rounded-full bg-[#1DA1F2] text-white flex items-center justify-center hover:scale-110 transition-transform"><FaTwitter size={14} /></button>
+                                        <button className="w-8 h-8 rounded-full bg-[#25D366] text-white flex items-center justify-center hover:scale-110 transition-transform"><FaWhatsapp size={14} /></button>
+                                    </div>
+                                </div>
+                                <Link href="/news" className="flex items-center gap-2 px-6 py-2 border-2 border-brand-red text-brand-red text-[11px] font-black uppercase tracking-widest rounded-full hover:bg-brand-red hover:text-white transition-all">
+                                    Read More News &rarr;
+                                </Link>
                             </div>
-                        </section>
-                    )}
-                </main>
+                        </article>
+
+                        {/* SIDEBAR (RHS) */}
+                        <aside className="lg:col-span-4 flex flex-col gap-10">
+                            {/* AD SLOT */}
+                            <AdBanner slot="article_sidebar" width={300} height={250} />
+
+                            {/* RELATED NEWS (NDTV STYLE) */}
+                            <div className="bg-[#F8F8F8] p-6 rounded-sm border-t-4 border-brand-red">
+                                <h3 className="text-[12px] font-black text-black uppercase tracking-widest mb-6 flex items-center gap-2">
+                                    <TrendingUp size={16} className="text-brand-red" /> More From {article.district || 'Jharkhand'}
+                                </h3>
+                                <div className="space-y-6">
+                                    {(article.related || []).slice(0, 6).map((item: any, i: number) => {
+                                        const thumb = item.featureImage?.asset ? urlFor(item.featureImage).width(100).height(100).url() : '/placeholder.png'
+                                        return (
+                                            <Link key={i} href={`/news/${item.slug}`} className="flex gap-4 group">
+                                                <div className="shrink-0 w-20 h-20 relative rounded-sm overflow-hidden bg-white">
+                                                    <Image src={thumb} alt={item.title} fill className="object-cover group-hover:scale-110 transition-transform" />
+                                                </div>
+                                                <div className="flex flex-col gap-2">
+                                                    <h4 className="text-[13px] font-bold text-gray-900 leading-snug group-hover:text-brand-red transition-colors serif-font line-clamp-3">
+                                                        {item.title}
+                                                    </h4>
+                                                </div>
+                                            </Link>
+                                        )
+                                    })}
+                                </div>
+                            </div>
+
+                        </aside>
+                    </div>
+                </div>
             </div>
         </PublicLayout>
     )

@@ -3,6 +3,9 @@ export function rateLimit(options: { interval: number; max: number }) {
 
     return {
         check: (ip: string) => {
+            // BUG-09 FIX: Prevent memory leak by clearing cache if it grows too large
+            if (cache.size > 10000) cache.clear()
+
             const now = Date.now()
             const record = cache.get(ip)
 
@@ -17,11 +20,12 @@ export function rateLimit(options: { interval: number; max: number }) {
             }
 
             if (record.count >= options.max) {
+                // BUG-21 FIX: Don't update lastRequest on rejected requests to avoid window reset
                 return false
             }
 
             record.count++
-            record.lastRequest = now
+            // record.lastRequest = now // Removed to fix BUG-21
             return true
         }
     }

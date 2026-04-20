@@ -88,25 +88,44 @@ JSON Format:
 
     for (const modelInfo of aiModels) {
         try {
-            let jsonStr = "";
+            let finalParsed = null;
             if (modelInfo.type === "gemini") {
                 const model = genAI.getGenerativeModel({ model: modelInfo.name });
                 const result = await model.generateContent(geoPrompt);
                 const text = (await result.response).text().trim();
-                jsonStr = text.substring(text.indexOf('{'), text.lastIndexOf('}') + 1);
+                const jsonStr = text.substring(text.indexOf('{'), text.lastIndexOf('}') + 1);
+                finalParsed = JSON.parse(jsonStr);
             } else {
                 const url = `https://text.pollinations.ai/${encodeURIComponent(geoPrompt)}?model=${modelInfo.name}`;
                 const controller = new AbortController();
-                const timeoutId = setTimeout(() => controller.abort(), 12000); // 12s per AI
+                const timeoutId = setTimeout(() => controller.abort(), 30000); // 30s per AI
                 const res = await fetch(url, { signal: controller.signal });
                 clearTimeout(timeoutId);
                 const text = await res.text();
-                jsonStr = text.substring(text.indexOf('{'), text.lastIndexOf('}') + 1);
+                
+                // Smart JSON Parsing
+                const parseAIResponse = (innerText) => {
+                    try {
+                        return JSON.parse(innerText);
+                    } catch (e) {
+                        const jsonMatch = innerText.match(/```json\n([\s\S]*?)\n```/) || innerText.match(/```([\s\S]*?)```/);
+                        if (jsonMatch) {
+                            try { return JSON.parse(jsonMatch[1]); } catch (e2) {}
+                        }
+                        const firstBrace = innerText.indexOf('{');
+                        const lastBrace = innerText.lastIndexOf('}');
+                        if (firstBrace !== -1 && lastBrace !== -1) {
+                            try { return JSON.parse(innerText.substring(firstBrace, lastBrace + 1)); } catch (e3) {}
+                        }
+                        throw new Error('Could not parse JSON from AI response');
+                    }
+                };
+                const parsed = parseAIResponse(text);
+                finalParsed = parsed;
             }
             
-            // Smart JSON Parsing
-            const finalParsed = JSON.parse(jsonStr);
-            
+            if (!finalParsed) throw new Error('Failed to get parsed AI response');
+
             // Handle variations in key names (case-insensitive)
             const findKey = (obj, key) => {
                 const entries = Object.entries(obj);
@@ -262,6 +281,12 @@ async function run() {
 
             console.log(`✅ Published: ${rewritten.title.substring(0, 40)}`);
             count++;
+            
+            // Wait 3 seconds to avoid rate limits
+            if (count < 30) {
+                console.log('⏳ Waiting 3 seconds before next article...');
+                await new Promise(r => setTimeout(r, 3000));
+            }
         }
         
         console.log(`✨ Successfully published ${count} news articles!`);

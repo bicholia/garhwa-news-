@@ -1,6 +1,7 @@
 import Link from 'next/link'
 import Image from 'next/image'
 import { createClient } from '@sanity/client'
+import NewsStripe from './NewsStripe'
 
 // Server-side Sanity client — always fetches fresh (no CDN cache)
 const client = createClient({
@@ -21,6 +22,7 @@ interface AdBannerProps {
     className?: string
     style?: React.CSSProperties
     hidePlaceholder?: boolean
+    children?: React.ReactNode
 }
 
 async function getGlobalBanner(slot: string) {
@@ -60,7 +62,8 @@ export default async function AdBanner({
     height = 90,
     className = '',
     style = {},
-    hidePlaceholder = false
+    hidePlaceholder = false,
+    children
 }: AdBannerProps) {
 
     let finalImageUrl = imageUrl
@@ -84,8 +87,35 @@ export default async function AdBanner({
         }
     }
 
-    // No ad found — show the placeholder block
+    // No ad found — show the placeholder block or fallback children
     if (!finalImageUrl) {
+        if (children) return <>{children}</>;
+        
+        // Automatic News Fallback
+        try {
+            const fallbackArticles = await client.fetch(`*[_type == "article" && defined(slug.current)] | order(publishedAt desc)[0...5] {
+                title,
+                "slug": slug.current,
+                featureImage,
+                publishedAt
+            }`);
+            
+            if (fallbackArticles && fallbackArticles.length > 0) {
+                const isSidebar = slot.toLowerCase().includes('sidebar') || slot.toLowerCase().includes('skyscraper');
+                return (
+                    <div className="container">
+                        <NewsStripe 
+                            articles={fallbackArticles} 
+                            title="Bureau Briefing" 
+                            variant={isSidebar ? 'vertical' : 'horizontal'} 
+                        />
+                    </div>
+                );
+            }
+        } catch (err) {
+            console.error('[AdBanner] Fallback news fetch error:', err);
+        }
+
         if (hidePlaceholder) return null;
         return (
             <div

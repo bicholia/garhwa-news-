@@ -11,12 +11,15 @@ const config: Config = {
             colors: {
                 'brand-navy': '#0F172A',
                 'brand-gold': '#B45309',
+                'brand-red': '#E31E24',
+                'ndtv-black': '#000000',
+                'ndtv-gray': '#F5F5F5',
                 'news-paper': '#F8FAF9',
                 'news-text': '#1E293B',
             },
             fontFamily: {
-                serif: ['var(--font-playfair)', 'serif'],
-                sans: ['var(--font-inter)', 'sans-serif'],
+                serif: ['"PT Serif"', 'serif'],
+                sans: ['Roboto', 'sans-serif'],
             },
             backgroundImage: {
                 'gradient-radial': 'radial-gradient(var(--tw-gradient-stops))',

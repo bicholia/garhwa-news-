@@ -14,27 +14,28 @@ export async function POST(request: Request) {
         // Using gemini-1.5-flash for speed and local context awareness
         const model = genAI.getGenerativeModel({ model: "gemini-1.5-flash" })
 
-        const aiPrompt = `आप 'NR Daily News' (गढ़वा पलामू न्यूज़ ब्यूरो) के एक सीनियर एडिटर हैं।
-नीचे दी गई जानकारी या लिंक के विवरण को एक संपूर्ण हिंदी न्यूज़ आर्टिकल में बदलें। 
+        const aiPrompt = `आप 'Think India' (थिंक इंडिया न्यूज़ ब्यूरो) के एक सीनियर मैनेजिंग एडिटर हैं।
+नीचे दी गई जानकारी या लिंक के विवरण को एक उच्च स्तरीय, प्रमाणिक हिंदी न्यूज़ आर्टिकल में बदलें, जैसा कि NDTV या बड़े न्यूज़ चैनलों पर दिखता है।
 
 जानकारी: ${prompt}
 
-नियम:
-1. हेडलाइन: बहुत आकर्षक, स्थानीय और क्लिक करने लायक होनी चाहिए (गढ़वा/पलामू संदर्भ जोड़ें)।
-2. खबर: कम से कम 300-400 शब्दों की हो। तथ्यों को विस्तार से समझाएं। 
-3. सारांश: 30-40 शब्दों का एक मजबूत 'Excerpt' जो न्यूज़ ज़ैल में दिखे।
-4. कैटेगरी: इनमें से एक चुनें: [top-story, crime, administration, city-facilities, disaster-accident, health-education, public-issues, rural-development, social-events, politics, sports, entertainment, jobs]
-5. जिला: [garhwa, palamu, jharkhand]
-6. इमेज प्रॉम्प्ट (Image Prompt): न्यूज़ के हिसाब से एक अंग्रेजी में 'High quality realistic news photography' प्रॉम्प्ट लिखें (सिर्फ प्रॉम्प्ट, कोई और टेक्स्ट नहीं)।
+पत्रकारिता के मानक (Journalism Standards):
+1. हेडलाइन: बहुत ही गंभीर, प्रभावशाली और सूचनात्मक होनी चाहिए (क्लिकबेट से बचें, तथ्यों पर ध्यान दें)।
+2. खबर की लंबाई: खबर कम से कम 500-700 शब्दों की होनी चाहिए। इसमें पूर्ण विवरण, पृष्ठभूमि (Background), और यदि संभव हो तो विशेषज्ञों या सूत्रों के हवाले से जानकारी जोड़ें।
+3. टोन (Tone): आवाज़ "Authoritative, Neutral और Fearless" होनी चाहिए। 'थिंक इंडिया ब्यूरो' के अंदाज़ में लिखें।
+4. सारांश (Excerpt): 120-150 शब्दों का एक विस्तृत सारांश (Lead Paragraph) लिखें जो पाठक को पूरी खबर का सार दे सके।
+5. कैटेगरी: इनमें से एक चुनें: [top-story, crime, administration, city-facilities, disaster-accident, health-education, public-issues, rural-development, social-events, politics, sports, entertainment, jobs]
+6. जिला: [india, garhwa, palamu, jharkhand]
+7. इमेज प्रॉम्प्ट (Image Prompt): न्यूज़ के हिसाब से एक अंग्रेजी में 'High quality realistic news photography, photorealistic, 8k, professional news camera style' प्रॉम्प्ट लिखें।
 
-आउटपुट सिर्फ शुद्ध JSON फॉर्मेट में दें (बिना किसी बैकथिक्स या कोड ब्लॉक के):
+आउटपुट JSON फॉर्मेट में दें:
 {
-  "title": "आकर्षक हेडलाइन",
-  "excerpt": "छोटा सारांश",
-  "content": "पूरी खबर का HTML फॉर्मेट (सिर्फ <p>, <br>, <strong> टैग्स)",
+  "title": "प्रभावशाली हेडलाइन",
+  "excerpt": "विस्तृत 150 शब्दों का सारांश",
+  "content": "पूरी खबर का HTML फॉर्मेट (सिर्फ <p>, <br>, <strong> टैग्स इस्तेमाल करें, खबर 500+ शब्दों की हो)",
   "category": "category-slug",
   "district": "district-slug",
-  "imagePrompt": "A realistic photo of [news context] in a local Indian city setting, high resolution, news style"
+  "imagePrompt": "A professional news photograph of [context], ultra-realistic, news reporting style"
 }`
 
         const result = await model.generateContent(aiPrompt)

@@ -7,26 +7,26 @@ import CookieBanner from '@/components/CookieBanner'
 import { Analytics } from '@vercel/analytics/react'
 
 export const metadata: Metadata = {
-  metadataBase: new URL('https://garhwapalamunews.com'),
+  metadataBase: new URL('https://thinkindia.press'),
   title: {
-    default: 'NR Regional News Bureau | Global Reporting Standards',
-    template: '%s | NR Regional News',
+    default: 'Think India | Fast. Fair. Fearless.',
+    template: '%s | Think India',
   },
   description:
-    'NR Regional News Bureau delivers authoritative local reporting from Jharkhand, Garhwa, and Palamu, powered by the global standards of NR Global Agency.',
+    'Think India delivers authoritative regional reporting and national intelligence, powered by speed and journalistic integrity.',
   keywords: [
-    'NR Global News', 'NR Daily News', 'Jharkhand News', 'Garhwa News', 'Palamu News',
-    'International News Agency', 'Latest Hindi News', 'Breaking News India'
+    'Think India', 'Think India News', 'Jharkhand News', 'Garhwa News', 'Palamu News',
+    'Latest Hindi News', 'Breaking News India'
   ],
   openGraph: {
     type: 'website',
     locale: 'en_US',
-    siteName: 'NR Regional News Bureau',
-    images: [{ url: '/logo-new.png', width: 1200, height: 630, alt: 'NR Regional News' }],
+    siteName: 'Think India',
+    images: [{ url: '/logo-think-india.png', width: 1200, height: 630, alt: 'Think India' }],
   },
   twitter: {
     card: 'summary_large_image',
-    images: ['/logo-new.png'],
+    images: ['/logo-think-india.png'],
   },
   icons: {
     icon: [
@@ -42,19 +42,19 @@ export const metadata: Metadata = {
     index: true,
     follow: true,
   },
-  alternates: { canonical: 'https://garhwapalamunews.com' },
+  alternates: { canonical: 'https://thinkindia.press' },
 }
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
     <html lang="hi" className="scroll-smooth">
       <head>
-        <meta name="theme-color" content="#0F172A" />
+        <meta name="theme-color" content="#E31E24" />
         <meta name="mobile-web-app-capable" content="yes" />
         <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
       </head>
-      <body className="bg-news-paper min-h-screen antialiased selection:bg-brand-gold/30 selection:text-brand-navy" suppressHydrationWarning>
-        <div id="nr-daily-news-root" className="flex flex-col min-h-screen" suppressHydrationWarning>
+      <body className="bg-white min-h-screen antialiased selection:bg-brand-red/30 selection:text-black" suppressHydrationWarning>
+        <div id="think-india-root" className="flex flex-col min-h-screen" suppressHydrationWarning>
           <ErrorHandler />
           <Suspense fallback={null}>
             <PremiumLoader />

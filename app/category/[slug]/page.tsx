@@ -1,22 +1,22 @@
-import { client } from '@/lib/sanity'
+import { client, urlFor } from '@/lib/sanity'
 import { getNewsByCategoryPage, CATEGORY_MAP, mergeAndSortNews } from '@/lib/db'
-import ArticleCard from '@/components/ArticleCard'
-import SectionHeading from '@/components/SectionHeading'
-import Pagination from '@/components/Pagination'
-import { notFound } from 'next/navigation'
 import PublicLayout from '@/components/PublicLayout'
+import Link from 'next/link'
+import { Globe, Clock, ArrowRight, ShieldCheck } from 'lucide-react'
+import Pagination from '@/components/Pagination'
+import AdBanner from '@/components/AdBanner'
 
 export const revalidate = 3600
 
-const POSTS_PER_PAGE = 12
+const POSTS_PER_PAGE = 20
 
 export async function generateMetadata({ params }: { params: Promise<{ slug: string }> }) {
     const { slug } = await params
     const categoryName = CATEGORY_MAP[slug as keyof typeof CATEGORY_MAP] || slug
     
     return {
-        title: `${categoryName} समाचार | गढ़वा पलामू न्यूज़`,
-        description: `गढ़वा और पलामू क्षेत्र से ${categoryName} से जुड़ी ताज़ा खबरें। पढ़ें विस्तार से।`,
+        title: `${categoryName} | ताज़ा समाचार | Think India`,
+        description: `Think India ${categoryName} Bureau: Fast, fair, and fearless news reporting from the digital grid.`,
     }
 }
 
@@ -38,43 +38,94 @@ export default async function CategoryPage({
         getNewsByCategoryPage(slug, POSTS_PER_PAGE, offset),
         client.fetch(
             `*[_type == "article" && category->slug.current == $slug] | order(publishedAt desc)[$offset...$limit] {
-                _id, title, slug, excerpt, featureImage, publishedAt, author->{name}
+                _id, title, slug, excerpt, featureImage, publishedAt
             }`,
             { slug, offset, limit: offset + POSTS_PER_PAGE }
         ),
         client.fetch(`count(*[_type == "article" && category->slug.current == $slug])`, { slug })
     ])
 
-    const articles = mergeAndSortNews(pgData.articles, snArticles, POSTS_PER_PAGE)
+    const articles = mergeAndSortNews(pgData.articles || pgData, snArticles, POSTS_PER_PAGE)
     const totalCount = pgData.total + snTotal
     const totalPages = Math.ceil(totalCount / POSTS_PER_PAGE)
 
     return (
         <PublicLayout>
-            <main className="container" style={{ paddingTop: '2rem', paddingBottom: '4rem' }}>
-                <SectionHeading title={`${categoryName} समाचार`} />
-
-                {articles.length === 0 ? (
-                    <div style={{ textAlign: 'center', padding: '4rem 0', color: '#6b7280' }}>
-                        इस श्रेणी में अभी कोई समाचार उपलब्ध नहीं है।
-                    </div>
-                ) : (
-                    <>
-                        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(300px, 1fr))', gap: '2rem' }}>
-                            {articles.map((article: any) => (
-                                <ArticleCard key={article.id || article._id} article={article} />
-                            ))}
+            <div className="bg-white min-h-screen pb-20">
+                {/* Category Header */}
+                <div className="bg-ndtv-black py-12 lg:py-16 border-b border-brand-red">
+                    <div className="container">
+                        <div className="flex items-center gap-4 mb-4">
+                            <span className="bg-brand-red text-white text-[10px] font-black uppercase tracking-widest px-3 py-1 rounded">
+                                CATEGORY BUREAU
+                            </span>
+                            <span className="text-gray-400 text-[11px] font-bold uppercase tracking-wider">Independent Coverage</span>
                         </div>
-                        {totalPages > 1 && (
-                            <Pagination
-                                currentPage={currentPage}
-                                totalPages={totalPages}
-                                basePath={`/category/${slug}`}
-                            />
+                        <h1 className="text-4xl lg:text-7xl font-black text-white leading-tight uppercase tracking-tighter serif-font">
+                            {categoryName} <span className="text-brand-red">REPORTS</span>
+                        </h1>
+                    </div>
+                </div>
+
+                <div className="container py-12 flex flex-col lg:flex-row gap-12">
+                    {/* Main Feed */}
+                    <div className="flex-1">
+                        <div className="flex items-center justify-between border-b-2 border-gray-100 mb-10 pb-4">
+                            <h2 className="text-[14px] font-black text-black uppercase tracking-widest flex items-center gap-3">
+                                <span className="w-3 h-3 bg-brand-red rounded-full animate-pulse" />
+                                Latest {categoryName} Intelligence
+                            </h2>
+                            <span className="text-[11px] font-bold text-gray-400 uppercase tracking-widest">Page {currentPage} of {totalPages}</span>
+                        </div>
+
+                        {articles.length === 0 ? (
+                            <div className="text-center py-24 bg-gray-50 text-gray-400 italic">
+                                No intelligence reports found in this sector.
+                            </div>
+                        ) : (
+                            <>
+                                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-x-6 gap-y-12">
+                                    {articles.map((article: any, i: number) => {
+                                        const img = article.image_url || (article.featureImage?.asset ? urlFor(article.featureImage).width(400).height(250).url() : null)
+                                        return (
+                                            <Link key={i} href={`/news/${typeof article.slug === 'string' ? article.slug : article.slug?.current}`} className="group flex flex-col">
+                                                <div className="aspect-video relative overflow-hidden rounded-sm bg-gray-100 mb-4">
+                                                    {img ? <img src={img} className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700" alt={article.title} /> : null}
+                                                </div>
+                                                <h3 className="text-[16px] font-bold text-gray-900 leading-[1.35] group-hover:text-brand-red transition-colors serif-font line-clamp-3">
+                                                    {article.title}
+                                                </h3>
+                                                <div className="mt-4 pt-4 border-t border-gray-50 flex items-center justify-between text-[10px] font-bold text-gray-400 uppercase tracking-wider">
+                                                    <span>{new Date(article.publishedAt || article.published_at).toLocaleDateString()}</span>
+                                                    <span className="group-hover:text-brand-red transition-colors">Read More &rarr;</span>
+                                                </div>
+                                            </Link>
+                                        )
+                                    })}
+                                </div>
+                                {totalPages > 1 && (
+                                    <div className="mt-20 pt-10 border-t border-gray-100">
+                                        <Pagination currentPage={currentPage} totalPages={totalPages} basePath={`/category/${slug}`} />
+                                    </div>
+                                )}
+                            </>
                         )}
-                    </>
-                )}
-            </main>
+                    </div>
+
+                    {/* Sidebar */}
+                    <aside className="w-full lg:w-80 space-y-10">
+                        <AdBanner slot="category_sidebar" width={300} height={250} />
+                        <div className="bg-[#F8F8F8] p-6 rounded-sm border-t-4 border-brand-red">
+                            <h3 className="text-[12px] font-black text-black uppercase tracking-widest mb-6 flex items-center gap-2">
+                                <ShieldCheck size={16} className="text-brand-red" /> Bureau Verified
+                            </h3>
+                            <p className="text-[13px] text-gray-500 font-medium leading-relaxed">
+                                All reports in the {categoryName} sector are double-vetted by Think India editors for accuracy and independence.
+                            </p>
+                        </div>
+                    </aside>
+                </div>
+            </div>
         </PublicLayout>
     )
 }

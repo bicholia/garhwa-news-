@@ -49,8 +49,8 @@ async function getImageUrl(prompt) {
         { id: 'VISION_NODE_2', url: `https://pollinations.ai/p/${encodeURIComponent(prompt)}?width=1280&height=720&model=midjourney&nologo=true` },
         { id: 'VISION_NODE_3', url: `https://pollinations.ai/p/${encodeURIComponent(prompt)}?width=1280&height=720&model=sdxl&nologo=true` },
         { id: 'VISION_NODE_4', url: `https://pollinations.ai/p/${encodeURIComponent(prompt)}?width=1280&height=720&model=dall-e-3&nologo=true` },
-        { id: 'VISION_NODE_5', url: `https://api.airforce/v1/image/generations?prompt=${encodeURIComponent(prompt)}&model=flux` },
-        { id: 'VISION_NODE_6', url: `https://api.airforce/v1/image/generations?prompt=${encodeURIComponent(prompt)}&model=sdxl` },
+        { id: 'VISION_NODE_5', url: `https://api.airforce.one/v1/image/generations?prompt=${encodeURIComponent(prompt)}&model=flux` },
+        { id: 'VISION_NODE_6', url: `https://api.airforce.one/v1/image/generations?prompt=${encodeURIComponent(prompt)}&model=sdxl` },
         { id: 'VISION_NODE_7', url: `https://hercai.onrender.com/v3/text2image?prompt=${encodeURIComponent(prompt)}` },
         { id: 'VISION_NODE_8', url: `https://hercai.onrender.com/v3-beta/text2image?prompt=${encodeURIComponent(prompt)}` },
         { id: 'VISION_NODE_9', url: `https://api-inference.huggingface.co/models/runwayml/stable-diffusion-v1-5` }
@@ -67,8 +67,11 @@ async function getImageUrl(prompt) {
                 continue; 
             }
 
-            const res = await fetch(node.url, { method: 'HEAD' });
-            if (res.ok) return node.url;
+            const res = await fetch(node.url, { method: 'GET' });
+            if (res.ok) {
+                const contentType = res.headers.get('content-type');
+                if (contentType?.startsWith('image/') || node.url.includes('pollinations.ai')) return node.url;
+            }
         } catch (e) {
             console.error(`📸 ${node.id} FAIL: ${e.message}`);
         }
@@ -77,7 +80,12 @@ async function getImageUrl(prompt) {
 }
 
 function createSlug(title) {
-  return title.toLowerCase().replace(/[^a-zA-Z0-9\s]/g, '').replace(/\s+/g, '-');
+  // BUG-05 FIX: Support Hindi characters by allowing Unicode in slug or using timestamp
+  const base = title.toLowerCase()
+    .replace(/[^\w\s\u0900-\u097F]/gi, '') // Keep alphanumeric and Hindi chars
+    .replace(/\s+/g, '-')
+    .substring(0, 50);
+  return `${base}-${Math.random().toString(36).substring(7)}`;
 }
 
 export async function GET(request) {
@@ -97,7 +105,8 @@ export async function GET(request) {
         for (const item of rawNews) {
             if (Date.now() - startTime > 55000) break;
 
-            if (await isNewsExists(createSlug(item.title)) || await isTitleExists(item.title)) {
+            const slugBase = createSlug(item.title)
+            if (await isNewsExists(slugBase) || await isTitleExists(item.title)) {
                 console.log(`⏩ Skipping duplicate: ${item.title.substring(0, 30)}...`);
                 continue;
             }
@@ -134,7 +143,9 @@ export async function GET(request) {
             const socialHook = await AgentSocial(pulseDraft);
 
             // PUBLICATION
+            const detectedCategory = pulseDraft.category || item.category || 'top-story';
             const finalSlug = `${stratosSEO.slug}-${Math.random().toString(36).substring(7)}`;
+            
             const doc = {
                 _type: 'article',
                 title: pulseDraft.title,
@@ -144,8 +155,8 @@ export async function GET(request) {
                     _type: 'block',
                     children: [{ _type: 'span', text: p.trim() }]
                 })),
-                district: pulseDraft.leadDistrict || 'garhwa',
-                category: { _type: 'reference', _ref: 'category-top-story' },
+                district: pulseDraft.leadDistrict || item.district || 'garhwa',
+                category: { _type: 'reference', _ref: `category-${detectedCategory}` }, // Pattern-based ref
                 publishedAt: new Date().toISOString(),
                 seoKeywords: stratosSEO.seoKeywords,
                 tags: stratosSEO.tags
@@ -155,20 +166,40 @@ export async function GET(request) {
                 doc.featureImage = { _type: 'image', asset: { _type: 'reference', _ref: assetId } };
             }
 
-            const sanityResult = await client.create(doc);
-            const fullImageUrl = assetId ? urlFor(sanityResult.featureImage).url() : '';
+            let fullImageUrl = '';
+            try {
+                const sanityResult = await client.create(doc);
+                fullImageUrl = assetId ? urlFor(sanityResult.featureImage).url() : '';
 
-            await insertNews({
-                title: doc.title,
-                slug: finalSlug,
-                content: pulseDraft.content,
-                excerpt: doc.excerpt,
-                image_url: assetId || '',
-                category: 'top-story',
-                district: doc.district,
-                published_at: doc.publishedAt,
-                highlights: oracleCheck.highlights || []
-            });
+                await insertNews({
+                    title: doc.title,
+                    slug: finalSlug,
+                    content: pulseDraft.content,
+                    excerpt: doc.excerpt,
+                    image_url: fullImageUrl || '',
+                    category: detectedCategory,
+                    district: doc.district,
+                    published_at: doc.publishedAt,
+                    highlights: oracleCheck.highlights || []
+                });
+            } catch (sanityErr) {
+                console.warn('Sanity Create Fail (probably reference error), falling back to top-story ref...');
+                doc.category = { _type: 'reference', _ref: 'category-top-story' };
+                const sanityResult = await client.create(doc);
+                fullImageUrl = assetId ? urlFor(sanityResult.featureImage).url() : '';
+                
+                await insertNews({
+                    title: doc.title,
+                    slug: finalSlug,
+                    content: pulseDraft.content,
+                    excerpt: doc.excerpt,
+                    image_url: fullImageUrl || '',
+                    category: detectedCategory,
+                    district: doc.district,
+                    published_at: doc.publishedAt,
+                    highlights: oracleCheck.highlights || []
+                });
+            }
 
             await sendToTelegram({
                 ...doc,

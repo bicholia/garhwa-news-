@@ -16,6 +16,16 @@ export default function ArticleCard({ article, priority = false }: Props) {
         year: 'numeric',
     })
 
+    // BUG-02 FIX: Deterministic report number instead of Math.random()
+    const getReportNumber = (text: string) => {
+        let hash = 0;
+        for (let i = 0; i < text.length; i++) {
+            hash = text.charCodeAt(i) + ((hash << 5) - hash);
+        }
+        return Math.abs(hash % 900) + 100;
+    };
+    const reportId = getReportNumber(article.title || '');
+
     const hasImage = article.featureImage?.asset || article.image_url
     const imageUrl = article.featureImage?.asset 
         ? urlFor(article.featureImage).width(800).height(450).url() 
@@ -46,15 +56,15 @@ export default function ArticleCard({ article, priority = false }: Props) {
                     ) : (
                         <div className="w-full h-full bg-brand-navy flex flex-col items-center justify-center p-6 text-center">
                             <div className="border-2 border-brand-gold/50 p-4 rounded-lg">
-                                <div className="text-[10px] text-brand-gold font-black uppercase tracking-[0.3em] mb-1">NR Global</div>
-                                <div className="text-white font-serif text-xl font-black">AGENCY NEWS</div>
+                                <div className="text-[10px] text-brand-gold font-bold uppercase tracking-[0.3em] mb-1">Think India</div>
+                                <div className="text-white font-bold text-xl">TOP NEWS</div>
                             </div>
                         </div>
                     )}
                     {/* Badge Overlay */}
                     <div className="absolute top-4 left-4">
-                        <span className="bg-brand-gold text-white text-[10px] font-black uppercase tracking-widest px-3 py-1.5 rounded-full shadow-lg">
-                            Premium Agency
+                        <span className="bg-brand-gold text-white text-[10px] font-bold uppercase tracking-widest px-3 py-1.5 rounded-full shadow-lg">
+                            Premium News
                         </span>
                     </div>
                 </div>
@@ -63,10 +73,10 @@ export default function ArticleCard({ article, priority = false }: Props) {
                 <div className="p-6 flex flex-col flex-1">
                     <div className="flex items-center gap-4 text-[10px] font-bold uppercase tracking-widest text-brand-gold mb-3">
                         <span className="flex items-center gap-1"><Clock size={12} /> {formattedDate}</span>
-                        <span className="flex items-center gap-1"><User size={12} /> {article.author?.name || 'By NR Desk'}</span>
+                        <span className="flex items-center gap-1"><User size={12} /> {article.author?.name || 'By Desk'}</span>
                     </div>
 
-                    <h2 className="text-lg lg:text-2xl font-black text-brand-navy font-serif leading-[1.2] mb-3 transition-colors duration-300 line-clamp-2">
+                    <h2 className="text-lg lg:text-2xl font-bold text-brand-navy leading-[1.2] mb-3 transition-colors duration-300 line-clamp-2 mt-2">
                         {truncate(article.title, 120)}
                     </h2>
 
@@ -75,8 +85,8 @@ export default function ArticleCard({ article, priority = false }: Props) {
                     </p>
 
                     <div className="mt-auto flex items-center justify-between pt-4 border-t border-gray-50">
-                        <span className="text-[10px] font-black uppercase tracking-widest text-brand-navy/40">Intl. Report No. {Math.floor(Math.random() * 900) + 100}</span>
-                        <div className="flex items-center gap-2 text-brand-gold font-black text-xs uppercase tracking-widest group-hover:translate-x-2 transition-transform duration-300">
+                        <span className="text-[10px] font-bold uppercase tracking-widest text-brand-navy/40">Report No. {reportId}</span>
+                        <div className="flex items-center gap-2 text-brand-gold font-bold text-xs uppercase tracking-widest group-hover:translate-x-2 transition-transform duration-300">
                             Read Full Report <ArrowRight size={14} />
                         </div>
                     </div>

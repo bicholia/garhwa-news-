@@ -2,7 +2,7 @@ import { MetadataRoute } from 'next'
 import { client } from '@/lib/sanity'
 import { getAllNews } from '@/lib/db'
 
-const baseUrl = 'https://garhwapalamunews.com'
+const baseUrl = 'https://thinkindia.press'
 
 async function getSiteData() {
   const query = `

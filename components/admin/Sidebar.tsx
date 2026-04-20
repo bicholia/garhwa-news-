@@ -37,7 +37,7 @@ export default function Sidebar() {
             {/* Brand */}
             <div style={{ padding: '1.5rem 1.25rem', borderBottom: '1px solid #1e293b' }}>
                 <div style={{ color: '#ef4444', fontWeight: 900, fontSize: '1.1rem', letterSpacing: '-0.02em' }}>
-                    NR Daily News
+                    Think India
                 </div>
                 <div style={{ color: '#475569', fontSize: '0.72rem', marginTop: '2px', textTransform: 'uppercase', letterSpacing: '0.1em' }}>
                     Admin Control Panel

@@ -7,6 +7,6 @@ export default function robots(): MetadataRoute.Robots {
       allow: '/',
       disallow: ['/admin/', '/api/'],
     },
-    sitemap: 'https://garhwapalamunews.com/sitemap.xml',
+    sitemap: 'https://thinkindia.press/sitemap.xml',
   }
 }
