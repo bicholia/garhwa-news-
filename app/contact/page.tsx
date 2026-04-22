@@ -20,16 +20,27 @@ export default function ContactPage() {
         e.preventDefault()
         setIsSubmitting(true)
         
-        // Simulate API call
-        await new Promise(resolve => setTimeout(resolve, 1500))
-        
-        console.log('Form submitted to Think India Bureau:', formData)
-        setIsSubmitting(false)
-        setSubmitted(true)
+        try {
+            const res = await fetch('/api/contact', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(formData)
+            })
+            const data = await res.json()
+            if (data.success) {
+                setSubmitted(true)
+            } else {
+                alert('सन्देश भेजने में समस्या हुई। कृपया बाद में प्रयास करें।')
+            }
+        } catch (e) {
+            console.error('Contact form error:', e)
+            alert('Network error. Please try again.')
+        } finally {
+            setIsSubmitting(false)
+        }
     }
 
-    // Email obfuscation helper (simple)
-    const bureauEmail = "bureau" + "@" + "thinkindia.press"
+
 
     return (
         <PublicLayout>
@@ -45,7 +56,7 @@ export default function ContactPage() {
                             <ShieldCheck size={14} /> Official News Bureau
                         </div>
                         <h1 className="text-4xl lg:text-7xl font-black text-white font-serif mb-6 tracking-tighter leading-tight">
-                            Connect with <br/> <span className="text-brand-gold italic text-3xl lg:text-5xl uppercase tracking-widest font-black text-shadow-glow">Think India News</span>
+                            Connect with <br/> <span className="text-brand-gold italic text-3xl lg:text-5xl uppercase tracking-widest font-black text-shadow-glow">ThinkIndia.press</span>
                         </h1>
                         <p className="max-w-2xl mx-auto text-gray-400 text-lg lg:text-xl font-medium leading-relaxed">
                             Report a story, inquire about strategic partnerships, or provide intelligence directly to our editorial bureau.
@@ -72,8 +83,8 @@ export default function ContactPage() {
                                             <div>
                                                 <h3 className="text-brand-navy font-black text-xs uppercase tracking-widest mb-2">Bureau Headquarters</h3>
                                                 <p className="text-gray-500 font-medium leading-relaxed">
-                                                    Ward No. 8, Near Police Line,<br />
-                                                    Garhwa, Jharkhand - 822114
+                                                    Rajpath Marg,<br />
+                                                    New Delhi - 110001
                                                 </p>
                                             </div>
                                         </div>
@@ -108,7 +119,7 @@ export default function ContactPage() {
 
                                 <div className="p-6 bg-brand-navy/5 rounded-2xl border border-brand-navy/5">
                                     <p className="text-[11px] text-gray-500 font-bold leading-relaxed italic">
-                                        "Think India operates as an independent regional media entity. Our bureau is committed to the highest standards of journalistic precision and ethical verification."
+                                        "ThinkIndia.press operates as an independent regional media entity. Our bureau is committed to the highest standards of journalistic precision and ethical verification."
                                     </p>
                                 </div>
                             </div>

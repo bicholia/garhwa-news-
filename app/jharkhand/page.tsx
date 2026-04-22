@@ -12,8 +12,8 @@ const POSTS_PER_PAGE = 24 // Even higher for state-wide news
 
 export async function generateMetadata() {
     return {
-        title: 'Jharkhand News Bureau | झारखंड न्यूज़ | Think India',
-        description: 'Comprehensive Jharkhand state news coverage, political analysis and regional updates from Think India.',
+        title: 'Jharkhand News Bureau | झारखंड न्यूज़ | ThinkIndia.press',
+        description: 'Comprehensive Jharkhand state news coverage, political analysis and regional updates from ThinkIndia.press.',
     }
 }
 
@@ -90,7 +90,7 @@ export default async function JharkhandPage({ searchParams }: { searchParams: Pr
                                                         {article.title}
                                                     </h3>
                                                     <div className="mt-6 flex items-center justify-between border-t border-gray-50 pt-4">
-                                                        <span className="text-[10px] font-black uppercase tracking-widest text-gray-300">Think India Bureau</span>
+                                                        <span className="text-[10px] font-black uppercase tracking-widest text-gray-300">ThinkIndia.press Bureau</span>
                                                         <span className="text-[10px] font-bold text-gray-400">{new Date(article.publishedAt || article.published_at).toLocaleDateString()}</span>
                                                     </div>
                                                 </Link>

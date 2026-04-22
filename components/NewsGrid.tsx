@@ -25,8 +25,22 @@ export default function NewsGrid({
     const featuredArticle = displayArticles[0]
     const remainingArticles = displayArticles.slice(1)
 
+    const resolveImageUrl = (article: any, w = 400, h = 250) => {
+        if (!article) return null;
+        if (article.image_url) return article.image_url;
+        if (typeof article.featureImage === 'string') return article.featureImage;
+        if (article.featureImage?.asset?._ref) {
+            try {
+                return urlFor(article.featureImage).width(w).height(h).url();
+            } catch (e) {
+                return null;
+            }
+        }
+        return null;
+    };
+
     const renderCard = (article: any, index: number, isSmall: boolean = false) => {
-        const imageUrl = article.image_url || (article.featureImage?.asset ? urlFor(article.featureImage).width(400).height(250).url() : null);
+        const imageUrl = resolveImageUrl(article, isSmall ? 100 : 400, isSmall ? 80 : 250);
         const date = article.publishedAt || article.published_at;
 
         return (
@@ -98,12 +112,16 @@ export default function NewsGrid({
                             className="group flex flex-col md:flex-row gap-6 bg-gray-50 p-6 rounded-sm border border-gray-100"
                         >
                             <div className="md:w-1/2 aspect-video overflow-hidden rounded-sm bg-gray-200 relative">
-                                {featuredArticle.image_url || featuredArticle.featureImage ? (
+                                {resolveImageUrl(featuredArticle, 600, 400) ? (
                                     <img 
-                                        src={featuredArticle.image_url || urlFor(featuredArticle.featureImage).width(600).height(400).url()} 
+                                        src={resolveImageUrl(featuredArticle, 600, 400) || ''} 
                                         className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105"
                                     />
-                                ) : null}
+                                ) : (
+                                    <div className="w-full h-full bg-gray-50 flex items-center justify-center text-gray-300">
+                                        <Clock size={40} />
+                                    </div>
+                                )}
                                 <div className="absolute top-3 left-3 bg-brand-red text-white text-[9px] font-black px-2 py-0.5 uppercase">Spotlight</div>
                             </div>
                             <div className="md:w-1/2 flex flex-col justify-center">
@@ -111,7 +129,7 @@ export default function NewsGrid({
                                     {featuredArticle.title}
                                 </h3>
                                 <p className="text-[14px] text-gray-600 line-clamp-3 leading-relaxed mb-4">
-                                    {featuredArticle.excerpt || featuredArticle.description || "In-depth investigative report from Think India's special unit."}
+                                    {featuredArticle.excerpt || featuredArticle.description || "In-depth investigative report from ThinkIndia.press special unit."}
                                 </p>
                                 <span className="text-[10px] font-black text-brand-red uppercase tracking-widest">Full Report &rarr;</span>
                             </div>

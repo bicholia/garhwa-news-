@@ -47,7 +47,9 @@ export default function NewsStripe({ articles, title, variant = 'horizontal' }: 
             </div>
             <div className="p-4 grid grid-cols-1 md:grid-cols-3 lg:grid-cols-3 gap-6">
                 {articles.slice(0, 3).map((article, i) => {
-                    const imageUrl = article.featureImage ? urlFor(article.featureImage).width(150).height(100).url() : null;
+                    const imageUrl = article.featureImage?.asset?._ref && article.featureImage.asset._ref.startsWith('image-') 
+                        ? urlFor(article.featureImage).width(150).height(100).url() 
+                        : null;
                     return (
                         <Link 
                             key={i} 

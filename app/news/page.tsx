@@ -9,9 +9,9 @@ import { ChevronLeft, ChevronRight, Newspaper } from 'lucide-react'
 export const revalidate = 300 // Revalidate every 5 minutes
 
 export const metadata: Metadata = {
-    title: 'सभी समाचार | All News | NR Daily News',
-    description: 'गढ़वा, पलामू और झारखंड की सभी ताज़ा खबरें। NR Daily News पर पढ़ें सभी ब्रेकिंग न्यूज़, लोकल न्यूज़ और राज्य की खबरें।',
-    keywords: 'NR Daily News, Garhwa News, Palamu News, Jharkhand News, सभी समाचार',
+    title: 'सभी समाचार | All News | ThinkIndia.press',
+    description: 'गढ़वा, पलामू और झारखंड की सभी ताज़ा खबरें। ThinkIndia.press पर पढ़ें सभी ब्रेकिंग न्यूज़, लोकल न्यूज़ और राज्य की खबरें।',
+    keywords: 'ThinkIndia.press, Garhwa News, Palamu News, Jharkhand News, सभी समाचार',
 }
 
 const ARTICLES_PER_PAGE = 12
@@ -57,7 +57,7 @@ export default async function AllNewsPage({
                     </div>
                     <div className="container max-w-6xl mx-auto relative z-10">
                         <div className="text-brand-gold font-black uppercase tracking-[0.4em] text-xs mb-4">
-                            NR Daily News Bureau
+                            ThinkIndia.press Bureau
                         </div>
                         <h1 className="text-4xl lg:text-6xl font-black text-white font-serif leading-tight mb-4">
                             सभी समाचार

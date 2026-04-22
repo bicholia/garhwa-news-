@@ -12,12 +12,18 @@ const client = createClient({
     token: process.env.SANITY_TOKEN
 });
 
-// Since images are saved in C:\Users\LAPPY PLUS\.gemini\antigravity\brain\b62b5f09-4d49-49a7-9d64-9c329f386dcb\
-const imageDir = 'C:\\Users\\LAPPY PLUS\\.gemini\\antigravity\\brain\\b62b5f09-4d49-49a7-9d64-9c329f386dcb';
+// Dynamically determine the brain directory for the current conversation
+const currentConversationId = path.basename(path.dirname(__dirname));
+const brainBaseDir = 'C:\\Users\\LAPPY PLUS\\.gemini\\antigravity\\brain';
+const imageDir = path.join(brainBaseDir, '887feaf3-9e64-415e-a622-bed9d4bb0e27');
 
 function getLatestImage(prefix) {
+    if (!fs.existsSync(imageDir)) {
+        console.warn(`Warning: Image directory ${imageDir} does not exist.`);
+        return null;
+    }
     const files = fs.readdirSync(imageDir);
-    const matching = files.filter(f => f.startsWith(prefix) && f.endsWith('.png'));
+    const matching = files.filter(f => f.startsWith(prefix) && (f.endsWith('.png') || f.endsWith('.jpg') || f.endsWith('.webp')));
     if (matching.length === 0) return null;
     matching.sort((a, b) => {
         return fs.statSync(path.join(imageDir, b)).mtimeMs - fs.statSync(path.join(imageDir, a)).mtimeMs;

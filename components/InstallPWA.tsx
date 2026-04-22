@@ -69,13 +69,13 @@ export default function InstallPWA() {
         </div>
         <div className="flex-1">
           <div className="flex items-center justify-between mb-1">
-            <h4 className="text-xs font-black uppercase tracking-[0.2em] text-black">Think India App</h4>
+            <h4 className="text-xs font-black uppercase tracking-[0.2em] text-black">ThinkIndia.press App</h4>
             <button onClick={handleDismiss} className="text-gray-400 hover:text-brand-red transition-colors">
               <X size={16} />
             </button>
           </div>
           <p className="text-[10px] font-bold text-gray-500 uppercase tracking-widest leading-relaxed mb-4">
-            Install the Think India application for fast, fair, and fearless news reports.
+            Install the ThinkIndia.press application for fast, fair, and fearless news reports.
           </p>
           <div className="flex gap-3">
             <button 

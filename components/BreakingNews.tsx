@@ -10,11 +10,13 @@ async function getBreakingNews() {
         "slug": slug.current
       }`
     )
-    return (news || []).map((item: any) => ({
-        ...item,
-        title: scrubBrandNames(item.title),
-        slug: scrubSlug(item.slug)
-    }))
+    return (news || [])
+        .filter((item: any) => item.title && item.slug)
+        .map((item: any) => ({
+            ...item,
+            title: scrubBrandNames(item.title),
+            slug: scrubSlug(item.slug)
+        }))
 }
 
 export default async function BreakingNews() {

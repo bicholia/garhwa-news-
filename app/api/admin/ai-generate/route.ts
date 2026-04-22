@@ -14,7 +14,7 @@ export async function POST(request: Request) {
         // Using gemini-1.5-flash for speed and local context awareness
         const model = genAI.getGenerativeModel({ model: "gemini-1.5-flash" })
 
-        const aiPrompt = `आप 'Think India' (थिंक इंडिया न्यूज़ ब्यूरो) के एक सीनियर मैनेजिंग एडिटर हैं।
+        const aiPrompt = `आप 'ThinkIndia.press' (थिंक इंडिया न्यूज़ ब्यूरो) के एक सीनियर मैनेजिंग एडिटर हैं।
 नीचे दी गई जानकारी या लिंक के विवरण को एक उच्च स्तरीय, प्रमाणिक हिंदी न्यूज़ आर्टिकल में बदलें, जैसा कि NDTV या बड़े न्यूज़ चैनलों पर दिखता है।
 
 जानकारी: ${prompt}
@@ -22,7 +22,7 @@ export async function POST(request: Request) {
 पत्रकारिता के मानक (Journalism Standards):
 1. हेडलाइन: बहुत ही गंभीर, प्रभावशाली और सूचनात्मक होनी चाहिए (क्लिकबेट से बचें, तथ्यों पर ध्यान दें)।
 2. खबर की लंबाई: खबर कम से कम 500-700 शब्दों की होनी चाहिए। इसमें पूर्ण विवरण, पृष्ठभूमि (Background), और यदि संभव हो तो विशेषज्ञों या सूत्रों के हवाले से जानकारी जोड़ें।
-3. टोन (Tone): आवाज़ "Authoritative, Neutral और Fearless" होनी चाहिए। 'थिंक इंडिया ब्यूरो' के अंदाज़ में लिखें।
+3. टोन (Tone): आवाज़ "Authoritative, Neutral और Fearless" होनी चाहिए। 'ThinkIndia.press' के अंदाज़ में लिखें।
 4. सारांश (Excerpt): 120-150 शब्दों का एक विस्तृत सारांश (Lead Paragraph) लिखें जो पाठक को पूरी खबर का सार दे सके।
 5. कैटेगरी: इनमें से एक चुनें: [top-story, crime, administration, city-facilities, disaster-accident, health-education, public-issues, rural-development, social-events, politics, sports, entertainment, jobs]
 6. जिला: [india, garhwa, palamu, jharkhand]
@@ -35,7 +35,9 @@ export async function POST(request: Request) {
   "content": "पूरी खबर का HTML फॉर्मेट (सिर्फ <p>, <br>, <strong> टैग्स इस्तेमाल करें, खबर 500+ शब्दों की हो)",
   "category": "category-slug",
   "district": "district-slug",
-  "imagePrompt": "A professional news photograph of [context], ultra-realistic, news reporting style"
+  "imagePrompt": "A professional news photograph of [context], ultra-realistic, news reporting style",
+  "seo_keywords": "comma, separated, high, traffic, keywords",
+  "meta_description": "160 characters search-optimized description"
 }`
 
         const result = await model.generateContent(aiPrompt)

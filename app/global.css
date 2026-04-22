@@ -12,11 +12,22 @@
   --news-text-muted: #64748B;
   --white: #ffffff;
   --border: rgba(0, 0, 0, 0.08);
-  --radius: 4px; /* NDTV is more boxy/less rounded */
+  --radius: 4px;
+  --bg-color: #ffffff;
   
   /* Font Stacks */
   --font-serif: 'PT Serif', 'Noto Serif Devanagari', serif;
   --font-sans: 'Roboto', 'Noto Sans Devanagari', -apple-system, sans-serif;
+}
+
+[data-theme='dark'] {
+  --bg-color: #0F172A;
+  --white: #1E293B;
+  --news-text: #F1F5F9;
+  --news-text-muted: #94A3B8;
+  --ndtv-black: #ffffff;
+  --ndtv-gray: #1E293B;
+  --border: rgba(255, 255, 255, 0.1);
 }
 
 /* ============================================================
@@ -38,12 +49,13 @@ html {
 
 body {
   font-family: var(--font-sans);
-  background-color: var(--news-paper);
+  background-color: var(--bg-color);
   color: var(--news-text);
   line-height: 1.6;
   -webkit-font-smoothing: antialiased;
   overflow-x: hidden;
   width: 100%;
+  transition: background-color 0.3s ease, color 0.3s ease;
 }
 
 .serif-font {

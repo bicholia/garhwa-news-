@@ -26,13 +26,24 @@ export default function ArticleCard({ article, priority = false }: Props) {
     };
     const reportId = getReportNumber(article.title || '');
 
-    const hasImage = article.featureImage?.asset || article.image_url
-    const imageUrl = article.featureImage?.asset 
-        ? urlFor(article.featureImage).width(800).height(450).url() 
-        : article.image_url
+    const getImageUrl = () => {
+        if (article.image_url) return article.image_url;
+        if (typeof article.featureImage === 'string') return article.featureImage;
+        if (article.featureImage?.asset?._ref) {
+            try {
+                return urlFor(article.featureImage).width(800).height(450).url();
+            } catch (e) {
+                return null;
+            }
+        }
+        return null;
+    };
 
-    const truncate = (text: string, length: number) => {
-        if (!text) return '';
+    const imageUrl = getImageUrl();
+    const hasImage = !!imageUrl;
+
+    const truncate = (text: any, length: number) => {
+        if (!text || typeof text !== 'string') return '';
         const cleanText = text.replace(/[#*`]/g, '');
         return cleanText.length > length ? cleanText.substring(0, length) + '...' : cleanText;
     };
@@ -50,13 +61,14 @@ export default function ArticleCard({ article, priority = false }: Props) {
                             alt={article.title}
                             fill
                             priority={priority}
+                            unoptimized
                             sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
                             className="object-cover transition-transform duration-700 group-hover:scale-110"
                         />
                     ) : (
                         <div className="w-full h-full bg-brand-navy flex flex-col items-center justify-center p-6 text-center">
                             <div className="border-2 border-brand-gold/50 p-4 rounded-lg">
-                                <div className="text-[10px] text-brand-gold font-bold uppercase tracking-[0.3em] mb-1">Think India</div>
+                                <div className="text-[10px] text-brand-gold font-bold uppercase tracking-[0.3em] mb-1">ThinkIndia.press</div>
                                 <div className="text-white font-bold text-xl">TOP NEWS</div>
                             </div>
                         </div>

@@ -362,7 +362,7 @@ export default function BulkUploadPage() {
                         Bulk News Upload
                     </motion.h1>
                     <p style={{ color: '#64748b', marginTop: '0.5rem', fontSize: '1.1rem', fontWeight: 500 }}>
-                        Enterprise content ingestion system for <span style={{ color: '#4f46e5', fontWeight: 700 }}>NR Daily News</span>
+                        Enterprise content ingestion system for <span style={{ color: '#4f46e5', fontWeight: 700 }}>ThinkIndia.press</span>
                     </p>
                 </div>
                 <div style={{ display: 'flex', gap: '1rem' }}>

@@ -20,7 +20,7 @@ export async function sendToTelegram(article: any) {
         'default': '[NEWS]'
     }
 
-    const label = categoryLabel[article.category?.slug?.current] || '[NEWS]'
+    const label = categoryLabel[article.category?.slug?.current] || '[ThinkIndia.press]'
     const districtHashtag = article.district ? `#${article.district}` : '#झारखंड'
 
     const message = `
@@ -30,7 +30,7 @@ ${article.excerpt || ''}
 
 पूरी खबर पढ़ें: ${process.env.NEXT_PUBLIC_SITE_URL}/news/${article.slug.current || article.slug}
 
-${districtHashtag} #${article.category?.name || 'समाचार'} #गढ़वा #पलामू #NRNews
+${districtHashtag} #${article.category?.name || 'समाचार'} #गढ़वा #पलामू #ThinkIndia #MaaGarhdeviAI
   `
 
     // Determine target URL and payload

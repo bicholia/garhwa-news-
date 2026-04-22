@@ -17,8 +17,8 @@ import { normalizeText } from '@/lib/safety'
 export const revalidate = 3600 // Revalidate every hour
 
 export const metadata: Metadata = {
-  title: 'Think India | India News, Jharkhand Regional Updates',
-  description: 'Think India provides authoritative, real-time coverage of National Indian news and Jharkhand regional events with unparalleled integrity.',
+  title: 'ThinkIndia.press | गढ़वा और झारखंड की नंबर 1 ताज़ा ख़बरें',
+  description: 'ThinkIndia.press: गढ़वा, पलामू और झारखंड की सबसे तेज़ और विश्वसनीय न्यूज़। ब्रेकिंग न्यूज़, क्राइम, और राजनीति की ताज़ा खबरें हिंदी में (Latest Hindi News).',
 }
 
 async function getHomepageData() {
@@ -136,8 +136,23 @@ export default async function Home() {
   const adSecondaryNews = filterNews(allFeatured, 3)
   const adSidebarNews = filterNews(allFeatured, 5)
 
+  const orgSchema = {
+    "@context": "https://schema.org",
+    "@type": "NewsMediaOrganization",
+    "name": "ThinkIndia.press",
+    "alternateName": "ThinkIndia.press Bureau",
+    "url": "https://thinkindia.press",
+    "logo": "https://thinkindia.press/logo-think-india.png",
+    "foundingLocation": {
+      "@type": "Place",
+      "name": "Garhwa, Jharkhand, India"
+    },
+    "knowsAbout": ["Jharkhand News", "Garhwa News", "Palamu News", "Hindi News"]
+  };
+
   return (
     <PublicLayout>
+      <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(orgSchema) }} />
       <div className="bg-white min-h-screen">
         {/* TIER 0: LEADERBOARD */}
         <div className="bg-white border-b border-gray-100 py-3 hidden lg:flex justify-center flex-col items-center">

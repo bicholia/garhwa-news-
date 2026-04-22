@@ -12,8 +12,8 @@ const POSTS_PER_PAGE = 20 // High density matching NDTV
 
 export async function generateMetadata() {
     return {
-        title: 'Garhwa News Bureau | गढ़वा न्यूज़ | Think India',
-        description: 'Get latest Garhwa news, breaking stories and regional updates from the Think India Garhwa Bureau.',
+        title: 'Garhwa News Bureau | गढ़वा न्यूज़ | ThinkIndia.press',
+        description: 'Get latest Garhwa news, breaking stories and regional updates from the ThinkIndia.press Garhwa Bureau.',
     }
 }
 
@@ -63,7 +63,7 @@ export default async function GarhwaPage({ searchParams }: { searchParams: Promi
                                 </div>
                                 <div>
                                     <div className="text-white text-[12px] font-black uppercase">Verified Reports</div>
-                                    <div className="text-gray-500 text-[10px] font-bold uppercase tracking-widest">Think India HQ Monitoring</div>
+                                    <div className="text-gray-500 text-[10px] font-bold uppercase tracking-widest">ThinkIndia.press HQ Monitoring</div>
                                 </div>
                             </div>
                         </div>

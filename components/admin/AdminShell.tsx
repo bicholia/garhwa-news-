@@ -45,7 +45,7 @@ export default function AdminShell({ children }: { children: React.ReactNode }) 
                 {/* Brand */}
                 <div style={{ padding: '1.25rem', borderBottom: '1px solid rgba(255,255,255,0.08)' }}>
                     <div style={{ color: '#ef4444', fontWeight: 900, fontSize: '1.05rem', letterSpacing: '-0.02em', display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
-                        <FileText size={20} /> NR Daily News
+                        <FileText size={20} /> ThinkIndia.press
                     </div>
                     <div style={{ color: '#6366f1', fontSize: '0.68rem', marginTop: '2px', textTransform: 'uppercase', letterSpacing: '0.1em' }}>
                         Admin Control Panel

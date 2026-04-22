@@ -3,8 +3,8 @@ import PublicLayout from '@/components/PublicLayout'
 import '@/app/global.css'
 
 export const metadata: Metadata = {
-    title: 'सुधार नीति | गढ़वा पलामू न्यूज़',
-    description: 'गढ़वा पलामू न्यूज़ में गलती होने पर सुधार की प्रक्रिया। त्रुटि रिपोर्ट करने का तरीका जानें।',
+    title: 'सुधार नीति | ThinkIndia.press',
+    description: 'ThinkIndia.press (थिंक इंडिया) में गलती होने पर सुधार की प्रक्रिया। त्रुटि रिपोर्ट करने का तरीका जानें।',
 }
 
 export default function CorrectionsPage() {

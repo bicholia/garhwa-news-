@@ -181,13 +181,13 @@ async function processArticle(articleUrl) {
         
         const catList = availableCategories.map(c => `${c.name} (${c.slug})`).join(', ');
 
-        const prompt = `You are a professional news scraper and rewrite engine for "Think India". 
+        const prompt = `You are a professional news scraper and rewrite engine for "ThinkIndia.press". 
 Target HTML Sample:
 ${html.substring(0, 30000)}
 
 Task:
 1. Extract the main news Title, primary high-resolution Image URL, and main Body.
-2. Rewrite for "Think India" (professional, unbiased, engaging Hindi).
+2. Rewrite for "ThinkIndia.press" (professional, unbiased, engaging Hindi).
 3. The content MUST be around 250-400 words.
 4. Categorize based on this list: ${catList}. Return ONLY the slug.
 
@@ -273,7 +273,7 @@ async function run(targetUrl) {
         return;
     }
 
-    console.log('🚀  Starting Think India Bulk AI Scraper...');
+    console.log('🚀  Starting ThinkIndia.press Bulk AI Scraper...');
     console.log('==========================================');
 
     // 1. Fetch Categories

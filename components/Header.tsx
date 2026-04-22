@@ -2,8 +2,9 @@
 
 import React, { useState, useEffect } from 'react'
 import Link from 'next/link'
-import { Menu, X, Search, Calendar, Globe, TrendingUp, PlayCircle } from 'lucide-react'
+import { Menu, X, Search, Calendar, Globe, TrendingUp, PlayCircle, Sun, Moon } from 'lucide-react'
 import { usePathname, useRouter } from 'next/navigation'
+import { useTheme } from '@/lib/ThemeContext'
 import WeatherWidget from '@/components/WeatherWidget'
 import Image from 'next/image'
 
@@ -17,6 +18,7 @@ export default function Header() {
     const [searchQuery, setSearchQuery] = useState('')
     const pathname = usePathname()
     const router = useRouter()
+    const { theme, toggleTheme } = useTheme()
 
     useEffect(() => {
         setMounted(true)
@@ -93,8 +95,8 @@ export default function Header() {
                         <div className="flex items-center gap-6 lg:gap-10">
                             <Link href="/" className="shrink-0 flex items-center">
                                 <span className="text-2xl lg:text-3xl font-black tracking-tighter flex items-center gap-1">
-                                    <span className="text-white">THINK</span>
-                                    <span className="text-brand-red">INDIA</span>
+                                    <span className="text-white uppercase">THINKINDIA</span>
+                                    <span className="text-brand-red uppercase">.PRESS</span>
                                 </span>
                             </Link>
 
@@ -124,6 +126,12 @@ export default function Header() {
                                 className="p-2 hover:bg-white/10 rounded-full transition-colors"
                             >
                                 <Search size={20} />
+                            </button>
+                            <button 
+                                onClick={toggleTheme}
+                                className="p-2 hover:bg-white/10 rounded-full transition-colors text-brand-red"
+                            >
+                                {theme === 'dark' ? <Sun size={20} /> : <Moon size={20} />}
                             </button>
                             {!isDesktop && (
                                 <button onClick={() => setMobileOpen(true)} className="p-2">
@@ -177,7 +185,7 @@ export default function Header() {
                         </nav>
                         <div className="mt-auto space-y-4 pt-10 border-t border-white/10">
                             <WeatherWidget />
-                            <div className="text-[10px] text-gray-500 uppercase font-bold">© 2026 Think India News</div>
+                            <div className="text-[10px] text-gray-500 uppercase font-bold">© 2026 ThinkIndia.press</div>
                         </div>
                     </div>
                 </div>

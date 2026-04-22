@@ -16,7 +16,7 @@ export const ArticleSchema = z.object({
     author: z.object({
         name: z.string(),
         image: z.any().optional(),
-    }).nullable().default({ name: 'NR Daily News' }),
+    }).nullable().default({ name: 'ThinkIndia.press' }),
     category: z.object({
         title: z.string(),
     }).nullable().default({ title: 'General' }),

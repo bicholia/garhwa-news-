@@ -3,7 +3,7 @@
 import React, { useState } from 'react'
 import Link from 'next/link'
 import { urlFor } from '@/lib/sanity'
-import { PlayCircle, TrendingUp, Globe, Clock, Flame } from 'lucide-react'
+import { TrendingUp, Globe, Clock, Flame } from 'lucide-react'
 
 interface NDTVHeroProps {
     mainStory: any
@@ -14,9 +14,23 @@ interface NDTVHeroProps {
 export default function NDTVHero({ mainStory, topStories, trendingStories }: NDTVHeroProps) {
     const [sidebarTab, setSidebarTab] = useState<'trending' | 'latest'>('trending')
 
-    if (!mainStory) return null
+    const resolveImageUrl = (story: any, w = 800, h = 500) => {
+        if (!story) return null;
+        if (story.image_url) return story.image_url;
+        if (typeof story.featureImage === 'string') return story.featureImage;
+        if (story.featureImage?.asset?._ref) {
+            try {
+                return urlFor(story.featureImage).width(w).height(h).url();
+            } catch (e) {
+                return null;
+            }
+        }
+        return null;
+    };
 
-    const mainImageUrl = mainStory.image_url || (mainStory.featureImage?.asset ? urlFor(mainStory.featureImage).width(800).height(500).url() : null)
+    const mainImageUrl = resolveImageUrl(mainStory, 800, 500);
+
+    if (!mainStory) return null
 
     return (
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 mb-16 px-4 lg:px-0">
@@ -30,7 +44,7 @@ export default function NDTVHero({ mainStory, topStories, trendingStories }: NDT
                             <div className="w-full h-full flex items-center justify-center text-gray-200"><Globe size={60} /></div>
                         )}
                         <div className="absolute top-4 left-4 bg-brand-red text-white text-[10px] font-black px-2 py-1 uppercase tracking-widest flex items-center gap-1.5 shadow-xl">
-                            <PlayCircle size={14} className="animate-pulse" /> Top News
+                            <TrendingUp size={14} className="animate-pulse" /> Top News
                         </div>
                     </div>
                     <h1 className="text-2xl lg:text-[32px] font-bold text-black leading-tight mb-4 group-hover:text-brand-red transition-all serif-font decoration-brand-red/30 underline-offset-8">
@@ -61,7 +75,7 @@ export default function NDTVHero({ mainStory, topStories, trendingStories }: NDT
                 </h3>
                 <div className="space-y-5">
                     {topStories.slice(2, 9).map((story, idx) => {
-                        const thumbUrl = story.image_url || (story.featureImage?.asset ? urlFor(story.featureImage).width(120).height(80).url() : null);
+                        const thumbUrl = resolveImageUrl(story, 120, 80);
                         return (
                             <Link key={idx} href={`/news/${story.slug?.current || story.slug}`} className="flex gap-3 group items-start">
                                 <span className="text-[16px] font-black text-gray-200 group-hover:text-brand-red transition-colors w-4 shrink-0 mt-0.5 italic">{idx + 1}</span>

@@ -59,12 +59,26 @@ export async function generateMetadata({ params }: { params: Promise<{ slug: str
     const article = await getArticle(decodedSlug)
     if (!article) return {}
     const domain = 'https://thinkindia.press'
-    const imageUrl = article.image_url || (article.featureImage?.asset ? urlFor(article.featureImage).width(1200).height(630).url() : `${domain}/og-image.png`)
+    const imageUrl = article.image_url || 
+        (article.featureImage?.asset?._ref && article.featureImage.asset._ref.startsWith('image-') 
+            ? urlFor(article.featureImage).width(1200).height(630).url() 
+            : `${domain}/og-image.png`)
+
+    const keywords = article.seo_keywords || article.seoKeywords || [
+        article.district,
+        article.category?.name,
+        'Jharkhand News',
+        'Garhwa News',
+        'Palamu News',
+        'ThinkIndia.press'
+    ].filter(Boolean).join(', ');
 
     return {
-        title: `${article.title} | Think India`,
-        description: article.excerpt?.substring(0, 160),
-        openGraph: { title: article.title, images: [{ url: imageUrl }] },
+        title: `${article.title} | ${article.district ? article.district.charAt(0).toUpperCase() + article.district.slice(1) + ' News | ' : ''}ThinkIndia.press`,
+        description: article.meta_description || article.excerpt?.substring(0, 160) || `${article.title} - Read the latest breaking news from Garhwa and Jharkhand on ThinkIndia.press.`,
+        keywords: keywords,
+        openGraph: { title: article.title, description: article.meta_description || article.excerpt?.substring(0, 160), images: [{ url: imageUrl }] },
+        twitter: { card: 'summary_large_image', title: article.title, description: article.meta_description || article.excerpt?.substring(0, 160), images: [imageUrl] },
     }
 }
 
@@ -76,11 +90,39 @@ export default async function Page({ params }: { params: Promise<{ slug: string 
 
     if (!article) notFound()
 
-    const imageUrl = article.image_url || (article.featureImage?.asset ? urlFor(article.featureImage).width(1200).height(630).url() : null)
+    const imageUrl = article.image_url || 
+        (article.featureImage?.asset?._ref && article.featureImage.asset._ref.startsWith('image-') 
+            ? urlFor(article.featureImage).width(1200).height(630).url() 
+            : null)
     const date = article.publishedAt || article.published_at
+
+    const articleSchema = {
+        "@context": "https://schema.org",
+        "@type": "NewsArticle",
+        "headline": article.title,
+        "image": imageUrl ? [imageUrl] : [],
+        "datePublished": date,
+        "dateModified": article._updatedAt || date,
+        "author": [{
+            "@type": "Person",
+            "name": article.author?.name || "ThinkIndia.press Bureau",
+            "url": "https://thinkindia.press/author/bureau"
+        }],
+        "publisher": {
+            "@type": "Organization",
+            "name": "ThinkIndia.press",
+            "logo": {
+                "@type": "ImageObject",
+                "url": "https://thinkindia.press/logo-think-india.png"
+            }
+        },
+        "dateline": `${article.district ? article.district.toUpperCase() : 'JHARKHAND'}, INDIA`,
+        "inLanguage": "hi"
+    };
 
     return (
         <PublicLayout>
+            <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(articleSchema) }} />
             <div className="bg-white min-h-screen">
                 <div className="bg-gray-50 border-b border-gray-100 py-4 hidden lg:flex justify-center">
                     <AdBanner slot="article_top" width={728} height={90} />
@@ -109,7 +151,7 @@ export default async function Page({ params }: { params: Promise<{ slug: string 
                                         <User size={20} />
                                     </div>
                                     <div className="flex flex-col">
-                                        <span className="text-[12px] font-black uppercase text-black">{article.author?.name || 'Think India Bureau'}</span>
+                                        <span className="text-[12px] font-black uppercase text-black">{article.author?.name || 'ThinkIndia.press Bureau'}</span>
                                         <span className="text-[10px] text-gray-500 font-bold uppercase tracking-wider">News Correspondent</span>
                                     </div>
                                 </div>
@@ -122,9 +164,9 @@ export default async function Page({ params }: { params: Promise<{ slug: string 
 
                             {imageUrl && (
                                 <div className="relative aspect-video rounded-sm overflow-hidden mb-8 bg-gray-100">
-                                    <Image src={imageUrl} alt={article.title} fill className="object-cover" priority />
+                                    <Image src={imageUrl} alt={article.title} fill unoptimized className="object-cover" priority />
                                     <div className="absolute bottom-0 left-0 right-0 bg-black/60 backdrop-blur-md p-4 text-white text-[12px] font-medium italic">
-                                        Representative Image — Think India Bureau
+                                        Representative Image — ThinkIndia.press Bureau
                                     </div>
                                 </div>
                             )}
@@ -165,11 +207,13 @@ export default async function Page({ params }: { params: Promise<{ slug: string 
                                 </h3>
                                 <div className="space-y-6">
                                     {(article.related || []).slice(0, 6).map((item: any, i: number) => {
-                                        const thumb = item.featureImage?.asset ? urlFor(item.featureImage).width(100).height(100).url() : '/placeholder.png'
+                                        const thumb = (item.featureImage?.asset?._ref && item.featureImage.asset._ref.startsWith('image-'))
+                                            ? urlFor(item.featureImage).width(100).height(100).url() 
+                                            : (item.image_url || '/placeholder.png')
                                         return (
                                             <Link key={i} href={`/news/${item.slug}`} className="flex gap-4 group">
                                                 <div className="shrink-0 w-20 h-20 relative rounded-sm overflow-hidden bg-white">
-                                                    <Image src={thumb} alt={item.title} fill className="object-cover group-hover:scale-110 transition-transform" />
+                                                    <Image src={thumb} alt={item.title} fill unoptimized className="object-cover group-hover:scale-110 transition-transform" />
                                                 </div>
                                                 <div className="flex flex-col gap-2">
                                                     <h4 className="text-[13px] font-bold text-gray-900 leading-snug group-hover:text-brand-red transition-colors serif-font line-clamp-3">

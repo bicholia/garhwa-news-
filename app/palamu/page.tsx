@@ -12,8 +12,8 @@ const POSTS_PER_PAGE = 20
 
 export async function generateMetadata() {
     return {
-        title: 'Palamu News Bureau | पलामू न्यूज़ | Think India',
-        description: 'Get latest Palamu news, breaking stories and regional updates from the Think India Palamu Bureau.',
+        title: 'Palamu News Bureau | पलामू न्यूज़ | ThinkIndia.press',
+        description: 'Get latest Palamu news, breaking stories and regional updates from the ThinkIndia.press Palamu Bureau.',
     }
 }
 
@@ -62,7 +62,7 @@ export default async function PalamuPage({ searchParams }: { searchParams: Promi
                                 </div>
                                 <div>
                                     <div className="text-white text-[12px] font-black uppercase">Verified Reports</div>
-                                    <div className="text-gray-500 text-[10px] font-bold uppercase tracking-widest">Think India HQ Monitoring</div>
+                                    <div className="text-gray-500 text-[10px] font-bold uppercase tracking-widest">ThinkIndia.press HQ Monitoring</div>
                                 </div>
                             </div>
                         </div>

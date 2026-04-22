@@ -18,7 +18,9 @@ async function checkLatest() {
     const query = `*[_type == "article"] | order(_createdAt desc)[0...5] {
         title,
         _createdAt,
-        "isAIImage": defined(featureImage)
+        "isAIImage": defined(featureImage) || defined(image_url),
+        image_url,
+        "hasFeatureImage": defined(featureImage)
     }`;
     
     try {

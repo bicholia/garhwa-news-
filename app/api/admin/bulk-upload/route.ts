@@ -1,5 +1,5 @@
 // app/api/admin/bulk-upload/route.ts
-// Enterprise Bulk News Upload API for NR Daily News
+// Enterprise Bulk News Upload API for ThinkIndia.press
 // Features: Forgiving parse, weighted category detect, batch processing, dry-run
 
 import { NextRequest, NextResponse } from 'next/server'
@@ -209,22 +209,22 @@ function validateRow(row: ReturnType<typeof normalizeRow>, rowNum: number): RowE
     const errors: RowError[] = []
 
     if (!row.title) {
-        errors.push({ field: 'title', reason: 'Title (शीर्षक) khali hai', severity: 'error' })
+        errors.push({ field: 'title', reason: 'शीर्षक (Title) खाली है। कृपया न्यूज़ का हेडलाइन लिखें।', severity: 'error' })
     } else if (row.title.length < 5) {
-        errors.push({ field: 'title', reason: 'Title bahut chhota hai (minimum 5 chars)', severity: 'error' })
+        errors.push({ field: 'title', reason: 'शीर्षक बहुत छोटा है (कम से कम 5 अक्षर होने चाहिए)।', severity: 'error' })
     }
 
     if (!row.body) {
-        errors.push({ field: 'body', reason: 'News body (विवरण) khali hai', severity: 'error' })
+        errors.push({ field: 'body', reason: 'न्यूज़ का विवरण (Body) खाली है।', severity: 'error' })
     }
 
     const validDistricts = ['garhwa', 'palamu', 'jharkhand', 'national']
     if (row.district && !validDistricts.includes(row.district.toLowerCase())) {
         errors.push({
             field: 'district',
-            reason: `"${row.district}" valid nahi. Use: garhwa, palamu, jharkhand, national`,
+            reason: `"${row.district}" अमान्य जिला है। केवल garhwa, palamu, jharkhand, national का उपयोग करें।`,
             severity: 'warning',
-            suggestion: 'jharkhand use hoga by default',
+            suggestion: 'jharkhand का उपयोग किया जाएगा।',
         })
     }
 
@@ -430,10 +430,11 @@ export async function POST(req: NextRequest) {
                             is_promoted: normalized.featured,
                             priority: normalized.featured ? 100 : 0,
                             highlights: [],
-                            seo_keywords: (doc.tags as string[]).join(', ')
+                            seo_keywords: (doc.tags as string[]).join(', '),
+                            author_id: 'thinkindia-admin'
                         })
                     } catch (pgErr) {
-                        console.warn('[Postgres Sync Failed]', pgErr)
+                        console.warn(`[Postgres Sync Failed] for slug: ${(doc.slug as any).current}`, pgErr)
                     }
                     
                     return sanityResult

@@ -41,11 +41,15 @@ async function getSiteData() {
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   const data = await getSiteData();
 
+  const latestArticleDate = data.articles && data.articles.length > 0 
+      ? new Date(Math.max(...data.articles.map((a: any) => new Date(a.publishedAt || 0).getTime())))
+      : new Date();
+
   const staticPages = [
-    { url: baseUrl, lastModified: new Date(), changeFrequency: 'hourly' as const, priority: 1.0 },
-    { url: `${baseUrl}/garhwa`, lastModified: new Date(), changeFrequency: 'hourly' as const, priority: 0.9 },
-    { url: `${baseUrl}/palamu`, lastModified: new Date(), changeFrequency: 'hourly' as const, priority: 0.9 },
-    { url: `${baseUrl}/jharkhand`, lastModified: new Date(), changeFrequency: 'hourly' as const, priority: 0.8 },
+    { url: baseUrl, lastModified: latestArticleDate, changeFrequency: 'hourly' as const, priority: 1.0 },
+    { url: `${baseUrl}/garhwa`, lastModified: latestArticleDate, changeFrequency: 'hourly' as const, priority: 0.9 },
+    { url: `${baseUrl}/palamu`, lastModified: latestArticleDate, changeFrequency: 'hourly' as const, priority: 0.9 },
+    { url: `${baseUrl}/jharkhand`, lastModified: latestArticleDate, changeFrequency: 'hourly' as const, priority: 0.9 },
     { url: `${baseUrl}/about`, lastModified: new Date(), changeFrequency: 'monthly' as const, priority: 0.5 },
     { url: `${baseUrl}/contact`, lastModified: new Date(), changeFrequency: 'monthly' as const, priority: 0.5 },
     { url: `${baseUrl}/privacy-policy`, lastModified: new Date(), changeFrequency: 'monthly' as const, priority: 0.3 },

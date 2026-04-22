@@ -1,8 +1,8 @@
 import { Metadata } from 'next'
 
 export const metadata: Metadata = {
-    title: 'संपादकीय नीति | गढ़वा पलामू न्यूज़',
-    description: 'गढ़वा पलामू न्यूज़ की संपादकीय नीति। हमारे समाचार चयन और तथ्य-जांच के सिद्धांतों के बारे में जानें।',
+    title: 'संपादकीय नीति | ThinkIndia.press',
+    description: 'ThinkIndia.press (थिंक इंडिया) की संपादकीय नीति। हमारे समाचार चयन और तथ्य-जांच के सिद्धांतों के बारे में जानें।',
 }
 
 import PublicLayout from '@/components/PublicLayout'
@@ -22,7 +22,7 @@ export default function EditorialPolicyPage() {
                     <div className="bg-white rounded-2xl shadow-lg p-8 space-y-8">
                         <section style={{ borderLeft: '4px solid #dc2626', paddingLeft: '1.5rem', background: '#fef2f2', padding: '1.5rem', borderRadius: '0 8px 8px 0' }}>
                             <p className="text-gray-800 text-lg font-semibold">
-                                गढ़वा पलामू न्यूज़ सटीक, निष्पक्ष और स्वतंत्र पत्रकारिता के लिए प्रतिबद्ध है।
+                                ThinkIndia.press (थिंक इंडिया) सटीक, निष्पक्ष और स्वतंत्र पत्रकारिता के लिए प्रतिबद्ध है।
                                 हमारा हर लेख इन सिद्धांतों का पालन करता है।
                             </p>
                         </section>

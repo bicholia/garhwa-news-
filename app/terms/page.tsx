@@ -1,8 +1,8 @@
 import { Metadata } from 'next'
 
 export const metadata: Metadata = {
-    title: 'उपयोग की शर्तें | गढ़वा पलामू न्यूज़',
-    description: 'गढ़वा पलामू न्यूज़ की उपयोग की शर्तें। हमारी वेबसाइट के उपयोग से संबंधित नियम और कानून।',
+    title: 'उपयोग की शर्तें | ThinkIndia.press',
+    description: 'ThinkIndia.press (थिंक इंडिया) की उपयोग की शर्तें। हमारी वेबसाइट के उपयोग से संबंधित नियम और कानून।',
 }
 
 import PublicLayout from '@/components/PublicLayout'
@@ -27,7 +27,7 @@ export default function TermsPage() {
                                 सामग्री का स्वामित्व (Copyright)
                             </h2>
                             <p className="text-gray-700 leading-relaxed text-lg">
-                                इस वेबसाइट पर प्रकाशित सभी मूल लेख, शोध, फोटो और वीडियो <strong>NR Daily News</strong> की बौद्धिक संपदा (Intellectual Property) हैं। बिना लिखित अनुमति के हमारे कंटेंट का व्यावसायिक उपयोग या कॉपी-पेस्ट करना कानूनी अपराध है। आप सोशल मीडिया पर न्यूज़ शेयर कर सकते हैं, बशर्ते आप हमारी वेबसाइट का लिंक साथ में दें।
+                                इस वेबसाइट पर प्रकाशित सभी मूल लेख, शोध, फोटो और वीडियो <strong>ThinkIndia.press</strong> की बौद्धिक संपदा (Intellectual Property) हैं। बिना लिखित अनुमति के हमारे कंटेंट का व्यावसायिक उपयोग या कॉपी-पेस्ट करना कानूनी अपराध है। आप सोशल मीडिया पर न्यूज़ शेयर कर सकते हैं, बशर्ते आप हमारी वेबसाइट का लिंक साथ में दें।
                             </p>
                         </section>
 

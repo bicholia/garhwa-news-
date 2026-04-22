@@ -13,7 +13,7 @@ export default function ErrorPage({
 }) {
     useEffect(() => {
         // Log the error to an error reporting service
-        console.error('NR Daily News UI Error Caught:', error)
+        console.error('ThinkIndia.press UI Error Caught:', error)
     }, [error])
 
     return (

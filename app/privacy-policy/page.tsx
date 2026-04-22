@@ -1,8 +1,8 @@
 import { Metadata } from 'next'
 
 export const metadata: Metadata = {
-    title: 'गोपनीयता नीति | गढ़वा पलामू न्यूज़',
-    description: 'गढ़वा पलामू न्यूज़ की गोपनीयता नीति। जानिए हम आपकी व्यक्तिगत जानकारी कैसे एकत्र, उपयोग और संरक्षित करते हैं।',
+    title: 'गोपनीयता नीति | ThinkIndia.press',
+    description: 'ThinkIndia.press (थिंक इंडिया) की गोपनीयता नीति। जानिए हम आपकी व्यक्तिगत जानकारी कैसे एकत्र, उपयोग और संरक्षित करते हैं।',
 }
 
 import PublicLayout from '@/components/PublicLayout'
@@ -27,7 +27,7 @@ export default function PrivacyPolicyPage() {
                                 डेटा संग्रह (Data Collection)
                             </h2>
                             <p className="text-gray-700 leading-relaxed text-lg mb-4">
-                                <strong>NR Daily News</strong> आपकी निजता का सम्मान करता है। हम निम्नलिखित जानकारी एकत्र कर सकते हैं:
+                                <strong>ThinkIndia.press</strong> आपकी निजता का सम्मान करता है। हम निम्नलिखित जानकारी एकत्र कर सकते हैं:
                             </p>
                             <ul className="grid md:grid-cols-2 gap-4 text-gray-700">
                                 <li className="bg-gray-50 p-4 rounded-xl border-l-4 border-red-600"><strong>लोकेशन:</strong> क्षेत्रीय समाचार दिखाने के लिए।</li>

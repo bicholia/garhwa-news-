@@ -52,7 +52,7 @@ export default async function AdminDashboard() {
                     नमस्ते, Admin!
                 </h1>
                 <p style={{ color: '#64748b', marginTop: '0.35rem' }}>
-                    NR Daily News Admin Panel — आज की तारीख: {new Date().toLocaleDateString('hi-IN', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' })}
+                    ThinkIndia.press Admin Panel — आज की तारीख: {new Date().toLocaleDateString('hi-IN', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' })}
                 </p>
             </div>
 
