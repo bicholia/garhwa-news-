@@ -11,17 +11,18 @@ export default async function SearchPage({ searchParams }: { searchParams: Promi
     let articles: any[] = []
 
     if (query) {
+        // Robust search across Postgres and Sanity
         const [pgResults, snResults] = await Promise.all([
             searchNews(query),
             client.fetch(
-                `*[_type == "article" && (title match "*" + $q + "*" || excerpt match "*" + $q + "*" || pt::text(body) match "*" + $q + "*")] | order(priority desc, publishedAt desc) {
-                    _id, title, slug, excerpt, featureImage, publishedAt, author->{name}, priority
+                `*[_type == "article" && (title match "*" + $q + "*" || excerpt match "*" + $q + "*" || body[].children[].text match "*" + $q + "*")] | order(publishedAt desc) {
+                    _id, title, "slug": slug.current, excerpt, featureImage, publishedAt, author->{name}, district
                 }`,
                 { q: query }
             )
         ])
         
-        articles = mergeAndSortNews(pgResults, snResults, 20)
+        articles = mergeAndSortNews(pgResults, snResults, 24)
     }
 
     return (
@@ -30,21 +31,23 @@ export default async function SearchPage({ searchParams }: { searchParams: Promi
                 <SectionHeading title={query ? `खोज परिणाम: "${query}"` : 'खोजें'} />
 
                 {query && articles.length === 0 ? (
-                    <div style={{ textAlign: 'center', padding: '4rem 0', color: '#6b7280' }}>
-                        <div style={{ fontSize: '3rem', marginBottom: '1rem' }}>🔍</div>
-                        <p>इस शब्द के लिए कोई समाचार नहीं मिला।</p>
-                        <p style={{ fontSize: '0.85rem', marginTop: '0.5rem' }}>कृपया कुछ और खोजें।</p>
+                    <div className="flex flex-col items-center justify-center py-24 text-gray-400">
+                        <div className="text-6xl mb-6 opacity-20">🔍</div>
+                        <h3 className="text-xl font-bold text-gray-900 mb-2">कोई परिणाम नहीं मिला</h3>
+                        <p className="text-sm font-medium">हमें आपकी खोज <strong>"{query}"</strong> के लिए कुछ नहीं मिला।</p>
+                        <p className="text-xs mt-2 uppercase tracking-widest font-bold text-brand-red">कृपया अन्य शब्दों के साथ प्रयास करें</p>
                     </div>
                 ) : articles.length > 0 ? (
-                    <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(300px, 1fr))', gap: '2rem' }}>
+                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
                         {articles.map((article: any) => (
                             <ArticleCard key={article.id || article._id} article={article} />
                         ))}
                     </div>
                 ) : (
-                    <div style={{ textAlign: 'center', padding: '4rem 0', color: '#6b7280' }}>
-                        <div style={{ fontSize: '3rem', marginBottom: '1rem' }}>🔍</div>
-                        <p>ऊपर के सर्च बार में खबर का शब्द लिखें।</p>
+                    <div className="flex flex-col items-center justify-center py-24 text-gray-400">
+                        <div className="text-6xl mb-6 opacity-20">🔍</div>
+                        <h3 className="text-xl font-bold text-gray-900 mb-2">सर्च बार में टाइप करें</h3>
+                        <p className="text-sm font-medium">न्यूज़ खोजने के लिए ऊपर दिए गए सर्च बार का उपयोग करें।</p>
                     </div>
                 )}
             </main>

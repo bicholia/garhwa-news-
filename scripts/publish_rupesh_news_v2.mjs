@@ -57,7 +57,8 @@ async function publishNews() {
         publishedAt: new Date().toISOString(),
         image_url: "https://thinkindia.press/rupesh-ai-hero.png",
         tags: ["AI", "Rupesh Vishwakarma", "Palamu", "Jharkhand", "Tech Innovation"],
-        _id: 'news-rupesh-v4-ai-story'
+        _id: 'news-rupesh-v4-ai-story',
+        author: { _type: 'reference', _ref: 'author-rupesh' }
     };
 
     console.log('Publishing/Updating news to Sanity...');
