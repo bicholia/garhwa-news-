@@ -60,9 +60,6 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
         <ThemeProvider>
           <div id="think-india-root" className="flex flex-col min-h-screen" suppressHydrationWarning>
             <ErrorHandler />
-            <Suspense fallback={null}>
-              <PremiumLoader />
-            </Suspense>
             <main className="flex-grow">
               {children}
             </main>

@@ -57,7 +57,7 @@ export default async function AdminDashboard() {
             </div>
 
             {/* Stats Cards */}
-            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(220px, 1fr))', gap: '1.25rem', marginBottom: '2rem' }}>
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
                 {statCards.map((card) => (
                     <div key={card.label} style={{
                         background: 'white',
@@ -74,7 +74,7 @@ export default async function AdminDashboard() {
             </div>
 
             {/* Quick Actions */}
-            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))', gap: '1.25rem', marginBottom: '2rem' }}>
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-8">
                 <Link href="/admin/dashboard/posts/new" style={{
                     display: 'flex', alignItems: 'center', gap: '1rem',
                     background: 'linear-gradient(135deg, #dc2626, #b91c1c)',

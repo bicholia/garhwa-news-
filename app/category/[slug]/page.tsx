@@ -16,7 +16,7 @@ export async function generateMetadata({ params }: { params: Promise<{ slug: str
     
     return {
         title: `${categoryName} | ताज़ा समाचार | Think India`,
-        description: `Think India ${categoryName} Bureau: Fast, fair, and fearless news reporting from the digital grid.`,
+        description: `Think India ${categoryName} Bureau: Impact, Integrity, and Intelligence. Global reporting from the digital grid.`,
     }
 }
 
@@ -55,12 +55,6 @@ export default async function CategoryPage({
                 {/* Category Header */}
                 <div className="bg-ndtv-black py-12 lg:py-16 border-b border-brand-red">
                     <div className="container">
-                        <div className="flex items-center gap-4 mb-4">
-                            <span className="bg-brand-red text-white text-[10px] font-black uppercase tracking-widest px-3 py-1 rounded">
-                                CATEGORY BUREAU
-                            </span>
-                            <span className="text-gray-400 text-[11px] font-bold uppercase tracking-wider">Independent Coverage</span>
-                        </div>
                         <h1 className="text-4xl lg:text-7xl font-black text-white leading-tight uppercase tracking-tighter serif-font">
                             {categoryName} <span className="text-brand-red">REPORTS</span>
                         </h1>

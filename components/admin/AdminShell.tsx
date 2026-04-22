@@ -36,12 +36,14 @@ export default function AdminShell({ children }: { children: React.ReactNode }) 
 
             {/* ===== SIDEBAR ===== */}
             <aside style={{
-                width: '240px',
                 background: 'linear-gradient(180deg, #0f172a 0%, #1e1b4b 100%)',
                 position: 'fixed', left: 0, top: 0, bottom: 0,
                 display: 'flex', flexDirection: 'column',
-                zIndex: 50, overflowY: 'auto'
-            }}>
+                zIndex: 50, overflowY: 'auto',
+                transition: 'transform 0.3s'
+            }}
+            className={`w-[240px] transform ${'translate-x-0'} lg:translate-x-0`}
+            >
                 {/* Brand */}
                 <div style={{ padding: '1.25rem', borderBottom: '1px solid rgba(255,255,255,0.08)' }}>
                     <div style={{ color: '#ef4444', fontWeight: 900, fontSize: '1.05rem', letterSpacing: '-0.02em', display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
@@ -131,7 +133,7 @@ export default function AdminShell({ children }: { children: React.ReactNode }) 
             </aside>
 
             {/* ===== MAIN ===== */}
-            <div style={{ marginLeft: '240px', flex: 1, display: 'flex', flexDirection: 'column' }}>
+            <div className="flex-1 flex flex-col lg:ml-[240px]">
                 {/* Top Header */}
                 <header style={{
                     height: '58px', background: 'white',

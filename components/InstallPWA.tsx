@@ -44,25 +44,27 @@ export default function InstallPWA() {
   }
 
   const handleInstallClick = async () => {
-    if (!deferredPrompt) {
-      if (isIOS) {
-        alert('To install: click Share button and then "Add to Home Screen".')
-      }
-      return
+    if (deferredPrompt) {
+        deferredPrompt.prompt()
+        const { outcome } = await deferredPrompt.userChoice
+        if (outcome === 'accepted') {
+            setShowPrompt(false)
+            localStorage.setItem('th_pwa_dismissed', 'true')
+        }
+        setDeferredPrompt(null)
+    } else if (isIOS) {
+        // Simple and direct instruction for iOS
+        alert('iPhone पर इंस्टॉल करने के लिए: नीचे "Share" बटन दबाएं और फिर "Add to Home Screen" चुनें।');
+    } else {
+        // For Android browsers where prompt isn't fired yet
+        alert('ऐप इंस्टॉल करने के लिए: ब्राउज़र के ऊपर 3-डॉट्स (Menu) पर क्लिक करें और "Install App" चुनें।');
     }
-    deferredPrompt.prompt()
-    const { outcome } = await deferredPrompt.userChoice
-    if (outcome === 'accepted') {
-      setShowPrompt(false)
-      localStorage.setItem('th_pwa_dismissed', 'true')
-    }
-    setDeferredPrompt(null)
   }
 
   if (!mounted || !showPrompt) return null
 
   return (
-    <div className="fixed top-6 left-4 right-4 md:top-auto md:bottom-32 md:left-auto md:right-6 md:w-[380px] bg-white p-6 rounded-3xl shadow-2xl z-[9999] border border-brand-red/20 animate-in fade-in md:slide-in-from-bottom-5 slide-in-from-top-5 duration-500">
+    <div className="fixed bottom-6 left-4 right-4 md:bottom-12 md:left-auto md:right-6 md:w-[380px] bg-white p-6 rounded-3xl shadow-[0_20px_50px_rgba(0,0,0,0.3)] z-[99999] border-2 border-brand-red/20 animate-in fade-in slide-in-from-bottom-10 duration-700">
       <div className="flex items-start gap-5">
         <div className="bg-ndtv-black p-3 rounded-2xl text-brand-red shrink-0">
           <DownloadCloud size={24} />

@@ -38,78 +38,32 @@ export default function LoginPage() {
     }
 
     return (
-        <div style={{
-            minHeight: '100vh',
-            background: 'linear-gradient(135deg, #0f172a 0%, #1e1b4b 100%)',
-            display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'center',
-            padding: '1rem',
-            fontFamily: "'Inter', 'Noto Sans Devanagari', sans-serif"
-        }}>
-            <div style={{
-                width: '100%',
-                maxWidth: '420px',
-                background: 'white',
-                borderRadius: '1.5rem',
-                padding: '2.5rem',
-                boxShadow: '0 25px 60px rgba(0,0,0,0.4)'
-            }}>
+        <div className="min-h-screen bg-gradient-to-br from-[#0f172a] to-[#1e1b4b] flex items-center justify-center p-4 font-sans">
+            <div className="w-full max-w-[420px] bg-white rounded-3xl p-8 lg:p-10 shadow-2xl animate-in fade-in zoom-in duration-500">
                 {/* Logo */}
-                <div style={{ textAlign: 'center', marginBottom: '2rem' }}>
-                    <div style={{
-                        width: '70px',
-                        height: '70px',
-                        background: 'linear-gradient(135deg, #dc2626, #7f1d1d)',
-                        borderRadius: '1rem',
-                        display: 'flex',
-                        alignItems: 'center',
-                        justifyContent: 'center',
-                        margin: '0 auto 1rem',
-                        boxShadow: '0 8px 20px rgba(220,38,38,0.4)'
-                    }}>
+                <div className="text-center mb-8">
+                    <div className="w-[70px] h-[70px] bg-gradient-to-br from-[#dc2626] to-[#7f1d1d] rounded-2xl flex items-center justify-center mx-auto mb-4 shadow-[0_8px_20px_rgba(220,38,38,0.4)]">
                         <svg width="32" height="32" fill="none" viewBox="0 0 24 24" stroke="white" strokeWidth={2}>
                             <path strokeLinecap="round" strokeLinejoin="round" d="M9 12.75L11.25 15 15 9.75m-3-7.036A11.959 11.959 0 013.598 6 11.99 11.99 0 003 9.749c0 5.592 3.824 10.29 9 11.623 5.176-1.332 9-6.03 9-11.622 0-1.31-.21-2.571-.598-3.751h-.152c-3.196 0-6.1-1.248-8.25-3.285z" />
                         </svg>
                     </div>
-                    <h1 style={{ fontSize: '1.5rem', fontWeight: 800, color: '#0f172a', margin: 0 }}>
-                        एडमिन लॉगिन
-                    </h1>
-                    <p style={{ color: '#64748b', marginTop: '0.4rem', fontSize: '0.9rem' }}>
-                        Think India — Secure Access
-                    </p>
+                    <h1 className="text-2xl font-black text-[#0f172a] mb-1">एडमिन लॉगिन</h1>
+                    <p className="text-gray-500 text-sm font-medium">ThinkIndia.press — Secure Access</p>
                 </div>
 
-                <form onSubmit={handleLogin}>
+                <form onSubmit={handleLogin} className="space-y-5">
                     {/* Error */}
                     {error && (
-                        <div style={{
-                            background: '#fef2f2',
-                            border: '1px solid #fca5a5',
-                            borderRadius: '0.75rem',
-                            padding: '0.75rem 1rem',
-                            marginBottom: '1.25rem',
-                            color: '#dc2626',
-                            fontSize: '0.875rem',
-                            fontWeight: 600
-                        }}>
+                        <div className="bg-red-50 border border-red-200 rounded-xl p-3 text-red-600 text-sm font-bold animate-shake">
                             {error}
                         </div>
                     )}
 
-                    <div style={{ marginBottom: '1.25rem' }}>
-                        <label style={{
-                            display: 'block',
-                            fontSize: '0.82rem',
-                            fontWeight: 700,
-                            color: '#374151',
-                            marginBottom: '0.5rem',
-                            textTransform: 'uppercase',
-                            letterSpacing: '0.05em'
-                        }}>
+                    <div>
+                        <label className="block text-[10px] font-black text-gray-500 uppercase tracking-widest mb-2">
                             पासवर्ड (Password)
                         </label>
-                        <div style={{ position: 'relative' }}>
+                        <div className="relative">
                             <input
                                 type={showPassword ? 'text' : 'password'}
                                 required
@@ -117,37 +71,12 @@ export default function LoginPage() {
                                 onChange={(e) => setPassword(e.target.value)}
                                 placeholder="••••••••••••"
                                 autoComplete="off"
-                                style={{
-                                    width: '100%',
-                                    padding: '0.85rem 3rem 0.85rem 1rem',
-                                    border: '2px solid #e2e8f0',
-                                    borderRadius: '0.75rem',
-                                    fontSize: '1rem',
-                                    outline: 'none',
-                                    boxSizing: 'border-box',
-                                    fontFamily: 'inherit',
-                                    transition: 'border-color 0.15s'
-                                }}
-                                onFocus={(e) => e.target.style.borderColor = '#dc2626'}
-                                onBlur={(e) => e.target.style.borderColor = '#e2e8f0'}
+                                className="w-full px-4 py-3.5 border-2 border-gray-100 rounded-xl text-lg outline-none focus:border-brand-red transition-all pr-12"
                             />
                             <button
                                 type="button"
                                 onClick={() => setShowPassword(!showPassword)}
-                                style={{
-                                    position: 'absolute',
-                                    right: '0.75rem',
-                                    top: '50%',
-                                    transform: 'translateY(-50%)',
-                                    background: 'none',
-                                    border: 'none',
-                                    cursor: 'pointer',
-                                    color: '#64748b',
-                                    display: 'flex',
-                                    alignItems: 'center',
-                                    justifyContent: 'center',
-                                    padding: '0.25rem'
-                                }}
+                                className="absolute right-4 top-1/2 -translate-y-1/2 text-gray-400 hover:text-brand-red"
                             >
                                 {showPassword ? (
                                     <svg width="20" height="20" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
@@ -166,27 +95,14 @@ export default function LoginPage() {
                     <button
                         type="submit"
                         disabled={loading}
-                        style={{
-                            width: '100%',
-                            padding: '0.9rem',
-                            background: loading ? '#94a3b8' : 'linear-gradient(135deg, #dc2626, #b91c1c)',
-                            color: 'white',
-                            border: 'none',
-                            borderRadius: '0.75rem',
-                            fontSize: '1rem',
-                            fontWeight: 700,
-                            cursor: loading ? 'not-allowed' : 'pointer',
-                            boxShadow: loading ? 'none' : '0 4px 15px rgba(220,38,38,0.4)',
-                            transition: 'all 0.2s',
-                            fontFamily: 'inherit'
-                        }}
+                        className={`w-full py-4 rounded-xl text-white text-sm font-black uppercase tracking-widest shadow-xl transition-all ${loading ? 'bg-gray-400' : 'bg-gradient-to-r from-brand-red to-red-800 hover:scale-[1.02] active:scale-95'}`}
                     >
                         {loading ? 'वेरिफाई हो रहा है...' : 'डैशबोर्ड खोलें →'}
                     </button>
                 </form>
 
-                <p style={{ marginTop: '2rem', textAlign: 'center', fontSize: '0.75rem', color: '#94a3b8' }}>
-                    © {new Date().getFullYear()} Think India. Unauthorized access is prohibited.
+                <p className="mt-8 text-center text-[10px] font-bold text-gray-400 uppercase tracking-widest">
+                    © {new Date().getFullYear()} ThinkIndia.press
                 </p>
             </div>
         </div>
