@@ -29,10 +29,10 @@ export default function Footer() {
             <div className="container">
                 {/* Branding & Social */}
                 <div className="flex flex-col lg:flex-row justify-between items-start lg:items-center gap-8 mb-12 pb-8 border-b border-gray-200">
-                    <Link href="/" className="shrink-0 flex items-center">
-                        <span className="text-3xl font-black tracking-tighter flex items-center gap-1">
-                            <span className="text-black">THINKINDIA</span>
-                            <span className="text-brand-red">.PRESS</span>
+                    <Link href="/" className="shrink-0 flex items-center group">
+                        <span className="text-3xl font-black tracking-tighter flex items-center gap-2">
+                            <span className="text-black group-hover:text-brand-red transition-colors">THINKINDIA</span>
+                            <span className="text-brand-red group-hover:text-black transition-colors">NEWS</span>
                         </span>
                     </Link>
                     <div className="flex gap-4">
@@ -51,9 +51,9 @@ export default function Footer() {
                 {/* Info Grid */}
                 <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-6 gap-x-8 gap-y-10 mb-12">
                     <div className="col-span-2">
-                        <h3 className="text-[12px] font-black uppercase tracking-widest text-brand-red mb-6">About ThinkIndia.press</h3>
-                        <p className="text-[13px] text-gray-600 leading-relaxed font-medium">
-                            ThinkIndia.press is your premium source for regional and national news. We focus on in-depth reporting from Garhwa, Palamu, and Jharkhand, combined with global standard journalism principles.
+                        <h3 className="text-[12px] font-black uppercase tracking-[0.15em] text-brand-red mb-6">About ThinkIndia News</h3>
+                        <p className="text-[14px] text-gray-600 leading-relaxed font-medium">
+                            ThinkIndia News is your premium source for regional and national reporting. We focus on in-depth journalism from Garhwa, Palamu, and across Jharkhand, combined with modern digital news standards.
                         </p>
                     </div>
 
@@ -84,23 +84,22 @@ export default function Footer() {
                     </div>
 
                     <div className="col-span-2">
-                        <h3 className="text-[12px] font-black uppercase tracking-widest text-brand-red mb-6">Contact Bureau</h3>
+                        <h3 className="text-[12px] font-black uppercase tracking-[0.15em] text-brand-red mb-6">ThinkIndia News</h3>
                         <div className="space-y-4">
-                            <div className="flex gap-3 text-[13px] text-gray-600">
-                                <MapPin size={16} className="text-gray-400 shrink-0" />
-                                <span>Rajpath Marg, New Delhi — 110001</span>
+                            <div className="flex gap-3 text-[14px] text-gray-600 font-medium">
+                                <MapPin size={18} className="text-brand-red/40 shrink-0" />
+                                <span>Main Road, Garhwa, Jharkhand — 822114</span>
                             </div>
 
-                            <div className="inline-flex items-center gap-2 px-3 py-1.5 bg-green-50 text-green-700 border border-green-100 rounded text-[10px] font-bold uppercase tracking-wider">
-                                <ShieldCheck size={12} /> Verified Agency
+                            <div className="inline-flex items-center gap-2 px-3 py-1.5 bg-gray-100 text-gray-700 border border-gray-200 rounded text-[10px] font-bold uppercase tracking-wider">
+                                <ShieldCheck size={12} className="text-brand-red" /> Verified Publisher
                             </div>
                         </div>
                     </div>
                 </div>
 
-                {/* Sub Footer */}
                 <div className="border-t border-gray-200 pt-8 flex flex-col md:flex-row justify-between items-center gap-4 text-[11px] font-bold text-gray-500 uppercase tracking-widest">
-                    <span>© 2026 THINKINDIA.PRESS NEWS · ALL RIGHTS RESERVED</span>
+                    <span>© 2026 THINKINDIA NEWS · ALL RIGHTS RESERVED</span>
                     <div className="flex flex-wrap justify-center md:justify-end gap-6">
                         <Link href="/privacy-policy" className="hover:text-black">Privacy</Link>
                         <Link href="/terms" className="hover:text-black">Terms</Link>

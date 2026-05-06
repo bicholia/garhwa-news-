@@ -1,6 +1,7 @@
 {
   "name": "garhwa-news",
   "version": "0.1.0",
+  "type": "module",
   "private": true,
   "scripts": {
     "dev": "node scripts/dev-with-recovery.js",

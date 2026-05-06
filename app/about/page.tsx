@@ -34,17 +34,17 @@ export default function AboutPage() {
                     <div className="bg-white rounded-3xl shadow-xl overflow-hidden mb-12 border border-gray-100">
                         <div className="md:flex">
                             <div className="md:w-1/3 bg-red-600 p-12 flex flex-col justify-center text-white">
-                                <h2 className="text-3xl font-black mb-4">Founder's Story</h2>
+                                <h2 className="text-3xl font-black mb-4">Editorial Vision</h2>
                                 <div className="w-16 h-1 bg-white opacity-50 mb-6"></div>
-                                <p className="text-red-100 italic">"हमारा सपना गढ़वा के हर घर को डिजिटल क्रांति से जोड़ना है।"</p>
+                                <p className="text-red-100 italic">"हमारा लक्ष्य गढ़वा की हर आवाज़ को मुख्यधारा से जोड़ना है।"</p>
                             </div>
                             <div className="md:w-2/3 p-10">
-                                <h2 className="text-2xl font-bold text-gray-900 mb-6">डिजिटल उत्थान (Digital Upliftment)</h2>
+                                <h2 className="text-2xl font-bold text-gray-900 mb-6">सत्यता और निष्पक्षता (Authentic Journalism)</h2>
                                 <p className="text-gray-700 leading-relaxed mb-6 text-lg">
-                                    ThinkIndia.press की शुरुआत एक छोटे से सपने के साथ हुई थी — गढ़वा और पलामू जैसे क्षेत्रों में सूचना के अभाव को मिटाना। हमने देखा कि हमारे क्षेत्र की खबरें बड़े मीडिया हाउसों में कहीं खो जाती थीं।
+                                    ThinkIndia.press की शुरुआत एक विजन के साथ हुई थी — गढ़वा और पलामू जैसे क्षेत्रों में खबरों के अभाव को मिटाना। हमने देखा कि हमारे क्षेत्र की खबरें बड़े मीडिया हाउसों में अक्सर जगह नहीं पा पाती थीं।
                                 </p>
                                 <p className="text-gray-700 leading-relaxed mb-6 text-lg">
-                                    हमारा उद्देश्य केवल समाचार देना नहीं, बल्कि इस क्षेत्र का <strong>डिजिटल उत्थान (Digital Upliftment)</strong> करना है। हम स्थानीय युवाओं को डिजिटल पत्रकारिता से जोड़ रहे हैं और तकनीकी रूप से सशक्त बना रहे हैं ताकि हमारे जिले की आवाज़ पूरी दुनिया में गूंज सके।
+                                    हमारा उद्देश्य केवल सूचना देना नहीं, बल्कि इस क्षेत्र की समस्याओं को सामने लाना और **ज़मीनी पत्रकारिता (Ground Journalism)** को बढ़ावा देना है। हम स्थानीय संवाददाताओं के साथ मिलकर एक ऐसा नेटवर्क बना रहे हैं जो पूरी तरह से विश्वसनीय और तथ्यों पर आधारित हो।
                                 </p>
                             </div>
                         </div>
@@ -110,7 +110,7 @@ export default function AboutPage() {
                                 <div style={{ background: '#fee2e2', padding: '12px', borderRadius: '50%', width: 48, height: 48, display: 'flex', alignItems: 'center', justifyContent: 'center', fontWeight: 800, color: '#dc2626' }}>A</div>
                                 <div>
                                     <h3 className="font-bold text-lg">अमित कुमार</h3>
-                                    <p className="text-gray-600 text-sm">तकनीकी प्रमुख</p>
+                                    <p className="text-gray-600 text-sm">डिजिटल डेस्क प्रमुख</p>
                                 </div>
                             </div>
                         </div>

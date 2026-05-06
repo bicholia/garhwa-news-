@@ -12,13 +12,14 @@ const client = createClient({
 
 async function getStats() {
     try {
-        const [total, today, cmsCheck] = await Promise.all([
+        const [total, today, cmsCheck, missingImagesCount] = await Promise.all([
             client.fetch(`count(*[_type == "article"])`),
             client.fetch(
                 `count(*[_type == "article" && publishedAt >= $from])`,
                 { from: new Date(new Date().setHours(0, 0, 0, 0)).toISOString() }
             ),
-            client.fetch(`count(*[_id == "nonexistent"])`).then(() => 'Online').catch(() => 'Offline')
+            client.fetch(`count(*[_id == "nonexistent"])`).then(() => 'Online').catch(() => 'Offline'),
+            client.fetch(`count(*[_type == "article" && !defined(featureImage)])`)
         ])
         
         const telegramStatus = process.env.TELEGRAM_BOT_TOKEN ? 'Connected' : 'Not Configured'
@@ -27,7 +28,8 @@ async function getStats() {
             total, 
             today, 
             cmsStatus: cmsCheck, 
-            telegramStatus 
+            telegramStatus,
+            missingImages: missingImagesCount
         }
     } catch {
         return { total: 0, today: 0, cmsStatus: 'Offline', telegramStatus: 'Unknown' }
@@ -40,7 +42,7 @@ export default async function AdminDashboard() {
     const statCards = [
         { label: 'कुल खबरें', value: stats.total, color: '#2563eb', bg: '#eff6ff', icon: <Newspaper size={28} color="#2563eb" /> },
         { label: 'आज की खबरें', value: stats.today, color: '#059669', bg: '#f0fdf4', icon: <Sparkles size={28} color="#059669" /> },
-        { label: 'Telegram', value: stats.telegramStatus, color: stats.telegramStatus === 'Connected' ? '#0088cc' : '#f59e0b', bg: '#f0f9ff', icon: <Megaphone size={28} color={stats.telegramStatus === 'Connected' ? '#0088cc' : '#f59e0b'} /> },
+        { label: 'बिना फोटो वाली', value: stats.missingImages, color: '#dc2626', bg: '#fef2f2', icon: <UploadCloud size={28} color="#dc2626" /> },
         { label: 'CMS Status', value: stats.cmsStatus, color: stats.cmsStatus === 'Online' ? '#7c3aed' : '#dc2626', bg: '#f5f3ff', icon: <CheckCircle2 size={28} color={stats.cmsStatus === 'Online' ? '#7c3aed' : '#dc2626'} /> },
     ]
 
@@ -117,6 +119,23 @@ export default async function AdminDashboard() {
                     <div>
                         <div style={{ fontSize: '1.1rem', fontWeight: 800, color: '#1d4ed8' }}>विज्ञापन (Ads)</div>
                         <div style={{ fontSize: '0.82rem', color: '#64748b', marginTop: '0.2rem' }}>लोकल बैनर अपलोड करें</div>
+                    </div>
+                </Link>
+
+                <Link href="/admin/dashboard/image-manager" style={{
+                    display: 'flex', alignItems: 'center', gap: '1rem',
+                    background: 'linear-gradient(135deg, #fef2f2, #fee2e2)',
+                    border: '2px solid #ef4444',
+                    color: '#0f172a', padding: '1.5rem', borderRadius: '1rem',
+                    textDecoration: 'none', fontWeight: 700,
+                    transition: 'box-shadow 0.2s',
+                    cursor: 'pointer'
+                }}
+                >
+                    <span style={{ fontSize: '2.5rem', display: 'flex', alignItems: 'center' }}><UploadCloud size={36} color="#dc2626" /></span>
+                    <div>
+                        <div style={{ fontSize: '1.1rem', fontWeight: 800, color: '#dc2626' }}>🖼️ इमेज मैनेजर</div>
+                        <div style={{ fontSize: '0.82rem', color: '#64748b', marginTop: '0.2rem' }}>बिना फोटो वाली खबरें फिक्स करें</div>
                     </div>
                 </Link>
 

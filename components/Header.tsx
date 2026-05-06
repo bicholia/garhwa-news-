@@ -87,31 +87,32 @@ export default function Header() {
 
     return (
         <>
-            <header className={`w-full z-[1000] transition-all duration-300 ${isScrolled ? 'fixed top-0 shadow-xl' : 'relative'}`}>
-                {/* TIER 1: NDTV Black Bar */}
-                <div className="bg-ndtv-black text-white py-2 lg:py-0 border-b border-white/10">
-                    <div className="container flex items-center justify-between h-14 lg:h-16">
+            <header className={`w-full z-[1000] transition-all duration-500 ease-in-out ${isScrolled ? 'fixed top-0 shadow-premium backdrop-blur-md bg-ndtv-black/95' : 'relative bg-ndtv-black'}`}>
+                {/* TIER 1: Main Bar */}
+                <div className="text-white border-b border-white/5">
+                    <div className="container flex items-center justify-between h-16 lg:h-20">
                         {/* Logo */}
-                        <div className="flex items-center gap-6 lg:gap-10">
-                            <Link href="/" className="shrink-0 flex items-center">
-                                <span className="text-2xl lg:text-3xl font-black tracking-tighter flex items-center gap-1">
-                                    <span className="text-white uppercase">THINKINDIA</span>
-                                    <span className="text-brand-red uppercase">.PRESS</span>
+                        <div className="flex items-center gap-8 lg:gap-12">
+                            <Link href="/" className="shrink-0 flex items-center group">
+                                <span className="text-2xl lg:text-3xl font-black tracking-tighter flex items-center gap-2">
+                                    <span className="text-white uppercase group-hover:text-brand-red transition-all duration-300">THINKINDIA</span>
+                                    <span className="text-brand-red uppercase group-hover:text-white transition-all duration-300">NEWS</span>
                                 </span>
                             </Link>
 
                             {/* Main Desktop Nav */}
                             {isDesktop && (
                                 <nav className="hidden lg:block h-full">
-                                    <ul className="flex items-center gap-6 h-full text-[12px] font-bold tracking-wide">
+                                    <ul className="flex items-center gap-8 h-full text-[13px] font-bold tracking-widest">
                                         {mainNav.map(item => (
-                                            <li key={item.name} className="h-full flex items-center">
+                                            <li key={item.name} className="h-full flex items-center relative group/nav">
                                                 <Link 
                                                     href={item.href} 
-                                                    className={`hover:text-brand-red transition-colors ${pathname === item.href ? 'text-brand-red' : ''}`}
+                                                    className={`hover:text-brand-red transition-all duration-300 uppercase ${pathname === item.href ? 'text-brand-red' : 'text-gray-300'}`}
                                                 >
                                                     {item.name}
                                                 </Link>
+                                                <span className={`absolute bottom-0 left-0 w-full h-0.5 bg-brand-red transition-transform duration-300 origin-left ${pathname === item.href ? 'scale-x-100' : 'scale-x-0 group-hover/nav:scale-x-100'}`} />
                                             </li>
                                         ))}
                                     </ul>
@@ -120,22 +121,28 @@ export default function Header() {
                         </div>
 
                         {/* Actions */}
-                        <div className="flex items-center gap-4">
+                        <div className="flex items-center gap-3 lg:gap-5">
                             <button 
                                 onClick={() => setSearchOpen(true)}
-                                className="p-2 hover:bg-white/10 rounded-full transition-colors"
+                                className="p-2.5 hover:bg-white/10 rounded-full transition-all duration-300 group"
+                                aria-label="Search"
                             >
-                                <Search size={20} />
+                                <Search size={18} className="group-hover:scale-110 transition-transform" />
                             </button>
                             <button 
                                 onClick={toggleTheme}
-                                className="p-2 hover:bg-white/10 rounded-full transition-colors text-brand-red"
+                                className="p-2.5 hover:bg-white/10 rounded-full transition-all duration-300 text-brand-red group"
+                                aria-label="Toggle Theme"
                             >
-                                {theme === 'dark' ? <Sun size={20} /> : <Moon size={20} />}
+                                {theme === 'dark' ? <Sun size={18} className="group-hover:rotate-90 transition-transform" /> : <Moon size={18} className="group-hover:-rotate-12 transition-transform" />}
                             </button>
                             {!isDesktop && (
-                                <button onClick={() => setMobileOpen(true)} className="p-2">
-                                    <Menu size={24} />
+                                <button 
+                                    onClick={() => setMobileOpen(true)} 
+                                    className="p-2.5 hover:bg-white/10 rounded-full transition-all"
+                                    aria-label="Menu"
+                                >
+                                    <Menu size={22} />
                                 </button>
                             )}
                         </div>
@@ -172,9 +179,9 @@ export default function Header() {
                     <div className="absolute top-0 right-0 w-[280px] h-full bg-ndtv-black text-white p-6 shadow-2xl flex flex-col">
                         <div className="flex justify-between items-center mb-10">
                             <span className="text-xl font-black tracking-tighter">
-                                THINK<span className="text-brand-red">INDIA</span>
+                                THINK<span className="text-brand-red">INDIA</span> NEWS
                             </span>
-                            <button onClick={() => setMobileOpen(false)}><X size={24} /></button>
+                            <button onClick={() => setMobileOpen(false)} className="hover:rotate-90 transition-transform"><X size={24} /></button>
                         </div>
                         <nav className="flex flex-col gap-6 font-bold text-lg">
                             {mainNav.map(item => (
@@ -185,7 +192,7 @@ export default function Header() {
                         </nav>
                         <div className="mt-auto space-y-4 pt-10 border-t border-white/10">
                             <WeatherWidget />
-                            <div className="text-[10px] text-gray-500 uppercase font-bold">© 2026 ThinkIndia.press</div>
+                            <div className="text-[10px] text-gray-500 uppercase font-bold tracking-widest">© 2026 ThinkIndia News</div>
                         </div>
                     </div>
                 </div>

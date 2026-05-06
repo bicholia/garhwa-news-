@@ -54,10 +54,25 @@ export default function PrivacyPolicyPage() {
                         <section>
                             <h2 className="text-2xl font-black text-gray-900 mb-4 flex items-center gap-2">
                                 <span className="w-8 h-8 bg-red-600 text-white rounded-lg flex items-center justify-center text-sm">03</span>
+                                कुकीज़ और विज्ञापन (Cookies & Ads)
+                            </h2>
+                            <p className="text-gray-700 leading-relaxed text-lg mb-4">
+                                हम विज्ञापनों को बेहतर बनाने के लिए <strong>Google AdSense</strong> का उपयोग करते हैं। Google, एक तृतीय-पक्ष विक्रेता के रूप में, हमारी साइट पर विज्ञापन दिखाने के लिए कुकीज़ का उपयोग करता है।
+                            </p>
+                            <ul className="space-y-3 text-gray-700">
+                                <li className="flex gap-2">✅ Google की DART कुकीज़ का उपयोग उपयोगकर्ताओं को उनकी पिछली यात्राओं के आधार पर विज्ञापन दिखाने के लिए किया जाता है।</li>
+                                <li className="flex gap-2">✅ आप Google के विज्ञापन और सामग्री नेटवर्क गोपनीयता नीति पर जाकर DART कुकी के उपयोग से बाहर निकल सकते हैं।</li>
+                                <li className="flex gap-2">✅ हम अन्य तृतीय-पक्ष विज्ञापन नेटवर्क का भी उपयोग कर सकते हैं जो कुकीज़ और वेब बीकन का उपयोग कर सकते हैं।</li>
+                            </ul>
+                        </section>
+
+                        <section>
+                            <h2 className="text-2xl font-black text-gray-900 mb-4 flex items-center gap-2">
+                                <span className="w-8 h-8 bg-red-600 text-white rounded-lg flex items-center justify-center text-sm">04</span>
                                 आपकी जानकारी की सुरक्षा
                             </h2>
                             <p className="text-gray-700 leading-relaxed text-lg">
-                                हम कभी भी आपका डेटा किसी तीसरे पक्ष को <strong>नहीं बेचते</strong>। सभी डेटा एन्क्रिप्टेड है और केवल सेवा सुधार के लिए उपयोग किया जाता है।
+                                हम कभी भी आपका डेटा किसी तीसरे पक्ष को <strong>नहीं बेचते</strong>। सभी डेटा एन्क्रिप्टेड है और केवल सेवा सुधार के लिए उपयोग किया जाता है। आपकी सुरक्षा हमारी प्राथमिकता है।
                             </p>
                         </section>
 

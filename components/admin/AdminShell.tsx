@@ -11,6 +11,7 @@ const navigation = [
     { name: 'ऑटो-पायलट', href: '/admin/dashboard/auto-pilot', icon: <Radio size={18} /> },
     { name: 'सभी न्यूज़', href: '/admin/dashboard/posts', icon: <FileText size={18} /> },
     { name: 'नई खबर लिखें', href: '/admin/dashboard/posts/new', icon: <PlusCircle size={18} /> },
+    { name: 'इमेज मैनेजर', href: '/admin/dashboard/image-manager', icon: <PlusCircle size={18} /> },
     { name: 'सेटिंग्स', href: '/admin/dashboard/settings', icon: <Settings size={18} /> },
 ]
 
@@ -149,6 +150,7 @@ export default function AdminShell({ children }: { children: React.ReactNode }) 
                         {pathname === '/admin/dashboard' && 'डैशबोर्ड'}
                         {pathname === '/admin/dashboard/posts' && 'सभी खबरें'}
                         {pathname === '/admin/dashboard/posts/new' && 'नई खबर लिखें'}
+                        {pathname === '/admin/dashboard/image-manager' && 'इमेज मैनेजर'}
                         {pathname === '/admin/dashboard/settings' && 'सेटिंग्स / प्रोफाइल'}
                     </div>
 

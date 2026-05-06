@@ -1,23 +1,24 @@
-@import url('https://fonts.googleapis.com/css2?family=PT+Serif:ital,wght@0,400;0,700;1,400&family=Roboto:wght@300;400;500;700;900&family=Noto+Serif+Devanagari:wght@400;700;900&family=Noto+Sans+Devanagari:wght@400;500;700&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=Lora:ital,wght@0,400;0,500;0,600;0,700;1,400;1,500;1,600;1,700&display=swap');
 
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
 
 :root {
-  --ndtv-red: #E31E24;
+  --brand-red: #E31E24;
+  --brand-navy: #0F172A;
   --ndtv-black: #000000;
-  --ndtv-gray: #F5F5F5;
+  --ndtv-gray: #F8FAFC;
   --news-text: #1E293B;
   --news-text-muted: #64748B;
   --white: #ffffff;
-  --border: rgba(0, 0, 0, 0.08);
-  --radius: 4px;
+  --border: rgba(0, 0, 0, 0.06);
+  --radius: 8px;
   --bg-color: #ffffff;
   
   /* Font Stacks */
-  --font-serif: 'PT Serif', 'Noto Serif Devanagari', serif;
-  --font-sans: 'Roboto', 'Noto Sans Devanagari', -apple-system, sans-serif;
+  --font-serif: 'Lora', serif;
+  --font-sans: 'Inter', sans-serif;
 }
 
 [data-theme='dark'] {
@@ -28,6 +29,7 @@
   --ndtv-black: #ffffff;
   --ndtv-gray: #1E293B;
   --border: rgba(255, 255, 255, 0.1);
+  --brand-red: #EF4444;
 }
 
 /* ============================================================
@@ -112,28 +114,28 @@ button {
   align-items: center;
   gap: 16px;
   font-family: var(--font-serif);
-  font-weight: 900;
+  font-weight: 800;
   font-size: 1.75rem;
-  color: var(--brand-navy);
-  margin-bottom: 2.5rem;
-  letter-spacing: -0.02em;
+  color: var(--ndtv-black);
+  margin-bottom: 2rem;
+  letter-spacing: -0.01em;
 }
 
 .section-title::before {
   content: '';
   display: block;
-  width: 6px;
-  height: 32px;
-  background: var(--brand-gold);
+  width: 5px;
+  height: 28px;
+  background: var(--brand-red);
+  border-radius: 2px;
 }
 
 .lead-text {
   font-family: var(--font-serif);
-  font-size: 1.5rem;
+  font-size: 1.25rem;
   line-height: 1.6;
-  color: var(--brand-navy);
+  color: var(--news-text);
   opacity: 0.9;
-  font-style: italic;
 }
 
 .article-body {

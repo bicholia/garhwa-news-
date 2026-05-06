@@ -154,7 +154,7 @@ async function runBatch() {
     console.log('🤖 Step 2: Gemini 2.5 Flash अब इन खबरों को लिख रहा है और Image Process कर रहा है...');
     console.log('----------------------------------------------------');
 
-    const model = genAI.getGenerativeModel({ model: "gemini-2.5-flash" });
+    const model = genAI.getGenerativeModel({ model: "gemini-2.0-flash" });
 
     let successCount = 0;
 
@@ -164,7 +164,7 @@ async function runBatch() {
             console.log(`\n>[${i+1}/${uniqueNews.length}] प्रोसेस हो रहा है: "${item.title}"`);
             
             // Generate Text
-            const prompt = `Rewrite this news for 'NR Daily News' in Hindi. It should be engaging, informative, and around 150-200 words.
+            const prompt = `Rewrite this news for 'ThinkIndia.press' in Hindi. It should be engaging, informative, and around 150-200 words.
 Title: ${item.title}
 Context: ${item.contentSnippet || item.content}
 

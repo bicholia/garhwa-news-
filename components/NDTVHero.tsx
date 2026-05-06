@@ -37,32 +37,32 @@ export default function NDTVHero({ mainStory, topStories, trendingStories }: NDT
             {/* COLUMN 1: Main Story (LHS) */}
             <div className="lg:col-span-6 flex flex-col border-b lg:border-b-0 lg:border-r border-gray-200 lg:pr-6">
                 <Link href={`/news/${mainStory.slug?.current || mainStory.slug}`} className="group">
-                    <div className="relative aspect-video overflow-hidden rounded-sm mb-4 bg-gray-100 shadow-md">
+                    <div className="relative aspect-video overflow-hidden rounded-md mb-6 bg-gray-100 shadow-premium group-hover:shadow-premium-hover transition-all duration-500">
                         {mainImageUrl ? (
                             <img src={mainImageUrl} alt={mainStory.title} className="w-full h-full object-cover transition-transform duration-1000 group-hover:scale-105" />
                         ) : (
                             <div className="w-full h-full flex items-center justify-center text-gray-200"><Globe size={60} /></div>
                         )}
-                        <div className="absolute top-4 left-4 bg-brand-red text-white text-[10px] font-black px-2 py-1 uppercase tracking-widest flex items-center gap-1.5 shadow-xl">
-                            <TrendingUp size={14} className="animate-pulse" /> Top News
+                        <div className="absolute top-4 left-4 bg-brand-red text-white text-[10px] font-black px-3 py-1.5 uppercase tracking-widest flex items-center gap-2 shadow-2xl rounded-sm">
+                            <Flame size={14} className="animate-pulse" /> Trending Now
                         </div>
                     </div>
-                    <h1 className="text-2xl lg:text-[32px] font-bold text-black leading-tight mb-4 group-hover:text-brand-red transition-all serif-font decoration-brand-red/30 underline-offset-8">
+                    <h1 className="text-3xl lg:text-[40px] font-bold text-gray-900 leading-[1.1] mb-5 group-hover:text-brand-red transition-all duration-300 serif-font">
                         {mainStory.title}
                     </h1>
-                    <p className="text-[15px] text-gray-600 leading-relaxed font-medium mb-6 line-clamp-3">
-                        {mainStory.excerpt || mainStory.description || "Leading investigative reporting from the region's most trusted bureau."}
+                    <p className="text-[16px] text-gray-600 leading-relaxed font-medium mb-8 line-clamp-3">
+                        {mainStory.excerpt || mainStory.description || "Leading investigative reporting from ThinkIndia News - your most trusted news source."}
                     </p>
                 </Link>
                 
                 {/* Micro-feed below main story */}
-                <div className="mt-auto hidden md:grid grid-cols-2 gap-4 pt-6 border-t border-gray-100">
+                <div className="mt-auto hidden md:grid grid-cols-2 gap-6 pt-8 border-t border-gray-100">
                     {topStories.slice(0, 2).map((s, i) => (
-                        <Link key={i} href={`/news/${s.slug}`} className="flex gap-3 group">
-                            <div className="shrink-0 w-16 h-12 bg-gray-100 rounded overflow-hidden">
-                                {s.image_url && <img src={s.image_url} className="w-full h-full object-cover" />}
+                        <Link key={i} href={`/news/${s.slug}`} className="flex gap-4 group items-center">
+                            <div className="shrink-0 w-20 h-14 bg-gray-100 rounded-md overflow-hidden shadow-sm">
+                                {resolveImageUrl(s, 200, 140) && <img src={resolveImageUrl(s, 200, 140) || ''} className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500" />}
                             </div>
-                            <h5 className="text-[11px] font-bold text-gray-800 line-clamp-2 leading-tight group-hover:text-brand-red transition-colors">{s.title}</h5>
+                            <h5 className="text-[13px] font-bold text-gray-800 line-clamp-2 leading-snug group-hover:text-brand-red transition-colors serif-font">{s.title}</h5>
                         </Link>
                     ))}
                 </div>
@@ -70,16 +70,15 @@ export default function NDTVHero({ mainStory, topStories, trendingStories }: NDT
 
             {/* COLUMN 2: Top Stories (Center) */}
             <div className="lg:col-span-3 flex flex-col border-b lg:border-b-0 lg:border-r border-gray-200 lg:pr-6">
-                <h3 className="text-[11px] font-black text-brand-red uppercase tracking-widest mb-6 flex items-center gap-2 border-b border-brand-red/10 pb-2">
-                    <TrendingUp size={14} /> Top Stories
+                <h3 className="text-[12px] font-black text-brand-red uppercase tracking-[0.2em] mb-8 flex items-center gap-2 border-b border-brand-red/10 pb-3">
+                    <TrendingUp size={16} /> Top Stories
                 </h3>
-                <div className="space-y-5">
+                <div className="space-y-6">
                     {topStories.slice(2, 9).map((story, idx) => {
-                        const thumbUrl = resolveImageUrl(story, 120, 80);
                         return (
-                            <Link key={idx} href={`/news/${story.slug?.current || story.slug}`} className="flex gap-3 group items-start">
-                                <span className="text-[16px] font-black text-gray-200 group-hover:text-brand-red transition-colors w-4 shrink-0 mt-0.5 italic">{idx + 1}</span>
-                                <h4 className="text-[13px] font-bold text-gray-900 leading-[1.3] line-clamp-3 group-hover:text-brand-red transition-colors font-serif">
+                            <Link key={idx} href={`/news/${story.slug?.current || story.slug}`} className="flex gap-4 group items-start">
+                                <span className="text-[20px] font-black text-gray-100 group-hover:text-brand-red/20 transition-colors w-6 shrink-0 mt-[-4px] italic">{idx + 1}</span>
+                                <h4 className="text-[15px] font-bold text-gray-900 leading-[1.4] line-clamp-3 group-hover:text-brand-red transition-all duration-300 serif-font">
                                     {story.title}
                                 </h4>
                             </Link>

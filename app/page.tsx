@@ -17,8 +17,8 @@ import { normalizeText } from '@/lib/safety'
 export const revalidate = 3600 // Revalidate every hour
 
 export const metadata: Metadata = {
-  title: 'ThinkIndia.press | गढ़वा और झारखंड की नंबर 1 ताज़ा ख़बरें',
-  description: 'ThinkIndia.press: गढ़वा, पलामू और झारखंड की सबसे तेज़ और विश्वसनीय न्यूज़। ब्रेकिंग न्यूज़, क्राइम, और राजनीति की ताज़ा खबरें हिंदी में (Latest Hindi News).',
+  title: 'ThinkIndia News | गढ़वा और झारखंड की नंबर 1 ताज़ा ख़बरें',
+  description: 'ThinkIndia News: गढ़वा, पलामू और झारखंड की सबसे तेज़ और विश्वसनीय न्यूज़। ब्रेकिंग न्यूज़, अपराध, और राजनीति की ताज़ा खबरें हिंदी में।',
 }
 
 async function getHomepageData() {
@@ -139,8 +139,8 @@ export default async function Home() {
   const orgSchema = {
     "@context": "https://schema.org",
     "@type": "NewsMediaOrganization",
-    "name": "ThinkIndia.press",
-    "alternateName": "ThinkIndia.press Bureau",
+    "name": "ThinkIndia News",
+    "alternateName": "ThinkIndia News",
     "url": "https://thinkindia.press",
     "logo": "https://thinkindia.press/logo-think-india.png",
     "foundingLocation": {
@@ -182,11 +182,11 @@ export default async function Home() {
             <div className="lg:col-span-9">
               
               {/* NATIONAL SECTION */}
-              <NewsGrid title="India Intelligence" articles={fIndia} variant="mixed" link="/india" />
+              <NewsGrid title="National Highlights" articles={fIndia} variant="mixed" link="/india" />
 
               <div className="my-8">
                 <AdBanner slot="mid_home_india" width={728} height={90}>
-                    <NewsStripe articles={adIndiaNews} title="India Intelligence Feed" />
+                    <NewsStripe articles={adIndiaNews} title="National News Feed" />
                 </AdBanner>
               </div>
 
@@ -247,8 +247,8 @@ export default async function Home() {
                   </div>
 
                   <div className="bg-ndtv-black p-6 rounded-sm text-white">
-                    <h4 className="text-[12px] font-black uppercase tracking-widest text-brand-red mb-4">Bureau Alerts</h4>
-                    <p className="text-[13px] text-gray-400 font-medium leading-relaxed">Get the digital grid briefings delivered to your inbox daily.</p>
+                    <h4 className="text-[12px] font-black uppercase tracking-widest text-brand-red mb-4">Morning Briefing</h4>
+                    <p className="text-[13px] text-gray-400 font-medium leading-relaxed">Get the digital morning highlights delivered to your inbox daily.</p>
                     <Link href="/contact" className="mt-6 block text-center py-3 bg-brand-red text-white text-[10px] font-black uppercase tracking-widest rounded hover:bg-white hover:text-brand-red transition-all">
                         Subscribe Now
                     </Link>

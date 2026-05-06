@@ -83,8 +83,8 @@ export default function ContactPage() {
                                             <div>
                                                 <h3 className="text-brand-navy font-black text-xs uppercase tracking-widest mb-2">Bureau Headquarters</h3>
                                                 <p className="text-gray-500 font-medium leading-relaxed">
-                                                    Rajpath Marg,<br />
-                                                    New Delhi - 110001
+                                                    Main Road, Garhwa<br />
+                                                    Jharkhand - 822114
                                                 </p>
                                             </div>
                                         </div>

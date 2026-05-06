@@ -11,7 +11,7 @@ interface Message {
 
 const INITIAL_MESSAGE: Message = { 
   role: 'assistant', 
-  content: 'नमस्ते! मैं ThinkIndia.press AI हूँ। क्या मैं आपको झारखंड, अमेरिका या वैश्विक ताज़ा खबरें जानने में मदद कर सकता हूँ?' 
+  content: 'नमस्ते! मैं ThinkIndia.press डिजिटल डेस्क हूँ। क्या मैं आपको झारखंड या ताज़ा खबरें जानने में मदद कर सकता हूँ?' 
 };
 
 export default function ChatBot() {
@@ -141,10 +141,10 @@ export default function ChatBot() {
               <Image src="/logo-think-india.png" alt="Logo" fill className="object-contain" />
             </div>
             <div>
-              <h3 className="font-bold text-[14px] leading-tight tracking-tight uppercase">ThinkIndia.press <span className="text-brand-red">AI</span></h3>
+              <h3 className="font-bold text-[14px] leading-tight tracking-tight uppercase">ThinkIndia.press <span className="text-brand-red">Support</span></h3>
               <div className="flex items-center gap-1">
                 <span className="w-1.5 h-1.5 bg-green-500 rounded-full animate-pulse" />
-                <p className="text-[9px] text-gray-400 font-bold uppercase tracking-widest">Neural Engine Online</p>
+                <p className="text-[9px] text-gray-400 font-bold uppercase tracking-widest">Bureau Desk Online</p>
               </div>
             </div>
           </div>
@@ -223,7 +223,7 @@ export default function ChatBot() {
             </button>
           </div>
           <div className="text-center mt-3">
-            <span className="text-[9px] text-gray-400 font-black uppercase tracking-[0.2em]">Neural Engine v2.0 • ThinkIndia.press</span>
+            <span className="text-[9px] text-gray-400 font-black uppercase tracking-[0.2em]">ThinkIndia Digital Bureau • 2026</span>
           </div>
         </form>
       </div>

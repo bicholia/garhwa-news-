@@ -47,32 +47,32 @@ export default function NewsGrid({
             <Link 
                 key={article._id || index} 
                 href={`/news/${article.slug?.current || article.slug}`}
-                className={`group flex ${isSmall ? 'flex-row gap-3 py-3 border-b border-gray-100 last:border-0' : 'flex-col'}`}
+                className={`group flex ${isSmall ? 'flex-row gap-4 py-4 border-b border-gray-100 last:border-0' : 'flex-col'}`}
             >
                 {/* Image Section */}
-                <div className={`shrink-0 overflow-hidden rounded-sm bg-gray-100 ${isSmall ? 'w-24 h-16' : 'aspect-video mb-4'}`}>
+                <div className={`shrink-0 overflow-hidden rounded-md bg-gray-100 shadow-sm transition-all duration-500 group-hover:shadow-premium ${isSmall ? 'w-28 h-20' : 'aspect-video mb-5'}`}>
                     {imageUrl ? (
                         <img 
                             src={imageUrl} 
                             alt={article.title} 
-                            className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110" 
+                            className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110" 
                         />
                     ) : (
                         <div className="w-full h-full flex items-center justify-center bg-gray-50 text-gray-200">
-                            <Clock size={isSmall ? 16 : 32} />
+                            <Clock size={isSmall ? 18 : 36} />
                         </div>
                     )}
                 </div>
 
                 {/* Content Section */}
                 <div className="flex flex-col flex-1">
-                    <h3 className={`font-bold text-gray-900 leading-snug group-hover:text-brand-red transition-colors serif-font ${isSmall ? 'text-[13px] line-clamp-2' : 'text-[16px] line-clamp-3'}`}>
+                    <h3 className={`font-bold text-gray-900 leading-snug group-hover:text-brand-red transition-all duration-300 serif-font ${isSmall ? 'text-[14px] line-clamp-2' : 'text-[17px] line-clamp-3'}`}>
                         {article.title}
                     </h3>
                     {!isSmall && (
-                        <div className="mt-3 flex items-center gap-2 text-[10px] text-gray-400 font-bold uppercase tracking-wider" suppressHydrationWarning>
-                            <span>Bureau</span>
-                            <span>•</span>
+                        <div className="mt-4 flex items-center gap-3 text-[11px] text-news-muted font-bold uppercase tracking-[0.1em]" suppressHydrationWarning>
+                            <span className="text-brand-red">ThinkIndia News</span>
+                            <span className="opacity-30">•</span>
                             <span>{date ? new Date(date).toLocaleDateString('hi-IN', { day: 'numeric', month: 'short' }) : 'Today'}</span>
                         </div>
                     )}
@@ -84,9 +84,9 @@ export default function NewsGrid({
     return (
         <div className="mb-16">
             {/* Header */}
-            <div className="flex items-center justify-between border-b-2 border-brand-red mb-8 pb-3">
-                <h2 className="text-xl lg:text-2xl font-black text-black uppercase tracking-tight serif-font flex items-center gap-3">
-                    <span className="w-2 h-8 bg-brand-red inline-block" />
+            <div className="flex items-center justify-between border-b border-gray-100 mb-10 pb-4">
+                <h2 className="text-2xl lg:text-3xl font-black text-gray-900 uppercase tracking-tighter serif-font flex items-center gap-4">
+                    <span className="w-1.5 h-10 bg-brand-red inline-block rounded-full" />
                     {title}
                 </h2>
                 {link && (
