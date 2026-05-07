@@ -1,15 +1,16 @@
+
 'use client'
 
 /**
  * ArticleActions.tsx
- * Client-side component for handling 'Save Brief' and 'Distribute' actions.
- * Provides bookmarking, native sharing, and social media connectivity.
+ * Client-side component for handling sharing and saving.
+ * Redesigned for better UX and AdSense friendliness (engagement).
  */
 
 import React, { useState, useEffect } from 'react'
-import { Bookmark, Share2 } from 'lucide-react'
-import { FaFacebookF, FaTwitter, FaWhatsapp } from 'react-icons/fa'
-import { motion } from 'framer-motion'
+import { Bookmark, Share2, Copy, Send } from 'lucide-react'
+import { FaFacebookF, FaTwitter, FaWhatsapp, FaTelegramPlane } from 'react-icons/fa'
+import { motion, AnimatePresence } from 'framer-motion'
 
 interface ArticleActionsProps {
     title: string
@@ -19,14 +20,11 @@ interface ArticleActionsProps {
 
 export default function ArticleActions({ title, slug, excerpt }: ArticleActionsProps) {
     const [saved, setSaved] = useState(false)
-    const [shared, setShared] = useState(false)
-    
-    // Safety check for production environment
+    const [copied, setCopied] = useState(false)
     const [url, setUrl] = useState('')
     
     useEffect(() => {
         setUrl(`${window.location.origin}/news/${slug}`)
-        // Check if article is already saved in bookmarks
         const savedBriefs = JSON.parse(localStorage.getItem('saved_briefs') || '[]')
         setSaved(savedBriefs.includes(slug))
     }, [slug])
@@ -44,26 +42,22 @@ export default function ArticleActions({ title, slug, excerpt }: ArticleActionsP
         }
     }
 
-    const handleShare = async () => {
+    const shareNative = async () => {
         if (navigator.share) {
             try {
-                await navigator.share({
-                    title: title,
-                    text: excerpt || title,
-                    url: url,
-                })
+                await navigator.share({ title, text: excerpt || title, url })
             } catch (err) {
-                // If user cancels, we ignore the error
-                if ((err as Error).name !== 'AbortError') {
-                    console.error('Error sharing:', err)
-                }
+                if ((err as Error).name !== 'AbortError') console.error('Error sharing:', err)
             }
         } else {
-            // Fallback: Copy to clipboard
-            navigator.clipboard.writeText(url)
-            setShared(true)
-            setTimeout(() => setShared(false), 2000)
+            copyToClipboard()
         }
+    }
+
+    const copyToClipboard = () => {
+        navigator.clipboard.writeText(url)
+        setCopied(true)
+        setTimeout(() => setCopied(false), 2000)
     }
 
     const shareSocial = (platform: string) => {
@@ -74,59 +68,102 @@ export default function ArticleActions({ title, slug, excerpt }: ArticleActionsP
         if (platform === 'facebook') shareUrl = `https://www.facebook.com/sharer/sharer.php?u=${encodedUrl}`
         if (platform === 'twitter') shareUrl = `https://twitter.com/intent/tweet?text=${encodedText}&url=${encodedUrl}`
         if (platform === 'whatsapp') shareUrl = `https://api.whatsapp.com/send?text=${encodedText}%20${encodedUrl}`
+        if (platform === 'telegram') shareUrl = `https://t.me/share/url?url=${encodedUrl}&text=${encodedText}`
         
         if (shareUrl) window.open(shareUrl, '_blank', 'noopener,noreferrer')
     }
 
     return (
-        <div className="flex items-center justify-between mb-12 py-6 border-y border-gray-100 bg-white/50 backdrop-blur-sm px-6 rounded-2xl shadow-sm">
-            <div className="flex items-center gap-10">
-                <motion.button 
-                    whileHover={{ scale: 1.02 }}
-                    whileTap={{ scale: 0.95 }}
-                    onClick={handleSave}
-                    className={`flex items-center gap-3 text-[10px] font-bold uppercase tracking-[0.2em] transition-all ${saved ? 'text-brand-gold' : 'text-brand-navy hover:text-brand-gold'}`}
-                >
-                    <Bookmark 
-                        size={18} 
-                        fill={saved ? '#91752D' : 'none'} 
-                        className={`transition-all duration-300 ${saved ? 'scale-110 drop-shadow-[0_0_8px_rgba(145,117,45,0.3)]' : ''}`} 
-                    /> 
-                    {saved ? 'Article Saved' : 'Save Brief'}
-                </motion.button>
+        <div className="my-10 p-6 bg-gray-50 rounded-2xl border border-gray-100">
+            <div className="flex flex-col md:flex-row md:items-center justify-between gap-6">
                 
-                <motion.button 
-                    whileHover={{ scale: 1.02 }}
-                    whileTap={{ scale: 0.95 }}
-                    onClick={handleShare}
-                    className="flex items-center gap-3 text-[10px] font-bold uppercase tracking-[0.2em] text-brand-navy hover:text-brand-gold transition-all"
-                >
-                    <Share2 size={18} className={shared ? 'text-brand-gold scale-110' : ''} /> 
-                    {shared ? 'Copied to Intelligence Grid' : 'Distribute Brief'}
-                </motion.button>
-            </div>
-            
-            <div className="flex items-center gap-6">
-                <span className="text-[8px] font-black uppercase tracking-widest text-gray-300 mr-2 md:block hidden">Gateway</span>
-                <motion.div whileHover={{ y: -3, transition: { duration: 0.2 } }} whileTap={{ scale: 0.85 }}>
-                    <FaFacebookF 
-                        onClick={() => shareSocial('facebook')}
-                        className="text-gray-400 hover:text-brand-navy cursor-pointer transition-colors w-4 h-4" 
-                    />
-                </motion.div>
-                <motion.div whileHover={{ y: -3, transition: { duration: 0.2 } }} whileTap={{ scale: 0.85 }}>
-                    <FaTwitter 
-                        onClick={() => shareSocial('twitter')}
-                        className="text-gray-400 hover:text-brand-navy cursor-pointer transition-colors w-4 h-4" 
-                    />
-                </motion.div>
-                <motion.div whileHover={{ y: -3, transition: { duration: 0.2 } }} whileTap={{ scale: 0.85 }}>
-                    <FaWhatsapp 
-                        onClick={() => shareSocial('whatsapp')}
-                        className="text-gray-400 hover:text-[#25D366] cursor-pointer transition-colors w-4 h-4" 
-                    />
-                </motion.div>
+                {/* Left: Share Label & Social Icons */}
+                <div className="flex flex-col gap-4">
+                    <div className="flex items-center gap-2 text-brand-red font-black uppercase tracking-widest text-[11px]">
+                        <Share2 size={16} />
+                        <span>इस खबर को शेयर करें (Share this News)</span>
+                    </div>
+                    
+                    <div className="flex items-center gap-3">
+                        <ShareButton 
+                            icon={<FaWhatsapp className="w-5 h-5" />} 
+                            label="WhatsApp" 
+                            color="bg-[#25D366]" 
+                            onClick={() => shareSocial('whatsapp')} 
+                        />
+                        <ShareButton 
+                            icon={<FaFacebookF className="w-5 h-5" />} 
+                            label="Facebook" 
+                            color="bg-[#1877F2]" 
+                            onClick={() => shareSocial('facebook')} 
+                        />
+                        <ShareButton 
+                            icon={<FaTelegramPlane className="w-5 h-5" />} 
+                            label="Telegram" 
+                            color="bg-[#0088cc]" 
+                            onClick={() => shareSocial('telegram')} 
+                        />
+                        <ShareButton 
+                            icon={<FaTwitter className="w-5 h-5" />} 
+                            label="Twitter" 
+                            color="bg-[#1DA1F2]" 
+                            onClick={() => shareSocial('twitter')} 
+                        />
+                    </div>
+                </div>
+
+                {/* Right: Actions (Save & Copy) */}
+                <div className="flex items-center gap-4 border-t md:border-t-0 pt-4 md:pt-0 border-gray-200">
+                    <button 
+                        onClick={copyToClipboard}
+                        className="flex items-center gap-2 px-4 py-2 bg-white border border-gray-200 rounded-lg text-[12px] font-bold text-gray-600 hover:bg-gray-100 transition-colors relative"
+                    >
+                        <Copy size={16} />
+                        {copied ? 'Link Copied!' : 'Copy Link'}
+                        <AnimatePresence>
+                            {copied && (
+                                <motion.span 
+                                    initial={{ opacity: 0, y: 10 }}
+                                    animate={{ opacity: 1, y: 0 }}
+                                    exit={{ opacity: 0 }}
+                                    className="absolute -top-10 left-1/2 -translate-x-1/2 bg-black text-white px-3 py-1 rounded text-[10px]"
+                                >
+                                    Saved to Clipboard
+                                </motion.span>
+                            )}
+                        </AnimatePresence>
+                    </button>
+
+                    <button 
+                        onClick={handleSave}
+                        className={`flex items-center gap-2 px-4 py-2 rounded-lg text-[12px] font-bold transition-all ${saved ? 'bg-brand-red text-white' : 'bg-white border border-gray-200 text-gray-600 hover:bg-gray-100'}`}
+                    >
+                        <Bookmark size={16} fill={saved ? 'currentColor' : 'none'} />
+                        {saved ? 'Saved' : 'Save'}
+                    </button>
+                    
+                    <button 
+                        onClick={shareNative}
+                        className="md:hidden flex items-center justify-center w-10 h-10 bg-brand-red text-white rounded-lg shadow-lg active:scale-95 transition-transform"
+                    >
+                        <Share2 size={20} />
+                    </button>
+                </div>
             </div>
         </div>
+    )
+}
+
+function ShareButton({ icon, label, color, onClick }: { icon: React.ReactNode, label: string, color: string, onClick: () => void }) {
+    return (
+        <motion.button
+            whileHover={{ scale: 1.05, y: -2 }}
+            whileTap={{ scale: 0.95 }}
+            onClick={onClick}
+            className={`${color} text-white flex items-center justify-center w-12 h-12 rounded-full shadow-md hover:shadow-lg transition-all`}
+            title={`Share on ${label}`}
+        >
+            {icon}
+        </motion.button>
     )
 }

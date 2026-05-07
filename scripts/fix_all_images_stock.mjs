@@ -34,7 +34,7 @@ async function uploadFromUrl(url, title) {
         if (!response.ok) throw new Error('Fetch failed');
         const buffer = await response.buffer();
         const asset = await client.assets.upload('image', buffer, {
-            filename: `${title.toLowerCase().replace(/\s+/g, '-')}.jpg`
+            filename: `${title.toLowerCase().replace(/\s+/g, '-')}-${Date.now()}.jpg`
         });
         return asset._id;
     } catch (error) {
@@ -43,17 +43,16 @@ async function uploadFromUrl(url, title) {
     }
 }
 
-async function fixAll() {
-    console.log('🚀 Fixing all articles with missing images...');
+async function fixAll(limit = 100) {
+    console.log(`🚀 Fixing up to ${limit} articles with missing images...`);
 
-    const articles = await client.fetch(`*[_type == "article" && (!defined(featureImage) || !defined(featureImage.asset))] | order(publishedAt desc)[0...50]`);
+    const articles = await client.fetch(`*[_type == "article" && (!defined(featureImage) || !defined(featureImage.asset))] | order(publishedAt desc)[0...${limit}]`);
     console.log(`Found ${articles.length} articles to fix.`);
 
     for (let i = 0; i < articles.length; i++) {
         const article = articles[i];
         console.log(`[${i+1}/${articles.length}] Fixing: ${article.title}`);
         
-        // Use a stock image based on index to keep it diverse
         const stockUrl = STOCK_IMAGES[i % STOCK_IMAGES.length];
         const assetId = await uploadFromUrl(stockUrl, article.title);
 
@@ -70,7 +69,8 @@ async function fixAll() {
         }
     }
 
-    console.log('✨ All articles fixed with high-quality stock images.');
+    console.log('✨ Image fixing process completed.');
 }
 
-fixAll();
+// Run the fix
+fixAll(200);
