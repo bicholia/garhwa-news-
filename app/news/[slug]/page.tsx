@@ -180,19 +180,18 @@ export default async function Page({ params }: { params: Promise<{ slug: string 
                             </div>
 
                             {/* Share & Actions */}
-                            <div className="mt-12 pt-8 border-t border-gray-100 flex flex-col sm:flex-row justify-between items-center gap-6">
-                                <div className="flex items-center gap-4">
-                                    <span className="text-[10px] font-black uppercase tracking-widest text-gray-400">Share This:</span>
-                                    <div className="flex gap-2">
-                                        <button className="w-8 h-8 rounded-full bg-[#1877F2] text-white flex items-center justify-center hover:scale-110 transition-transform"><FaFacebookF size={14} /></button>
-                                        <button className="w-8 h-8 rounded-full bg-[#1DA1F2] text-white flex items-center justify-center hover:scale-110 transition-transform"><FaTwitter size={14} /></button>
-                                        <button className="w-8 h-8 rounded-full bg-[#25D366] text-white flex items-center justify-center hover:scale-110 transition-transform"><FaWhatsapp size={14} /></button>
-                                    </div>
-                                </div>
+                            <ArticleActions 
+                                title={article.title} 
+                                slug={decodedSlug} 
+                                excerpt={article.excerpt} 
+                            />
+
+                            <div className="mt-4 flex flex-col sm:flex-row justify-between items-center gap-6">
                                 <Link href="/news" className="flex items-center gap-2 px-6 py-2 border-2 border-brand-red text-brand-red text-[11px] font-black uppercase tracking-widest rounded-full hover:bg-brand-red hover:text-white transition-all">
                                     Read More News &rarr;
                                 </Link>
                             </div>
+
                         </article>
 
                         {/* SIDEBAR (RHS) */}

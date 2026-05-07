@@ -211,7 +211,7 @@ export default function PostsPage() {
                     {/* Table Head */}
                     <div style={{
                         display: 'grid',
-                        gridTemplateColumns: '40px 1fr 120px 100px 110px 100px',
+                        gridTemplateColumns: '40px 1fr 100px 100px 100px 100px 100px',
                         padding: '0.75rem 1.5rem',
                         background: '#f8fafc',
                         borderBottom: '1px solid #e2e8f0',
@@ -229,8 +229,9 @@ export default function PostsPage() {
                             style={{ width: '16px', height: '16px', cursor: 'pointer', accentColor: '#dc2626' }}
                         />
                         <span>शीर्षक (Title)</span>
+                        <span>Photo</span>
+                        <span>Content</span>
                         <span>श्रेणी</span>
-                        <span>जिला</span>
                         <span>तारीख</span>
                         <span style={{ textAlign: 'right' }}>Actions</span>
                     </div>
@@ -241,12 +242,13 @@ export default function PostsPage() {
                             key={post._id}
                             style={{
                                 display: 'grid',
-                                gridTemplateColumns: '40px 1fr 120px 100px 110px 100px',
-                                padding: '1rem 1.5rem',
+                                gridTemplateColumns: '40px 1fr 100px 100px 100px 100px 100px',
+                                padding: '0.6rem 1.5rem',
                                 borderBottom: idx < posts.length - 1 ? '1px solid #f1f5f9' : 'none',
                                 alignItems: 'center',
                                 transition: 'background 0.15s',
-                                background: selectedPostIds.includes(post._id) ? '#fef2f2' : 'transparent'
+                                background: selectedPostIds.includes(post._id) ? '#fef2f2' : 'transparent',
+                                fontSize: '0.85rem'
                             }}
                             onMouseEnter={e => { if (!selectedPostIds.includes(post._id)) e.currentTarget.style.background = '#f8fafc' }}
                             onMouseLeave={e => { if (!selectedPostIds.includes(post._id)) e.currentTarget.style.background = 'transparent' }}
@@ -259,61 +261,85 @@ export default function PostsPage() {
                                     style={{ width: '16px', height: '16px', cursor: 'pointer', accentColor: '#dc2626' }}
                                 />
                             </div>
+                            <div style={{ whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis', fontWeight: 500, color: '#0f172a' }}>
+                                {post.title || 'No Title'}
+                            </div>
                             <div>
-                                <div style={{ fontWeight: 600, color: '#0f172a', fontSize: '0.9rem', lineHeight: 1.4 }}>
-                                    {post.title?.slice(0, 70)}{(post.title?.length > 70) ? '...' : ''}
-                                </div>
-                                {post.excerpt && (
-                                    <div style={{ color: '#94a3b8', fontSize: '0.78rem', marginTop: '0.2rem' }}>
-                                        {post.excerpt?.slice(0, 60)}...
-                                    </div>
-                                )}
+                                <span style={{
+                                    display: 'inline-flex',
+                                    alignItems: 'center',
+                                    gap: '0.25rem',
+                                    padding: '2px 8px',
+                                    borderRadius: '12px',
+                                    fontSize: '0.7rem',
+                                    fontWeight: 600,
+                                    background: post.hasImage ? '#f0fdf4' : '#fff1f2',
+                                    color: post.hasImage ? '#16a34a' : '#e11d48',
+                                    border: `1px solid ${post.hasImage ? '#bbf7d0' : '#fecdd3'}`
+                                }}>
+                                    {post.hasImage ? '✓ Yes' : '✗ No'}
+                                </span>
+                            </div>
+                            <div>
+                                <span style={{
+                                    display: 'inline-flex',
+                                    alignItems: 'center',
+                                    gap: '0.25rem',
+                                    padding: '2px 8px',
+                                    borderRadius: '12px',
+                                    fontSize: '0.7rem',
+                                    fontWeight: 600,
+                                    background: post.hasBody ? '#f0fdf4' : '#fff1f2',
+                                    color: post.hasBody ? '#16a34a' : '#e11d48',
+                                    border: `1px solid ${post.hasBody ? '#bbf7d0' : '#fecdd3'}`
+                                }}>
+                                    {post.hasBody ? '✓ Yes' : '✗ No'}
+                                </span>
                             </div>
                             <div>
                                 <span style={{
                                     background: categoryColors[post.category] || '#64748b',
                                     color: 'white',
-                                    padding: '2px 10px',
-                                    borderRadius: '20px',
-                                    fontSize: '0.72rem',
+                                    padding: '2px 8px',
+                                    borderRadius: '4px',
+                                    fontSize: '0.65rem',
                                     fontWeight: 700
                                 }}>
                                     {post.category || 'N/A'}
                                 </span>
                             </div>
-                            <div style={{ color: '#64748b', fontSize: '0.83rem' }}>{post.district || '—'}</div>
-                            <div style={{ color: '#64748b', fontSize: '0.83rem' }}>
-                                {post.publishedAt ? new Date(post.publishedAt).toLocaleDateString('hi-IN') : '—'}
+                            <div style={{ color: '#64748b', fontSize: '0.8rem' }}>
+                                {post.publishedAt ? new Date(post.publishedAt).toLocaleDateString('hi-IN', { day: '2-digit', month: 'short' }) : '—'}
                             </div>
-                            <div style={{ display: 'flex', gap: '0.5rem', justifyContent: 'flex-end' }}>
+                            <div style={{ display: 'flex', gap: '0.4rem', justifyContent: 'flex-end' }}>
                                 <Link
                                     href={`/admin/dashboard/posts/${post._id}`}
                                     style={{
-                                        padding: '0.35rem 0.75rem',
-                                        borderRadius: '0.5rem',
+                                        padding: '0.3rem 0.6rem',
+                                        borderRadius: '0.4rem',
                                         background: '#eff6ff',
                                         color: '#2563eb',
-                                        fontSize: '0.78rem',
+                                        fontSize: '0.75rem',
                                         fontWeight: 600,
                                         textDecoration: 'none'
                                     }}
                                 >
-                                    सम्पादित
+                                    Edit
                                 </Link>
                                 <button
                                     onClick={() => handleDelete(post._id)}
                                     style={{
-                                        padding: '0.35rem 0.75rem',
-                                        borderRadius: '0.5rem',
+                                        padding: '0.3rem 0.6rem',
+                                        borderRadius: '0.4rem',
                                         background: '#fef2f2',
                                         color: '#dc2626',
-                                        fontSize: '0.78rem',
+                                        fontSize: '0.75rem',
                                         fontWeight: 600,
                                         border: 'none',
                                         cursor: 'pointer'
                                     }}
                                 >
-                                    हटाएं
+                                    Del
                                 </button>
                             </div>
                         </div>

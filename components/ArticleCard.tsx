@@ -2,6 +2,7 @@ import Link from 'next/link'
 import Image from 'next/image'
 import { urlFor } from '@/lib/sanity'
 import { Clock, User, ArrowRight } from 'lucide-react'
+import ShareButton from './ShareButton'
 
 interface Props {
     article: any
@@ -97,7 +98,15 @@ export default function ArticleCard({ article, priority = false }: Props) {
                     </p>
 
                     <div className="mt-auto flex items-center justify-between pt-4 border-t border-gray-50">
-                        <span className="text-[10px] font-bold uppercase tracking-widest text-brand-navy/40">Report No. {reportId}</span>
+                        <div className="flex flex-col gap-1">
+                            <span className="text-[10px] font-bold uppercase tracking-widest text-brand-navy/40">Report No. {reportId}</span>
+                            <ShareButton 
+                                title={article.title} 
+                                slug={slug} 
+                                excerpt={article.excerpt} 
+                                className="mt-1"
+                            />
+                        </div>
                         <div className="flex items-center gap-2 text-brand-gold font-bold text-xs uppercase tracking-widest group-hover:translate-x-2 transition-transform duration-300">
                             Read Full Report <ArrowRight size={14} />
                         </div>
@@ -107,3 +116,4 @@ export default function ArticleCard({ article, priority = false }: Props) {
         </article>
     );
 }
+

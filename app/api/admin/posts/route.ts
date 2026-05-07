@@ -20,7 +20,9 @@ export async function GET() {
         "category": category->slug.current,
         "district": district,
         publishedAt,
-        featured
+        featured,
+        "hasImage": defined(featureImage),
+        "hasBody": defined(body) && count(body) > 0
       }
     `)
         return NextResponse.json(posts)
