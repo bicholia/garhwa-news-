@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useRef } from 'react'
+import { useState, useRef, useEffect } from 'react'
 import { useRouter } from 'next/navigation'
 import dynamic from 'next/dynamic'
 import Image from 'next/image'
@@ -53,6 +53,8 @@ export default function PostForm({ initialData, isEditing }: PostFormProps) {
     const [imgUploading, setImgUploading] = useState(false)
     const [aiPrompt, setAiPrompt] = useState('')
     const [aiLoading, setAiLoading] = useState(false)
+    const [isDuplicate, setIsDuplicate] = useState(false)
+    const [checkingDuplicate, setCheckingDuplicate] = useState(false)
 
     const [formData, setFormData] = useState({
         title: initialData?.title || '',
@@ -68,6 +70,32 @@ export default function PostForm({ initialData, isEditing }: PostFormProps) {
 
     const set = (key: string) => (e: any) =>
         setFormData(prev => ({ ...prev, [key]: e.target.value }))
+
+    useEffect(() => {
+        if (!formData.title || isEditing) {
+            setIsDuplicate(false)
+            return
+        }
+        
+        const timer = setTimeout(async () => {
+            setCheckingDuplicate(true)
+            try {
+                const res = await fetch('/api/admin/posts/check-duplicate', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ title: formData.title }),
+                })
+                const data = await res.json()
+                setIsDuplicate(data.isDuplicate)
+            } catch (err) {
+                console.error('Failed to check duplicate:', err)
+            } finally {
+                setCheckingDuplicate(false)
+            }
+        }, 1000)
+
+        return () => clearTimeout(timer)
+    }, [formData.title, isEditing])
 
     const handleFeatureImageUpload = async (file: File) => {
         setImgUploading(true)
@@ -113,6 +141,12 @@ export default function PostForm({ initialData, isEditing }: PostFormProps) {
         setLoading(true)
         setError('')
         setSuccess('')
+
+        if (isDuplicate) {
+            setError('यह खबर पहले से मौजूद है! कृपया टाइटल बदलें।')
+            setLoading(false)
+            return
+        }
 
         const url = isEditing
             ? `/api/admin/posts/${initialData._id}`
@@ -294,6 +328,16 @@ export default function PostForm({ initialData, isEditing }: PostFormProps) {
                         <div style={{ fontSize: '0.73rem', color: '#94a3b8', marginTop: '0.35rem' }}>
                             {formData.title.length} अक्षर
                         </div>
+                        {checkingDuplicate && (
+                            <div style={{ fontSize: '0.8rem', color: '#2563eb', marginTop: '0.35rem' }}>
+                                डुप्लिकेट चेक किया जा रहा है...
+                            </div>
+                        )}
+                        {isDuplicate && (
+                            <div style={{ fontSize: '0.8rem', color: '#dc2626', marginTop: '0.35rem', fontWeight: 600 }}>
+                                ⚠️ यह खबर पहले से मौजूद है! (Duplicate News)
+                            </div>
+                        )}
                     </div>
 
                     {/* Excerpt */}

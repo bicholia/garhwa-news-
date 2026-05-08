@@ -10,6 +10,7 @@ export default function PostsPage() {
     const [loading, setLoading] = useState(true)
     const [error, setError] = useState('')
     const [selectedPostIds, setSelectedPostIds] = useState<string[]>([])
+    const [filterEmpty, setFilterEmpty] = useState(false)
     const router = useRouter()
 
     useEffect(() => {
@@ -107,6 +108,7 @@ export default function PostsPage() {
         'auto': '#374151',
         'agriculture': '#3f6212',
     }
+    const displayedPosts = filterEmpty ? posts.filter(p => !p.hasBody) : posts
 
     return (
         <div>
@@ -131,12 +133,31 @@ export default function PostsPage() {
                             सभी खबरें
                         </h1>
                         <p style={{ color: '#64748b', marginTop: '0.25rem', fontSize: '0.9rem' }}>
-                            {loading ? 'लोड हो रहा है...' : `कुल ${posts.length} खबरें`}
+                            {loading ? 'लोड हो रहा है...' : `कुल ${filterEmpty ? displayedPosts.length : posts.length} खबरें`}
                         </p>
                     </div>
                 </div>
 
                 <div style={{ display: 'flex', gap: '1rem', alignItems: 'center' }}>
+                    <button
+                        onClick={() => setFilterEmpty(!filterEmpty)}
+                        style={{
+                            background: filterEmpty ? '#fff1f2' : 'white',
+                            color: filterEmpty ? '#e11d48' : '#475569',
+                            border: `1.5px solid ${filterEmpty ? '#fecdd3' : '#e2e8f0'}`,
+                            padding: '0.7rem 1.2rem',
+                            borderRadius: '0.75rem',
+                            fontWeight: 600,
+                            fontSize: '0.9rem',
+                            cursor: 'pointer',
+                            display: 'flex',
+                            alignItems: 'center',
+                            gap: '0.5rem',
+                            transition: 'all 0.15s'
+                        }}
+                    >
+                        {filterEmpty ? '✓ खाली खबरें दिख रही हैं' : 'खाली खबरें खोजें'}
+                    </button>
                     {selectedPostIds.length > 0 && (
                         <button
                             onClick={handleBulkDelete}
@@ -237,7 +258,7 @@ export default function PostsPage() {
                     </div>
 
                     {/* Rows */}
-                    {posts.map((post, idx) => (
+                    {displayedPosts.map((post, idx) => (
                         <div
                             key={post._id}
                             style={{
