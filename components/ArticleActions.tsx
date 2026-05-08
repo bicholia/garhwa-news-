@@ -109,6 +109,13 @@ export default function ArticleActions({ title, slug, excerpt }: ArticleActionsP
                             color="bg-[#1DA1F2]" 
                             onClick={() => shareSocial('twitter')} 
                         />
+                        <ShareButton 
+                            icon={<Share2 className="w-5 h-5" />} 
+                            label="Share" 
+                            color="bg-gray-700" 
+                            onClick={shareNative} 
+                            title="Share this news"
+                        />
                     </div>
                 </div>
 
@@ -142,26 +149,21 @@ export default function ArticleActions({ title, slug, excerpt }: ArticleActionsP
                         {saved ? 'Saved' : 'Save'}
                     </button>
                     
-                    <button 
-                        onClick={shareNative}
-                        className="md:hidden flex items-center justify-center w-10 h-10 bg-brand-red text-white rounded-lg shadow-lg active:scale-95 transition-transform"
-                    >
-                        <Share2 size={20} />
-                    </button>
+
                 </div>
             </div>
         </div>
     )
 }
 
-function ShareButton({ icon, label, color, onClick }: { icon: React.ReactNode, label: string, color: string, onClick: () => void }) {
+function ShareButton({ icon, label, color, onClick, title }: { icon: React.ReactNode, label: string, color: string, onClick: () => void, title?: string }) {
     return (
         <motion.button
             whileHover={{ scale: 1.05, y: -2 }}
             whileTap={{ scale: 0.95 }}
             onClick={onClick}
             className={`${color} text-white flex items-center justify-center w-12 h-12 rounded-full shadow-md hover:shadow-lg transition-all`}
-            title={`Share on ${label}`}
+            title={title || `Share on ${label}`}
         >
             {icon}
         </motion.button>
