@@ -10,6 +10,7 @@ import AdBanner from '@/components/AdBanner'
 import PublicLayout from '@/components/PublicLayout'
 import { Clock, MapPin, User, ShieldCheck, PlayCircle, TrendingUp, Share2 } from 'lucide-react'
 import ArticleActions from '@/components/ArticleActions'
+import FloatingShareBar from '@/components/FloatingShareBar'
 import { scrubBrandNames, scrubSlug, scrubPortableText } from '@/lib/safety'
 
 export const revalidate = 0 
@@ -73,12 +74,14 @@ export async function generateMetadata({ params }: { params: Promise<{ slug: str
         'ThinkIndia.press'
     ].filter(Boolean).join(', ');
 
+    const excerptText = typeof article.excerpt === 'string' ? article.excerpt.substring(0, 160) : '';
+
     return {
         title: `${article.title} | ${article.district ? article.district.charAt(0).toUpperCase() + article.district.slice(1) + ' News | ' : ''}ThinkIndia.press`,
-        description: article.meta_description || article.excerpt?.substring(0, 160) || `${article.title} - Read the latest breaking news from Garhwa and Jharkhand on ThinkIndia.press.`,
+        description: article.meta_description || excerptText || `${article.title} - Read the latest breaking news from Garhwa and Jharkhand on ThinkIndia.press.`,
         keywords: keywords,
-        openGraph: { title: article.title, description: article.meta_description || article.excerpt?.substring(0, 160), images: [{ url: imageUrl }] },
-        twitter: { card: 'summary_large_image', title: article.title, description: article.meta_description || article.excerpt?.substring(0, 160), images: [imageUrl] },
+        openGraph: { title: article.title, description: article.meta_description || excerptText, images: [{ url: imageUrl }] },
+        twitter: { card: 'summary_large_image', title: article.title, description: article.meta_description || excerptText, images: [imageUrl] },
     }
 }
 
@@ -237,26 +240,7 @@ export default async function Page({ params }: { params: Promise<{ slug: string 
                 </div>
 
                 {/* Floating Share Bar for Mobile */}
-                <div className="fixed bottom-6 left-1/2 -translate-x-1/2 z-50 lg:hidden w-[90%] max-w-sm">
-                    <div className="bg-black/80 backdrop-blur-xl border border-white/20 p-3 rounded-2xl shadow-2xl flex items-center justify-between gap-4">
-                        <span className="text-white text-[10px] font-bold uppercase tracking-widest ml-2">Share:</span>
-                        <div className="flex gap-4 pr-2">
-                            <Link href={`https://api.whatsapp.com/send?text=${encodeURIComponent(article.title + " " + domain + "/news/" + decodedSlug)}`} target="_blank" className="bg-[#25D366] p-2.5 rounded-xl text-white shadow-lg shadow-[#25D366]/20">
-                                <FaWhatsapp size={20} />
-                            </Link>
-                            <Link href={`https://t.me/share/url?url=${encodeURIComponent(domain + "/news/" + decodedSlug)}&text=${encodeURIComponent(article.title)}`} target="_blank" className="bg-[#0088cc] p-2.5 rounded-xl text-white shadow-lg shadow-[#0088cc]/20">
-                                <FaTelegramPlane size={20} />
-                            </Link>
-                            <button onClick={() => {
-                                if (navigator.share) {
-                                    navigator.share({ title: article.title, url: domain + "/news/" + decodedSlug });
-                                }
-                            }} className="bg-brand-red p-2.5 rounded-xl text-white shadow-lg shadow-brand-red/20">
-                                <Share2 size={20} />
-                            </button>
-                        </div>
-                    </div>
-                </div>
+                <FloatingShareBar title={article.title} url={`${domain}/news/${decodedSlug}`} />
             </div>
         </PublicLayout>
     )
