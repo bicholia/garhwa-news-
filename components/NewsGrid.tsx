@@ -1,4 +1,6 @@
+'use client'
 import Link from 'next/link'
+import { motion } from 'framer-motion'
 import { ArrowRight, Clock } from 'lucide-react'
 import { urlFor } from '@/lib/sanity'
 
@@ -44,13 +46,18 @@ export default function NewsGrid({
         const date = article.publishedAt || article.published_at;
 
         return (
-            <Link 
-                key={article._id || index} 
-                href={`/news/${article.slug?.current || article.slug}`}
-                className={`group flex ${isSmall ? 'flex-row gap-4 py-4 border-b border-gray-100 last:border-0' : 'flex-col'}`}
+            <motion.div
+                key={article._id || index}
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.4, delay: index * 0.05 }}
             >
+                <Link 
+                    href={`/news/${article.slug?.current || article.slug}`}
+                    className={`group flex ${isSmall ? 'flex-col sm:flex-row gap-4 py-4 border-b border-gray-100 last:border-0' : 'flex-col'}`}
+                >
                 {/* Image Section */}
-                <div className={`shrink-0 overflow-hidden rounded-md bg-gray-100 shadow-sm transition-all duration-500 group-hover:shadow-premium ${isSmall ? 'w-28 h-20' : 'aspect-video mb-5'}`}>
+                <div className={`shrink-0 overflow-hidden rounded-md bg-gray-100 shadow-sm transition-all duration-500 group-hover:shadow-premium ${isSmall ? 'w-full sm:w-28 h-40 sm:h-20' : 'aspect-video mb-5'}`}>
                     {imageUrl ? (
                         <img 
                             src={imageUrl} 
@@ -77,14 +84,15 @@ export default function NewsGrid({
                         </div>
                     )}
                 </div>
-            </Link>
+                </Link>
+            </motion.div>
         )
     }
 
     return (
-        <div className="mb-16">
+        <div className="mb-8 md:mb-16">
             {/* Header */}
-            <div className="flex items-center justify-between border-b border-gray-100 mb-10 pb-4">
+            <div className="flex items-center justify-between border-b border-gray-100 mb-4 md:mb-10 pb-4">
                 <h2 className="text-2xl lg:text-3xl font-black text-gray-900 uppercase tracking-tighter serif-font flex items-center gap-4">
                     <span className="w-1.5 h-10 bg-brand-red inline-block rounded-full" />
                     {title}
@@ -106,7 +114,12 @@ export default function NewsGrid({
             {variant === 'mixed' && (
                 <div className="grid grid-cols-1 lg:grid-cols-12 gap-8">
                     {/* LHS: Large Featured */}
-                    <div className="lg:col-span-12 xl:col-span-8">
+                    <motion.div
+                        className="lg:col-span-12 xl:col-span-8"
+                        initial={{ opacity: 0, y: 20 }}
+                        animate={{ opacity: 1, y: 0 }}
+                        transition={{ duration: 0.5 }}
+                    >
                         <Link 
                             href={`/news/${featuredArticle.slug?.current || featuredArticle.slug}`}
                             className="group flex flex-col md:flex-row gap-6 bg-gray-50 p-6 rounded-sm border border-gray-100"
@@ -134,21 +147,27 @@ export default function NewsGrid({
                                 <span className="text-[10px] font-black text-brand-red uppercase tracking-widest">Full Report &rarr;</span>
                             </div>
                         </Link>
-                    </div>
+                    </motion.div>
 
                     {/* RHS: List */}
                     <div className="lg:col-span-12 xl:col-span-4 flex flex-col divide-y divide-gray-100">
                         {remainingArticles.slice(0, 5).map((article, index) => (
-                            <Link 
-                                key={index} 
-                                href={`/news/${article.slug?.current || article.slug}`}
-                                className="py-3 flex gap-4 group"
+                            <motion.div
+                                key={index}
+                                initial={{ opacity: 0, x: 20 }}
+                                animate={{ opacity: 1, x: 0 }}
+                                transition={{ duration: 0.3, delay: index * 0.05 }}
                             >
+                                <Link 
+                                    href={`/news/${article.slug?.current || article.slug}`}
+                                    className="py-3 flex gap-4 group"
+                                >
                                 <span className="text-2xl font-black text-gray-200 group-hover:text-brand-red transition-colors italic w-8 shrink-0">{index + 2}</span>
                                 <h4 className="text-[13px] font-bold text-gray-800 leading-snug line-clamp-3 group-hover:text-brand-red transition-colors serif-font">
                                     {article.title}
                                 </h4>
-                            </Link>
+                                </Link>
+                            </motion.div>
                         ))}
                     </div>
                 </div>

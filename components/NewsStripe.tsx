@@ -1,6 +1,6 @@
 import Link from 'next/link'
 import { urlFor } from '@/lib/sanity'
-import { TrendingUp } from 'lucide-react'
+import { TrendingUp, Clock } from 'lucide-react'
 
 interface NewsStripeProps {
     articles: any[]

@@ -184,7 +184,7 @@ export default async function Home() {
               {/* NATIONAL SECTION */}
               <NewsGrid title="National Highlights" articles={fIndia} variant="mixed" link="/india" />
 
-              <div className="my-8">
+              <div className="my-4 md:my-8">
                 <AdBanner slot="mid_home_india" width={728} height={90}>
                     <NewsStripe articles={adIndiaNews} title="National News Feed" />
                 </AdBanner>
@@ -193,7 +193,7 @@ export default async function Home() {
               {/* BIG STORY GRID: GARHWA */}
               <NewsGrid title="Garhwa Reports" articles={fGarhwa} variant="standard" link="/garhwa" />
 
-              <div className="my-8">
+              <div className="my-4 md:my-8">
                 <AdBanner slot="mid_home_1" width={728} height={90}>
                     <NewsStripe articles={adGarhwaNews} title="Garhwa Fast Track" />
                 </AdBanner>
@@ -211,7 +211,7 @@ export default async function Home() {
                  <NewsGrid title="Crime Watch" articles={fCrime} variant="list" link="/category/crime" />
               </div>
 
-              <div className="my-8">
+              <div className="my-4 md:my-8">
                 <AdBanner slot="mid_home_2" width={728} height={90}>
                     <NewsStripe articles={adSecondaryNews} title="National Briefing" />
                 </AdBanner>
@@ -224,7 +224,7 @@ export default async function Home() {
             </div>
 
             {/* SIDEBAR (RHS) */}
-            <aside className="lg:col-span-3 space-y-12">
+            <aside className="lg:col-span-3 space-y-6 md:space-y-12">
               <div className="sticky top-24 space-y-12">
                   <AdBanner slot="sidebar_skyscraper" width={300} height={600}>
                       <NewsStripe articles={adSidebarNews} title="Quick Updates" variant="vertical" />

@@ -90,6 +90,10 @@ export default async function Page({ params }: { params: Promise<{ slug: string 
 
     if (!article) notFound()
 
+    const bodyText = article.body ? JSON.stringify(article.body) : (article.content || '');
+    const wordCount = bodyText.split(/\s+/).length;
+    const readTime = Math.max(1, Math.ceil(wordCount / 200));
+
     const imageUrl = article.image_url || 
         (article.featureImage?.asset?._ref && article.featureImage.asset._ref.startsWith('image-') 
             ? urlFor(article.featureImage).width(1200).height(630).url() 
@@ -159,7 +163,9 @@ export default async function Page({ params }: { params: Promise<{ slug: string 
                                 <div className="h-8 w-[1px] bg-gray-100 hidden sm:block" />
                                 <div className="flex items-center gap-2 text-gray-500 text-[11px] font-bold uppercase tracking-widest" suppressHydrationWarning>
                                     <Clock size={14} /> 
-                                    Updated: {new Date(date).toLocaleString('hi-IN', { day: 'numeric', month: 'long', year: 'numeric', hour: '2-digit', minute: '2-digit' })}
+                                    <span>Updated: {new Date(date).toLocaleString('hi-IN', { day: 'numeric', month: 'long', year: 'numeric', hour: '2-digit', minute: '2-digit' })}</span>
+                                    <span className="opacity-30">•</span>
+                                    <span>{readTime} min read</span>
                                 </div>
                             </div>
 

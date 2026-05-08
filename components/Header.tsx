@@ -181,7 +181,7 @@ export default function Header() {
                             <span className="text-xl font-black tracking-tighter">
                                 THINK<span className="text-brand-red">INDIA</span> NEWS
                             </span>
-                            <button onClick={() => setMobileOpen(false)} className="hover:rotate-90 transition-transform"><X size={24} /></button>
+                            <button onClick={() => setMobileOpen(false)} className="hover:rotate-90 transition-transform" aria-label="Close menu"><X size={24} /></button>
                         </div>
                         <nav className="flex flex-col gap-6 font-bold text-lg">
                             {mainNav.map(item => (
@@ -201,7 +201,7 @@ export default function Header() {
             {/* Search Overlay */}
             {searchOpen && (
                 <div className="fixed inset-0 bg-ndtv-black/95 z-[3000] flex items-center justify-center p-6 backdrop-blur-md">
-                    <button onClick={() => setSearchOpen(false)} className="absolute top-8 right-8 text-white hover:rotate-90 transition-transform">
+                    <button onClick={() => setSearchOpen(false)} className="absolute top-8 right-8 text-white hover:rotate-90 transition-transform" aria-label="Close search">
                         <X size={36} strokeWidth={1.5} />
                     </button>
                     <div className="w-full max-w-2xl">

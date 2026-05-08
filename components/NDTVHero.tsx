@@ -33,7 +33,7 @@ export default function NDTVHero({ mainStory, topStories, trendingStories }: NDT
     if (!mainStory) return null
 
     return (
-        <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 mb-16 px-4 lg:px-0">
+        <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 mb-8 lg:mb-16 px-4 lg:px-0">
             {/* COLUMN 1: Main Story (LHS) */}
             <div className="lg:col-span-6 flex flex-col border-b lg:border-b-0 lg:border-r border-gray-200 lg:pr-6">
                 <Link href={`/news/${mainStory.slug?.current || mainStory.slug}`} className="group">
@@ -47,10 +47,10 @@ export default function NDTVHero({ mainStory, topStories, trendingStories }: NDT
                             <Flame size={14} className="animate-pulse" /> Trending Now
                         </div>
                     </div>
-                    <h1 className="text-3xl lg:text-[40px] font-bold text-gray-900 leading-[1.1] mb-5 group-hover:text-brand-red transition-all duration-300 serif-font">
+                    <h1 className="text-2xl lg:text-[40px] font-bold text-gray-900 leading-[1.1] mb-5 group-hover:text-brand-red transition-all duration-300 serif-font">
                         {mainStory.title}
                     </h1>
-                    <p className="text-[16px] text-gray-600 leading-relaxed font-medium mb-8 line-clamp-3">
+                    <p className="text-[16px] text-gray-600 leading-relaxed font-medium mb-8 line-clamp-3 hidden md:block">
                         {mainStory.excerpt || mainStory.description || "Leading investigative reporting from ThinkIndia News - your most trusted news source."}
                     </p>
                 </Link>
@@ -73,10 +73,10 @@ export default function NDTVHero({ mainStory, topStories, trendingStories }: NDT
                 <h3 className="text-[12px] font-black text-brand-red uppercase tracking-[0.2em] mb-8 flex items-center gap-2 border-b border-brand-red/10 pb-3">
                     <TrendingUp size={16} /> Top Stories
                 </h3>
-                <div className="space-y-6">
+                <div className="space-y-4 md:space-y-6">
                     {topStories.slice(2, 9).map((story, idx) => {
                         return (
-                            <Link key={idx} href={`/news/${story.slug?.current || story.slug}`} className="flex gap-4 group items-start">
+                            <Link key={idx} href={`/news/${story.slug?.current || story.slug}`} className={`flex gap-4 group items-start ${idx >= 4 ? 'hidden md:flex' : 'flex'}`}>
                                 <span className="text-[20px] font-black text-gray-100 group-hover:text-brand-red/20 transition-colors w-6 shrink-0 mt-[-4px] italic">{idx + 1}</span>
                                 <h4 className="text-[15px] font-bold text-gray-900 leading-[1.4] line-clamp-3 group-hover:text-brand-red transition-all duration-300 serif-font">
                                     {story.title}
@@ -111,7 +111,7 @@ export default function NDTVHero({ mainStory, topStories, trendingStories }: NDT
 
                 <div className="divide-y divide-gray-100">
                     {(sidebarTab === 'trending' ? trendingStories : topStories.slice(9)).slice(0, 6).map((story, idx) => (
-                        <Link key={idx} href={`/news/${story.slug?.current || story.slug}`} className="py-4 group block">
+                        <Link key={idx} href={`/news/${story.slug?.current || story.slug}`} className={`py-2 md:py-4 group block ${idx >= 3 ? 'hidden md:block' : 'block'}`}>
                             <h4 className="text-[12px] font-bold text-gray-700 leading-snug group-hover:text-brand-red transition-colors flex gap-2">
                                 <span className="mt-1"><Flame size={12} className="text-brand-red opacity-40" /></span>
                                 {story.title}

@@ -4,6 +4,7 @@ import { useState, useRef } from 'react'
 import { useRouter } from 'next/navigation'
 import dynamic from 'next/dynamic'
 import Image from 'next/image'
+import { compressImage } from '@/lib/imageUtils'
 import { Image as ImageIcon, Sparkles, Loader2 } from 'lucide-react'
 
 // Dynamic import to avoid SSR issues with contentEditable
@@ -69,15 +70,15 @@ export default function PostForm({ initialData, isEditing }: PostFormProps) {
         setFormData(prev => ({ ...prev, [key]: e.target.value }))
 
     const handleFeatureImageUpload = async (file: File) => {
-        if (file.size > 4 * 1024 * 1024) {
-            setError('तस्वीर बहुत बड़ी है! कृपया 4MB से छोटी तस्वीर चुनें। (Max 4MB)')
-            return
-        }
         setImgUploading(true)
         setError('')
-        const fd = new FormData()
-        fd.append('file', file)
         try {
+            // Compress image before upload
+            const compressedFile = await compressImage(file)
+            
+            const fd = new FormData()
+            fd.append('file', compressedFile)
+            
             const res = await fetch('/api/admin/media/upload', { method: 'POST', body: fd })
 
             if (!res.ok) {

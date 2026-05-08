@@ -2,6 +2,7 @@ import { client, urlFor } from '@/lib/sanity'
 import { getNewsByDistrict, mergeAndSortNews } from '@/lib/db'
 import PublicLayout from '@/components/PublicLayout'
 import Link from 'next/link'
+import Image from 'next/image'
 import { MapPin, ShieldCheck, Clock, ArrowRight } from 'lucide-react'
 import Pagination from '@/components/Pagination'
 import AdBanner from '@/components/AdBanner'
@@ -94,7 +95,7 @@ export default async function GarhwaPage({ searchParams }: { searchParams: Promi
                                             return (
                                                 <Link key={i} href={`/news/${article.slug}`} className="group flex flex-col">
                                                     <div className="aspect-video relative overflow-hidden rounded-sm bg-gray-100 mb-4">
-                                                        {img ? <img src={img} className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700" alt={article.title} /> : null}
+                                                        {img ? <Image src={img} className="object-cover group-hover:scale-110 transition-transform duration-700" alt={article.title} fill sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw" /> : null}
                                                         <div className="absolute top-2 left-2 bg-ndtv-black/80 text-white text-[8px] font-black uppercase px-1.5 py-0.5 rounded">THINK INDIA</div>
                                                     </div>
                                                     <h3 className="text-[16px] font-bold text-gray-900 leading-[1.35] group-hover:text-brand-red transition-colors serif-font line-clamp-3">

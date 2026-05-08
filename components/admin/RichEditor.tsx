@@ -2,6 +2,7 @@
 
 import { useRef, useState, useCallback } from 'react'
 import { Link as LinkIcon, Quote, Image as ImageIcon } from 'lucide-react'
+import { compressImage } from '@/lib/imageUtils'
 
 interface RichEditorProps {
     value: string
@@ -49,19 +50,15 @@ export default function RichEditor({ value, onChange, placeholder = 'यहा�
     }
 
     const insertImage = async (file: File) => {
-        if (file.size > 4 * 1024 * 1024) {
-            setUploadMsg('तस्वीर बहुत बड़ी है! अधिकतम साइज़ 4MB है।')
-            setTimeout(() => setUploadMsg(''), 4000)
-            return
-        }
-
         setUploading(true)
         setUploadMsg('तस्वीर अपलोड हो रही है...')
 
-        const formData = new FormData()
-        formData.append('file', file)
-
         try {
+            // Compress image before upload
+            const compressedFile = await compressImage(file)
+
+            const formData = new FormData()
+            formData.append('file', compressedFile)
             const res = await fetch('/api/admin/media/upload', {
                 method: 'POST',
                 body: formData,
