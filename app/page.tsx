@@ -14,7 +14,7 @@ import { Suspense } from 'react'
 import { Metadata } from 'next'
 import { normalizeText } from '@/lib/safety'
 
-export const revalidate = 3600 // Revalidate every hour
+export const revalidate = 60 // Revalidate every minute
 
 export const metadata: Metadata = {
   title: 'ThinkIndia News | गढ़वा और झारखंड की नंबर 1 ताज़ा ख़बरें',

@@ -22,10 +22,18 @@ export default function NDTVHero({ mainStory, topStories, trendingStories }: NDT
             try {
                 return urlFor(story.featureImage).width(w).height(h).url();
             } catch (e) {
-                return null;
+                // Fallback handled below
             }
         }
-        return null;
+        
+        // Fallback to random placeholder
+        const id = story._id || story.id || story.title || '';
+        let hash = 0;
+        for (let i = 0; i < id.length; i++) {
+            hash = id.charCodeAt(i) + ((hash << 5) - hash);
+        }
+        const index = Math.abs(hash % 4) + 1;
+        return `/placeholder_${index}.png`;
     };
 
     const mainImageUrl = resolveImageUrl(mainStory, 800, 500);
@@ -33,7 +41,7 @@ export default function NDTVHero({ mainStory, topStories, trendingStories }: NDT
     if (!mainStory) return null
 
     return (
-        <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 mb-8 lg:mb-16 px-4 lg:px-0">
+        <div className="grid grid-cols-1 lg:grid-cols-12 gap-4 lg:gap-6 mb-8 lg:mb-16 px-4 lg:px-0">
             {/* COLUMN 1: Main Story (LHS) */}
             <div className="lg:col-span-6 flex flex-col border-b lg:border-b-0 lg:border-r border-gray-200 lg:pr-6">
                 <Link href={`/news/${mainStory.slug?.current || mainStory.slug}`} className="group">
@@ -70,22 +78,22 @@ export default function NDTVHero({ mainStory, topStories, trendingStories }: NDT
 
             {/* COLUMN 2: Top Stories (Center) */}
             <div className="lg:col-span-3 flex flex-col border-b lg:border-b-0 lg:border-r border-gray-200 lg:pr-6">
-                <h3 className="text-[12px] font-black text-brand-red uppercase tracking-[0.2em] mb-8 flex items-center gap-2 border-b border-brand-red/10 pb-3">
+                <h3 className="text-[12px] font-black text-brand-red uppercase tracking-[0.2em] mb-4 lg:mb-8 flex items-center gap-2 border-b border-brand-red/10 pb-3">
                     <TrendingUp size={16} /> Top Stories
                 </h3>
-                <div className="space-y-4 md:space-y-6">
+                <div className="space-y-2 lg:space-y-6">
                     {topStories.slice(2, 9).map((story, idx) => {
                         return (
-                            <Link key={idx} href={`/news/${story.slug?.current || story.slug}`} className={`flex gap-4 group items-start ${idx >= 4 ? 'hidden md:flex' : 'flex'}`}>
+                            <Link key={idx} href={`/news/${story.slug?.current || story.slug}`} className={`flex gap-4 group items-start ${idx >= 3 ? 'hidden md:flex' : 'flex'}`}>
                                 <span className="text-[20px] font-black text-gray-100 group-hover:text-brand-red/20 transition-colors w-6 shrink-0 mt-[-4px] italic">{idx + 1}</span>
-                                <h4 className="text-[15px] font-bold text-gray-900 leading-[1.4] line-clamp-3 group-hover:text-brand-red transition-all duration-300 serif-font">
+                                <h4 className="text-[14px] lg:text-[15px] font-bold text-gray-900 leading-[1.3] line-clamp-3 group-hover:text-brand-red transition-all duration-300 serif-font">
                                     {story.title}
                                 </h4>
                             </Link>
                         );
                     })}
                 </div>
-                <Link href="/news" className="mt-8 text-[11px] font-black text-brand-red flex items-center gap-1 uppercase tracking-tighter hover:underline">
+                <Link href="/news" className="mt-4 lg:mt-8 text-[11px] font-black text-brand-red flex items-center gap-1 uppercase tracking-tighter hover:underline">
                     View Full Feed Archive <ArrowIcon />
                 </Link>
             </div>
@@ -94,7 +102,7 @@ export default function NDTVHero({ mainStory, topStories, trendingStories }: NDT
             <div className="lg:col-span-3 flex flex-col">
 
                 {/* Tabbed Sidebar List */}
-                <div className="flex gap-4 border-b border-gray-100 mb-6">
+                <div className="flex gap-4 border-b border-gray-100 mb-4 lg:mb-6">
                     <button 
                         onClick={() => setSidebarTab('trending')}
                         className={`text-[11px] font-black uppercase pb-2 px-1 tracking-widest transition-all ${sidebarTab === 'trending' ? 'text-brand-red border-b-2 border-brand-red' : 'text-gray-400'}`}
@@ -111,7 +119,7 @@ export default function NDTVHero({ mainStory, topStories, trendingStories }: NDT
 
                 <div className="divide-y divide-gray-100">
                     {(sidebarTab === 'trending' ? trendingStories : topStories.slice(9)).slice(0, 6).map((story, idx) => (
-                        <Link key={idx} href={`/news/${story.slug?.current || story.slug}`} className={`py-2 md:py-4 group block ${idx >= 3 ? 'hidden md:block' : 'block'}`}>
+                        <Link key={idx} href={`/news/${story.slug?.current || story.slug}`} className={`py-1.5 lg:py-4 group block ${idx >= 2 ? 'hidden md:block' : 'block'}`}>
                             <h4 className="text-[12px] font-bold text-gray-700 leading-snug group-hover:text-brand-red transition-colors flex gap-2">
                                 <span className="mt-1"><Flame size={12} className="text-brand-red opacity-40" /></span>
                                 {story.title}

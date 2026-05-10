@@ -52,6 +52,12 @@ export const metadata: Metadata = {
   },
 }
 
+export const viewport = {
+  width: 'device-width',
+  initialScale: 1,
+  themeColor: '#E31E24',
+}
+
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
     <html lang="hi" className="scroll-smooth" suppressHydrationWarning>

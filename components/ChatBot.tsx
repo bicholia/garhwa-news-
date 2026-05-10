@@ -116,7 +116,7 @@ export default function ChatBot() {
       {/* Floating Action Button */}
       <button
         onClick={() => setIsOpen(true)}
-        className={`fixed bottom-6 right-6 w-16 h-16 rounded-full bg-white border-2 border-brand-red shadow-2xl hover:scale-110 transition-all z-50 flex items-center justify-center p-2 group ${isOpen ? 'scale-0' : 'scale-100'}`}
+        className={`fixed bottom-12 right-6 w-16 h-16 rounded-full bg-white border-2 border-brand-red shadow-2xl hover:scale-110 transition-all z-50 flex items-center justify-center p-2 group ${isOpen ? 'scale-0' : 'scale-100'}`}
         aria-label="Open AI Chat"
       >
         <div className="relative w-full h-full">
@@ -132,7 +132,7 @@ export default function ChatBot() {
 
       {/* Chat Window */}
       <div 
-        className={`fixed bottom-6 right-6 w-80 sm:w-96 h-[500px] max-h-[80vh] bg-white rounded-2xl shadow-2xl flex flex-col z-50 transition-all origin-bottom-right border border-gray-200 overflow-hidden ${isOpen ? 'scale-100 opacity-100' : 'scale-0 opacity-0 pointer-events-none'}`}
+        className={`fixed bottom-12 right-6 w-80 sm:w-96 h-[500px] max-h-[80vh] bg-white rounded-2xl shadow-2xl flex flex-col z-50 transition-all origin-bottom-right border border-gray-200 overflow-hidden ${isOpen ? 'scale-100 opacity-100' : 'scale-0 opacity-0 pointer-events-none'}`}
       >
         {/* Header */}
         <div className="bg-black text-white p-4 flex justify-between items-center border-b-2 border-brand-red">

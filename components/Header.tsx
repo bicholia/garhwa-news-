@@ -90,7 +90,7 @@ export default function Header() {
             <header className={`w-full z-[1000] transition-all duration-500 ease-in-out ${isScrolled ? 'fixed top-0 shadow-premium backdrop-blur-md bg-ndtv-black/95' : 'relative bg-ndtv-black'}`}>
                 {/* TIER 1: Main Bar */}
                 <div className="text-white border-b border-white/5">
-                    <div className="container flex items-center justify-between h-16 lg:h-20">
+                    <div className="container flex items-center justify-between h-12 lg:h-20">
                         {/* Logo */}
                         <div className="flex items-center gap-8 lg:gap-12">
                             <Link href="/" className="shrink-0 flex items-center group">

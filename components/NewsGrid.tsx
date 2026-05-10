@@ -35,10 +35,18 @@ export default function NewsGrid({
             try {
                 return urlFor(article.featureImage).width(w).height(h).url();
             } catch (e) {
-                return null;
+                // Fallback handled below
             }
         }
-        return null;
+        
+        // Fallback to random placeholder
+        const id = article._id || article.id || article.title || '';
+        let hash = 0;
+        for (let i = 0; i < id.length; i++) {
+            hash = id.charCodeAt(i) + ((hash << 5) - hash);
+        }
+        const index = Math.abs(hash % 4) + 1;
+        return `/placeholder_${index}.png`;
     };
 
     const renderCard = (article: any, index: number, isSmall: boolean = false) => {
