@@ -7,6 +7,9 @@ export default function robots(): MetadataRoute.Robots {
       allow: '/',
       disallow: ['/admin/', '/api/'],
     },
-    sitemap: 'https://thinkindia.press/sitemap.xml',
+    sitemap: [
+      'https://thinkindia.press/sitemap.xml',
+      'https://thinkindia.press/sitemap-news.xml'
+    ],
   }
 }

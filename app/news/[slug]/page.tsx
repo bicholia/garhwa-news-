@@ -107,6 +107,10 @@ export default async function Page({ params }: { params: Promise<{ slug: string 
     const articleSchema = {
         "@context": "https://schema.org",
         "@type": "NewsArticle",
+        "mainEntityOfPage": {
+            "@type": "WebPage",
+            "@id": `${domain}/news/${decodedSlug}`
+        },
         "headline": article.title,
         "image": imageUrl ? [imageUrl] : [],
         "datePublished": date,
@@ -128,9 +132,35 @@ export default async function Page({ params }: { params: Promise<{ slug: string 
         "inLanguage": "hi"
     };
 
+    const breadcrumbSchema = {
+        "@context": "https://schema.org",
+        "@type": "BreadcrumbList",
+        "itemListElement": [
+            {
+                "@type": "ListItem",
+                "position": 1,
+                "name": "Home",
+                "item": `${domain}/`
+            },
+            {
+                "@type": "ListItem",
+                "position": 2,
+                "name": "News",
+                "item": `${domain}/news`
+            },
+            {
+                "@type": "ListItem",
+                "position": 3,
+                "name": article.district || 'India',
+                "item": `${domain}/${article.district?.toLowerCase() || 'india'}`
+            }
+        ]
+    };
+
     return (
         <PublicLayout>
             <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(articleSchema) }} />
+            <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(breadcrumbSchema) }} />
             <div className="bg-white min-h-screen">
                 <div className="bg-gray-50 border-b border-gray-100 py-4 hidden lg:flex justify-center">
                     <AdBanner slot="article_top" width={728} height={90} />
@@ -174,7 +204,7 @@ export default async function Page({ params }: { params: Promise<{ slug: string 
 
                             {imageUrl && (
                                 <div className="relative aspect-video rounded-sm overflow-hidden mb-8 bg-gray-100">
-                                    <Image src={imageUrl} alt={article.title} fill unoptimized className="object-cover" priority />
+                                    <Image src={imageUrl} alt={article.title} fill className="object-cover" priority />
                                     <div className="absolute bottom-0 left-0 right-0 bg-black/60 backdrop-blur-md p-4 text-white text-[12px] font-medium italic">
                                         Representative Image — ThinkIndia.press Bureau
                                     </div>
@@ -222,7 +252,7 @@ export default async function Page({ params }: { params: Promise<{ slug: string 
                                         return (
                                             <Link key={i} href={`/news/${item.slug}`} className="flex gap-4 group">
                                                 <div className="shrink-0 w-20 h-20 relative rounded-sm overflow-hidden bg-white">
-                                                    <Image src={thumb} alt={item.title} fill unoptimized className="object-cover group-hover:scale-110 transition-transform" />
+                                                    <Image src={thumb} alt={item.title} fill className="object-cover group-hover:scale-110 transition-transform" />
                                                 </div>
                                                 <div className="flex flex-col gap-2">
                                                     <h4 className="text-[13px] font-bold text-gray-900 leading-snug group-hover:text-brand-red transition-colors serif-font line-clamp-3">

@@ -150,9 +150,22 @@ export default async function Home() {
     "knowsAbout": ["Jharkhand News", "Garhwa News", "Palamu News", "Hindi News"]
   };
 
+  const websiteSchema = {
+    "@context": "https://schema.org",
+    "@type": "WebSite",
+    "name": "ThinkIndia News",
+    "url": "https://thinkindia.press",
+    "potentialAction": {
+      "@type": "SearchAction",
+      "target": "https://thinkindia.press/search?q={search_term_string}",
+      "query-input": "required name=search_term_string"
+    }
+  };
+
   return (
     <PublicLayout>
       <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(orgSchema) }} />
+      <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(websiteSchema) }} />
       <div className="bg-white min-h-screen">
         {/* TIER 0: LEADERBOARD */}
         <div className="bg-white border-b border-gray-100 py-3 hidden lg:flex justify-center flex-col items-center">

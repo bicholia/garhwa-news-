@@ -4,7 +4,8 @@ import Link from 'next/link'
 import { usePathname, useRouter } from 'next/navigation'
 import { useProfile } from '@/lib/ProfileContext'
 
-import { LayoutDashboard, FileText, PlusCircle, Settings, LogOut, Radio } from 'lucide-react'
+import { useState } from 'react'
+import { LayoutDashboard, FileText, PlusCircle, Settings, LogOut, Radio, Menu, X } from 'lucide-react'
 
 const navigation = [
     { name: 'डैशबोर्ड', href: '/admin/dashboard', icon: <LayoutDashboard size={18} /> },
@@ -19,6 +20,7 @@ export default function AdminShell({ children }: { children: React.ReactNode }) 
     const pathname = usePathname()
     const router = useRouter()
     const { profile } = useProfile()
+    const [isSidebarOpen, setIsSidebarOpen] = useState(false)
 
     const handleLogout = () => {
         document.cookie = 'admin_session=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;'
@@ -35,24 +37,47 @@ export default function AdminShell({ children }: { children: React.ReactNode }) 
     return (
         <div style={{ display: 'flex', minHeight: '100vh', background: '#f1f5f9', fontFamily: "'Noto Sans Devanagari','Inter',sans-serif" }}>
 
+            {/* Backdrop for mobile */}
+            {isSidebarOpen && (
+                <div 
+                    onClick={() => setIsSidebarOpen(false)}
+                    style={{
+                        position: 'fixed', inset: 0,
+                        background: 'rgba(0,0,0,0.5)',
+                        zIndex: 45,
+                        backdropFilter: 'blur(4px)'
+                    }}
+                    className="lg:hidden"
+                />
+            )}
+
             {/* ===== SIDEBAR ===== */}
             <aside style={{
                 background: 'linear-gradient(180deg, #0f172a 0%, #1e1b4b 100%)',
                 position: 'fixed', left: 0, top: 0, bottom: 0,
                 display: 'flex', flexDirection: 'column',
                 zIndex: 50, overflowY: 'auto',
-                transition: 'transform 0.3s'
+                transition: 'transform 0.3s cubic-bezier(0.4, 0, 0.2, 1)'
             }}
-            className={`w-[240px] transform ${'translate-x-0'} lg:translate-x-0`}
+            className={`w-[240px] transform ${isSidebarOpen ? 'translate-x-0' : '-translate-x-full'} lg:translate-x-0`}
             >
-                {/* Brand */}
-                <div style={{ padding: '1.25rem', borderBottom: '1px solid rgba(255,255,255,0.08)' }}>
-                    <div style={{ color: '#ef4444', fontWeight: 900, fontSize: '1.05rem', letterSpacing: '-0.02em', display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
-                        <FileText size={20} /> ThinkIndia.press
+                {/* Brand & Close button on mobile */}
+                <div style={{ padding: '1.25rem', borderBottom: '1px solid rgba(255,255,255,0.08)', display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+                    <div>
+                        <div style={{ color: '#ef4444', fontWeight: 900, fontSize: '1.05rem', letterSpacing: '-0.02em', display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+                            <FileText size={20} /> ThinkIndia.press
+                        </div>
+                        <div style={{ color: '#6366f1', fontSize: '0.68rem', marginTop: '2px', textTransform: 'uppercase', letterSpacing: '0.1em' }}>
+                            Admin Control Panel
+                        </div>
                     </div>
-                    <div style={{ color: '#6366f1', fontSize: '0.68rem', marginTop: '2px', textTransform: 'uppercase', letterSpacing: '0.1em' }}>
-                        Admin Control Panel
-                    </div>
+                    <button 
+                        onClick={() => setIsSidebarOpen(false)}
+                        className="lg:hidden"
+                        style={{ background: 'transparent', border: 'none', color: '#94a3b8', cursor: 'pointer' }}
+                    >
+                        <X size={20} />
+                    </button>
                 </div>
 
                 {/* Profile Card in Sidebar */}
@@ -140,18 +165,33 @@ export default function AdminShell({ children }: { children: React.ReactNode }) 
                     height: '58px', background: 'white',
                     borderBottom: '1px solid #e2e8f0',
                     display: 'flex', alignItems: 'center',
-                    padding: '0 1.5rem',
+                    padding: '0 1rem lg:1.5rem',
                     justifyContent: 'space-between',
                     position: 'sticky', top: 0, zIndex: 40,
                     boxShadow: '0 1px 3px rgba(0,0,0,0.05)'
                 }}>
-                    {/* Breadcrumb area */}
-                    <div style={{ color: '#64748b', fontSize: '0.875rem', fontWeight: 500 }}>
-                        {pathname === '/admin/dashboard' && 'डैशबोर्ड'}
-                        {pathname === '/admin/dashboard/posts' && 'सभी खबरें'}
-                        {pathname === '/admin/dashboard/posts/new' && 'नई खबर लिखें'}
-                        {pathname === '/admin/dashboard/image-manager' && 'इमेज मैनेजर'}
-                        {pathname === '/admin/dashboard/settings' && 'सेटिंग्स / प्रोफाइल'}
+                    <div style={{ display: 'flex', alignItems: 'center', gap: '1rem' }}>
+                        {/* Hamburger for mobile */}
+                        <button 
+                            onClick={() => setIsSidebarOpen(true)}
+                            className="lg:hidden"
+                            style={{ 
+                                background: '#f1f5f9', border: '1px solid #e2e8f0', 
+                                borderRadius: '0.5rem', padding: '0.4rem',
+                                color: '#475569', cursor: 'pointer'
+                            }}
+                        >
+                            <Menu size={20} />
+                        </button>
+
+                        {/* Breadcrumb area */}
+                        <div style={{ color: '#64748b', fontSize: '0.875rem', fontWeight: 500 }} className="hidden sm:block">
+                            {pathname === '/admin/dashboard' && 'डैशबोर्ड'}
+                            {pathname === '/admin/dashboard/posts' && 'सभी खबरें'}
+                            {pathname === '/admin/dashboard/posts/new' && 'नई खबर लिखें'}
+                            {pathname === '/admin/dashboard/image-manager' && 'इमेज मैनेजर'}
+                            {pathname === '/admin/dashboard/settings' && 'सेटिंग्स / प्रोफाइल'}
+                        </div>
                     </div>
 
                     {/* Profile in Header */}
@@ -178,7 +218,7 @@ export default function AdminShell({ children }: { children: React.ReactNode }) 
                     </Link>
                 </header>
 
-                <main style={{ padding: '2rem', flex: 1 }}>
+                <main className="p-4 lg:p-8 flex-1">
                     {children}
                 </main>
             </div>

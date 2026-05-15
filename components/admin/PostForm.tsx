@@ -235,7 +235,7 @@ export default function PostForm({ initialData, isEditing }: PostFormProps) {
 
     return (
         <form onSubmit={handleSubmit}>
-            <div style={{ display: 'grid', gridTemplateColumns: '1fr 340px', gap: '2rem', alignItems: 'start' }}>
+            <div className="grid grid-cols-1 lg:grid-cols-[1fr,340px] gap-6 lg:gap-8 items-start">
 
                 {/* ===== LEFT: Main Content ===== */}
                 <div style={{ display: 'flex', flexDirection: 'column', gap: '1.25rem' }}>
@@ -371,7 +371,7 @@ export default function PostForm({ initialData, isEditing }: PostFormProps) {
                 </div>
 
                 {/* ===== RIGHT: Settings ===== */}
-                <div style={{ position: 'sticky', top: '72px', display: 'flex', flexDirection: 'column', gap: '1.25rem' }}>
+                <div className="flex flex-col gap-5 lg:sticky lg:top-[72px]">
 
                     {/* Publish Button Card */}
                     <div style={{ background: 'white', padding: '1.5rem', borderRadius: '1rem', border: '1px solid #e2e8f0' }}>

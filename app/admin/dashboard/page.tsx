@@ -49,11 +49,11 @@ export default async function AdminDashboard() {
     return (
         <div>
             {/* Welcome */}
-            <div style={{ marginBottom: '2rem' }}>
-                <h1 style={{ fontSize: '1.75rem', fontWeight: 800, color: '#0f172a', margin: 0 }}>
+            <div style={{ marginBottom: '1.5rem' }}>
+                <h1 className="text-2xl lg:text-[1.75rem] font-extrabold text-slate-900 m-0">
                     नमस्ते, Admin!
                 </h1>
-                <p style={{ color: '#64748b', marginTop: '0.35rem' }}>
+                <p style={{ color: '#64748b', marginTop: '0.35rem', fontSize: '0.875rem' }}>
                     ThinkIndia.press Admin Panel — आज की तारीख: {new Date().toLocaleDateString('hi-IN', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' })}
                 </p>
             </div>

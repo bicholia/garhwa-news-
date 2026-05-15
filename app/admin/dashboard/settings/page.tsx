@@ -82,7 +82,7 @@ export default function SettingsPage() {
     const initials = name.split(' ').map(w => w[0]).join('').toUpperCase().slice(0, 2)
 
     return (
-        <div style={{ maxWidth: '680px' }}>
+        <div className="max-w-[680px] px-4 md:px-0">
             <div style={{ marginBottom: '2rem', display: 'flex', alignItems: 'center', gap: '1rem' }}>
                 <Link
                     href="/admin/dashboard"
@@ -128,15 +128,7 @@ export default function SettingsPage() {
                 <div style={{ display: 'flex', alignItems: 'center', gap: '1.5rem' }}>
                     {/* Current Photo */}
                     <div style={{ position: 'relative', flexShrink: 0 }}>
-                        <div style={{
-                            width: '100px', height: '100px',
-                            borderRadius: '50%',
-                            border: '3px solid #dc2626',
-                            overflow: 'hidden',
-                            background: 'linear-gradient(135deg, #dc2626, #7f1d1d)',
-                            display: 'flex', alignItems: 'center', justifyContent: 'center',
-                            boxShadow: '0 4px 16px rgba(220,38,38,0.3)'
-                        }}>
+                        <div className="w-20 h-20 md:w-[100px] md:h-[100px] rounded-full border-3 border-brand-red overflow-hidden bg-gradient-to-br from-brand-red to-red-900 flex items-center justify-center shadow-xl">
                             {profile.photoUrl ? (
                                 <img src={profile.photoUrl} alt="Profile"
                                     style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
@@ -272,16 +264,11 @@ export default function SettingsPage() {
                         { label: 'Session Duration', value: '24 घंटे', icon: '⏱️' },
                         { label: 'Rate Limit', value: '5 attempts / minute', icon: '🛡️' },
                     ].map(item => (
-                        <div key={item.label} style={{
-                            display: 'flex', justifyContent: 'space-between', alignItems: 'center',
-                            padding: '0.75rem 1rem',
-                            background: '#f8fafc', borderRadius: '0.6rem',
-                            border: '1px solid #f1f5f9'
-                        }}>
+                        <div key={item.label} className="flex flex-col sm:flex-row sm:justify-between sm:items-center p-3 sm:p-4 bg-slate-50 rounded-xl border border-slate-100 gap-2">
                             <span style={{ color: '#475569', fontWeight: 600, fontSize: '0.875rem' }}>
                                 {item.label}
                             </span>
-                            <span style={{ color: '#0f172a', fontWeight: 700, fontSize: '0.85rem', fontFamily: 'monospace' }}>
+                            <span className="text-slate-900 font-bold text-xs sm:text-[0.85rem] font-mono break-all">
                                 {item.value}
                             </span>
                         </div>

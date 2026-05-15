@@ -113,7 +113,7 @@ export default function PostsPage() {
     return (
         <div>
             {/* Page Header */}
-            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '2rem' }}>
+            <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-8">
                 <div style={{ display: 'flex', alignItems: 'center', gap: '1rem' }}>
                     <Link
                         href="/admin/dashboard"
@@ -129,7 +129,7 @@ export default function PostsPage() {
                         ←
                     </Link>
                     <div>
-                        <h1 style={{ fontSize: '1.75rem', fontWeight: 800, color: '#0f172a', margin: 0 }}>
+                        <h1 style={{ fontSize: '1.5rem', fontWeight: 800, color: '#0f172a', margin: 0 }}>
                             सभी खबरें
                         </h1>
                         <p style={{ color: '#64748b', marginTop: '0.25rem', fontSize: '0.9rem' }}>
@@ -138,25 +138,25 @@ export default function PostsPage() {
                     </div>
                 </div>
 
-                <div style={{ display: 'flex', gap: '1rem', alignItems: 'center' }}>
+                <div style={{ display: 'flex', gap: '0.5rem', flexWrap: 'wrap', alignItems: 'center' }}>
                     <button
                         onClick={() => setFilterEmpty(!filterEmpty)}
                         style={{
                             background: filterEmpty ? '#fff1f2' : 'white',
                             color: filterEmpty ? '#e11d48' : '#475569',
                             border: `1.5px solid ${filterEmpty ? '#fecdd3' : '#e2e8f0'}`,
-                            padding: '0.7rem 1.2rem',
+                            padding: '0.6rem 1rem',
                             borderRadius: '0.75rem',
                             fontWeight: 600,
-                            fontSize: '0.9rem',
+                            fontSize: '0.8rem',
                             cursor: 'pointer',
                             display: 'flex',
                             alignItems: 'center',
-                            gap: '0.5rem',
+                            gap: '0.4rem',
                             transition: 'all 0.15s'
                         }}
                     >
-                        {filterEmpty ? '✓ खाली खबरें दिख रही हैं' : 'खाली खबरें खोजें'}
+                        {filterEmpty ? '✓' : '🔍'} <span className="hidden sm:inline">खाली खबरें</span>
                     </button>
                     {selectedPostIds.length > 0 && (
                         <button
@@ -164,18 +164,18 @@ export default function PostsPage() {
                             style={{
                                 background: '#fef2f2',
                                 color: '#dc2626',
-                                padding: '0.7rem 1.2rem',
+                                padding: '0.6rem 1rem',
                                 borderRadius: '0.75rem',
                                 fontWeight: 600,
-                                fontSize: '0.9rem',
+                                fontSize: '0.8rem',
                                 border: '1px solid #fca5a5',
                                 cursor: 'pointer',
                                 display: 'flex',
                                 alignItems: 'center',
-                                gap: '0.5rem',
+                                gap: '0.4rem',
                             }}
                         >
-                            <Trash2 size={16} /> हटाएँ ({selectedPostIds.length})
+                            <Trash2 size={14} /> हटाएँ ({selectedPostIds.length})
                         </button>
                     )}
                     <Link
@@ -183,18 +183,18 @@ export default function PostsPage() {
                         style={{
                             background: '#dc2626',
                             color: 'white',
-                            padding: '0.7rem 1.5rem',
+                            padding: '0.6rem 1.2rem',
                             borderRadius: '0.75rem',
                             fontWeight: 700,
-                            fontSize: '0.9rem',
+                            fontSize: '0.85rem',
                             textDecoration: 'none',
                             display: 'flex',
                             alignItems: 'center',
-                            gap: '0.5rem',
+                            gap: '0.4rem',
                             boxShadow: '0 4px 12px rgba(220,38,38,0.3)'
                         }}
                     >
-                        + नई खबर लिखें
+                        + <span className="hidden sm:inline">नई खबर</span><span className="sm:hidden">लिखें</span>
                     </Link>
                 </div>
             </div>
@@ -232,8 +232,8 @@ export default function PostsPage() {
                     {/* Table Head */}
                     <div style={{
                         display: 'grid',
-                        gridTemplateColumns: '40px 1fr 100px 100px 100px 100px 100px',
-                        padding: '0.75rem 1.5rem',
+                        gridTemplateColumns: '40px 1fr 60px 80px 100px',
+                        padding: '0.75rem 1rem',
                         background: '#f8fafc',
                         borderBottom: '1px solid #e2e8f0',
                         fontSize: '0.75rem',
@@ -242,7 +242,9 @@ export default function PostsPage() {
                         textTransform: 'uppercase',
                         letterSpacing: '0.05em',
                         alignItems: 'center'
-                    }}>
+                    }}
+                    className="md:grid-cols-[40px_1fr_100px_100px_100px_100px_100px]"
+                    >
                         <input
                             type="checkbox"
                             checked={posts.length > 0 && selectedPostIds.length === posts.length}
@@ -250,10 +252,10 @@ export default function PostsPage() {
                             style={{ width: '16px', height: '16px', cursor: 'pointer', accentColor: '#dc2626' }}
                         />
                         <span>शीर्षक (Title)</span>
-                        <span>Photo</span>
-                        <span>Content</span>
-                        <span>श्रेणी</span>
-                        <span>तारीख</span>
+                        <span className="hidden md:block">Photo</span>
+                        <span className="hidden md:block">Content</span>
+                        <span className="hidden sm:block">श्रेणी</span>
+                        <span className="hidden lg:block">तारीख</span>
                         <span style={{ textAlign: 'right' }}>Actions</span>
                     </div>
 
@@ -263,14 +265,15 @@ export default function PostsPage() {
                             key={post._id}
                             style={{
                                 display: 'grid',
-                                gridTemplateColumns: '40px 1fr 100px 100px 100px 100px 100px',
-                                padding: '0.6rem 1.5rem',
+                                gridTemplateColumns: '40px 1fr 60px 80px 100px',
+                                padding: '0.6rem 1rem',
                                 borderBottom: idx < posts.length - 1 ? '1px solid #f1f5f9' : 'none',
                                 alignItems: 'center',
                                 transition: 'background 0.15s',
                                 background: selectedPostIds.includes(post._id) ? '#fef2f2' : 'transparent',
                                 fontSize: '0.85rem'
                             }}
+                            className="md:grid-cols-[40px_1fr_100px_100px_100px_100px_100px]"
                             onMouseEnter={e => { if (!selectedPostIds.includes(post._id)) e.currentTarget.style.background = '#f8fafc' }}
                             onMouseLeave={e => { if (!selectedPostIds.includes(post._id)) e.currentTarget.style.background = 'transparent' }}
                         >
@@ -285,7 +288,7 @@ export default function PostsPage() {
                             <div style={{ whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis', fontWeight: 500, color: '#0f172a' }}>
                                 {post.title || 'No Title'}
                             </div>
-                            <div>
+                            <div className="hidden md:block">
                                 <span style={{
                                     display: 'inline-flex',
                                     alignItems: 'center',
@@ -301,7 +304,7 @@ export default function PostsPage() {
                                     {post.hasImage ? '✓ Yes' : '✗ No'}
                                 </span>
                             </div>
-                            <div>
+                            <div className="hidden md:block">
                                 <span style={{
                                     display: 'inline-flex',
                                     alignItems: 'center',
@@ -317,7 +320,7 @@ export default function PostsPage() {
                                     {post.hasBody ? '✓ Yes' : '✗ No'}
                                 </span>
                             </div>
-                            <div>
+                            <div className="hidden sm:block">
                                 <span style={{
                                     background: categoryColors[post.category] || '#64748b',
                                     color: 'white',
@@ -329,7 +332,7 @@ export default function PostsPage() {
                                     {post.category || 'N/A'}
                                 </span>
                             </div>
-                            <div style={{ color: '#64748b', fontSize: '0.8rem' }}>
+                            <div className="hidden lg:block" style={{ color: '#64748b', fontSize: '0.8rem' }}>
                                 {post.publishedAt ? new Date(post.publishedAt).toLocaleDateString('hi-IN', { day: '2-digit', month: 'short' }) : '—'}
                             </div>
                             <div style={{ display: 'flex', gap: '0.4rem', justifyContent: 'flex-end' }}>

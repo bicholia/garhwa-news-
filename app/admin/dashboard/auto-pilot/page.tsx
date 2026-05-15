@@ -114,7 +114,7 @@ export default function AutoPilotDashboard() {
     return () => clearInterval(interval)
   }, [isLaunching])
 
-  const triggerManualRun = async () => {
+    const triggerManualRun = async () => {
     if (isLaunching) return;
     setIsLaunching(true)
     setActiveStep('PULSE')
@@ -134,26 +134,37 @@ export default function AutoPilotDashboard() {
     }
   }
 
+  const handleRefresh = () => {
+      fetchStatus()
+  }
+
   return (
     <div style={styles.container} className="bg-slate-50 min-h-screen">
       {/* Header */}
-      <div className="flex items-center justify-between mb-12">
+      <div className="flex flex-col md:flex-row md:items-center justify-between mb-8 md:mb-12 gap-6">
         <div>
-          <h1 className="text-5xl font-black tracking-tighter text-slate-900 flex items-center gap-4">
-             <div className="p-3 bg-slate-900 rounded-[1.5rem] shadow-2xl">
-               <Cpu className="text-white" size={36} />
+          <h1 className="text-3xl md:text-5xl font-black tracking-tighter text-slate-900 flex items-center gap-3 md:gap-4">
+             <div className="p-2 md:p-3 bg-slate-900 rounded-xl md:rounded-[1.5rem] shadow-2xl">
+               <Cpu className="text-white" size={24} />
              </div>
-             NEURAL AGENCY <span className="text-[10px] bg-indigo-600 text-white px-4 py-1.5 rounded-full font-black tracking-[0.2em] uppercase">V4 Multicore</span>
+             NEURAL AGENCY <span className="hidden sm:inline-block text-[10px] bg-indigo-600 text-white px-4 py-1.5 rounded-full font-black tracking-[0.2em] uppercase">V4 Multicore</span>
           </h1>
-          <p className="text-slate-500 font-bold mt-3 text-lg">Zero-Touch Multi-Agent Orchestration Bureau | Garhwa & Palamu</p>
+          <p className="text-slate-500 font-bold mt-2 md:mt-3 text-sm md:text-lg">Zero-Touch Multi-Agent Orchestration Bureau</p>
         </div>
         
-        <div className="flex gap-4">
+        <div className="flex gap-3">
+          <button 
+            onClick={handleRefresh}
+            className="p-4 md:px-6 bg-white border border-slate-200 rounded-2xl md:rounded-[2rem] text-slate-600 hover:bg-slate-50 transition-all shadow-lg"
+            title="Refresh Status"
+          >
+            <Activity size={20} className={isLaunching ? 'animate-pulse' : ''} />
+          </button>
           <button 
             onClick={triggerManualRun}
             disabled={isLaunching}
-            className={`px-12 py-6 rounded-[2rem] font-black text-lg tracking-tight flex items-center gap-4 transition-all shadow-2xl relative overflow-hidden group ${
-              isLaunching ? 'bg-slate-500 cursor-not-allowed' : 'bg-slate-900 hover:bg-slate-800'
+            className={`flex-1 md:flex-none px-6 md:px-12 py-4 md:py-6 rounded-2xl md:rounded-[2rem] font-black text-sm md:text-lg tracking-tight flex items-center justify-center gap-3 md:gap-4 transition-all shadow-2xl relative overflow-hidden group ${
+              isLaunching ? 'bg-slate-500 cursor-not-allowed' : 'bg-slate-900 hover:bg-slate-800 text-white'
             }`}
           >
              {isLaunching && (
@@ -166,11 +177,11 @@ export default function AutoPilotDashboard() {
              )}
             {isLaunching ? (
                 <>
-                  <Activity className="animate-spin" size={24} /> PIPELINE ACTIVE...
+                  <Activity className="animate-spin" size={20} /> <span className="hidden sm:inline">PIPELINE ACTIVE...</span><span className="sm:hidden">ACTIVE...</span>
                 </>
             ) : (
                 <>
-                  <Zap size={24} className="group-hover:text-amber-400 transition-colors" /> ENGAGE AGENTS
+                  <Zap size={20} className="group-hover:text-amber-400 transition-colors" /> ENGAGE AGENTS
                 </>
             )}
           </button>
@@ -184,18 +195,18 @@ export default function AutoPilotDashboard() {
         <div className="lg:col-span-3 space-y-8">
           
           {/* Stats Bar */}
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-6">
+          <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 md:gap-6">
             {[
               { label: 'Agency Output', value: stats.publishedToday, suffix: 'Stories' },
               { label: 'Intelligence Trust', value: stats.successRate, suffix: '%' },
               { label: 'Neural Sync', value: stats.lastRun, suffix: 'IST' },
               { label: 'Active Matrix', value: '5', suffix: 'Agents' }
             ].map((s, i) => (
-              <div key={i} className="p-8 bg-white rounded-[2.5rem] border border-slate-100 shadow-xl shadow-slate-200/40">
-                <div className="text-[10px] font-black uppercase text-slate-400 mb-2 tracking-widest">{s.label}</div>
-                <div className="flex items-baseline gap-2">
-                   <div className="text-3xl font-black text-slate-900 tracking-tighter">{s.value}</div>
-                   <div className="text-xs font-black text-slate-300">{s.suffix}</div>
+              <div key={i} className="p-4 md:p-8 bg-white rounded-2xl md:rounded-[2.5rem] border border-slate-100 shadow-xl shadow-slate-200/40">
+                <div className="text-[8px] md:text-[10px] font-black uppercase text-slate-400 mb-1 md:mb-2 tracking-widest">{s.label}</div>
+                <div className="flex items-baseline gap-1 md:gap-2">
+                   <div className="text-xl md:text-3xl font-black text-slate-900 tracking-tighter">{s.value}</div>
+                   <div className="text-[10px] font-black text-slate-300">{s.suffix}</div>
                 </div>
               </div>
             ))}

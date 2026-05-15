@@ -316,11 +316,11 @@ export default function RichEditor({ value, onChange, placeholder = 'यहा�
                 onMouseUp={updateActiveFormats}
                 dangerouslySetInnerHTML={value ? { __html: value } : undefined}
                 data-placeholder={placeholder}
+                className="p-4 lg:p-8"
                 style={{
-                    minHeight: '800px', // Increased from 420px
-                    padding: '2rem 2.5rem', // More space for long articles
+                    minHeight: '400px', 
                     outline: 'none',
-                    fontSize: '18px', // Slightly larger font for better readability
+                    fontSize: '18px', 
                     lineHeight: 1.85,
                     fontFamily: "'Noto Sans Devanagari', 'Inter', sans-serif",
                     color: '#1e293b',

@@ -101,9 +101,16 @@ export async function GET(request) {
     try {
         await initializeAgentLog();
         const rawNews = await fetchNewsSmart();
+        
+        // request-level cache to prevent processing the same thing twice in one run
+        const processedTitles = new Set();
 
         for (const item of rawNews) {
             if (Date.now() - startTime > 55000) break;
+
+            const normTitle = item.title.toLowerCase().replace(/\s+/g, '');
+            if (processedTitles.has(normTitle)) continue;
+            processedTitles.add(normTitle);
 
             const slugBase = createSlug(item.title)
             if (await isNewsExists(slugBase) || await isTitleExists(item.title)) {
@@ -117,6 +124,12 @@ export async function GET(request) {
             await logAgentAction({ agent_name: 'PULSE', type: 'WRITE', message: `Drafting investigative report: ${item.title.substring(0, 30)}...` });
             const pulseDraft = await AgentPulse(item.title, item.content);
             
+            // Re-check title after AI generation in case it changed drastically or another process finished
+            if (await isTitleExists(pulseDraft.title)) {
+                console.log(`⏩ Skipping duplicate (Post-AI): ${pulseDraft.title.substring(0, 30)}...`);
+                continue;
+            }
+
             // 📈 STRATOS
             await logAgentAction({ agent_name: 'STRATOS', type: 'WRITE', message: `Optimizing architecture & SEO for: ${pulseDraft.title.substring(0, 30)}` });
             const stratosSEO = await AgentStratos(pulseDraft);
@@ -183,22 +196,31 @@ export async function GET(request) {
                     highlights: oracleCheck.highlights || []
                 });
             } catch (sanityErr) {
-                console.warn('Sanity Create Fail (probably reference error), falling back to top-story ref...');
-                doc.category = { _type: 'reference', _ref: 'category-top-story' };
-                const sanityResult = await client.create(doc);
-                fullImageUrl = assetId ? urlFor(sanityResult.featureImage).url() : '';
-                
-                await insertNews({
-                    title: doc.title,
-                    slug: finalSlug,
-                    content: pulseDraft.content,
-                    excerpt: doc.excerpt,
-                    image_url: fullImageUrl || '',
-                    category: detectedCategory,
-                    district: doc.district,
-                    published_at: doc.publishedAt,
-                    highlights: oracleCheck.highlights || []
-                });
+                console.warn('Sanity Create/DB Insert Fail:', sanityErr.message);
+                // If it's a reference error for category, we try one last time with a safe fallback
+                if (sanityErr.message.includes('reference') || sanityErr.message.includes('category')) {
+                    doc.category = { _type: 'reference', _ref: 'category-top-story' };
+                    try {
+                       const sanityResult = await client.create(doc);
+                       fullImageUrl = assetId ? urlFor(sanityResult.featureImage).url() : '';
+                       await insertNews({
+                           title: doc.title,
+                           slug: finalSlug,
+                           content: pulseDraft.content,
+                           excerpt: doc.excerpt,
+                           image_url: fullImageUrl || '',
+                           category: detectedCategory,
+                           district: doc.district,
+                           published_at: doc.publishedAt,
+                           highlights: oracleCheck.highlights || []
+                       });
+                    } catch (e) {
+                       console.error('Final publication fallback failed:', e.message);
+                       continue;
+                    }
+                } else {
+                    continue; // Skip this item on other errors
+                }
             }
 
             await sendToTelegram({
