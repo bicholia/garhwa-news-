@@ -49,28 +49,21 @@ export default async function AdminDashboard() {
     return (
         <div>
             {/* Welcome */}
-            <div style={{ marginBottom: '1.5rem' }}>
+            <div className="mb-6 lg:mb-8">
                 <h1 className="text-2xl lg:text-[1.75rem] font-extrabold text-slate-900 m-0">
                     नमस्ते, Admin!
                 </h1>
-                <p style={{ color: '#64748b', marginTop: '0.35rem', fontSize: '0.875rem' }}>
+                <p className="text-slate-500 mt-1 lg:mt-1.5 text-xs lg:text-sm">
                     ThinkIndia.press Admin Panel — आज की तारीख: {new Date().toLocaleDateString('hi-IN', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' })}
                 </p>
             </div>
 
-            {/* Stats Cards */}
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
+            <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 md:gap-4 mb-8">
                 {statCards.map((card) => (
-                    <div key={card.label} style={{
-                        background: 'white',
-                        borderRadius: '1rem',
-                        padding: '1.5rem',
-                        boxShadow: '0 1px 4px rgba(0,0,0,0.08)',
-                        border: '1px solid #e2e8f0',
-                    }}>
-                        <div style={{ fontSize: '2rem', marginBottom: '0.75rem' }}>{card.icon}</div>
-                        <div style={{ fontSize: '2rem', fontWeight: 800, color: card.color }}>{card.value}</div>
-                        <div style={{ color: '#64748b', fontWeight: 600, fontSize: '0.875rem', marginTop: '0.25rem' }}>{card.label}</div>
+                    <div key={card.label} className="bg-white rounded-2xl p-4 md:p-6 shadow-sm border border-slate-200">
+                        <div className="mb-2 md:mb-3">{card.icon}</div>
+                        <div className="text-2xl md:text-4xl font-extrabold" style={{ color: card.color }}>{card.value}</div>
+                        <div className="text-slate-500 font-semibold text-[10px] md:text-sm mt-1 uppercase tracking-wider">{card.label}</div>
                     </div>
                 ))}
             </div>
@@ -158,8 +151,8 @@ export default async function AdminDashboard() {
             </div>
 
             {/* System Status */}
-            <div style={{ background: 'white', borderRadius: '1rem', padding: '1.5rem', border: '1px solid #e2e8f0' }}>
-                <h2 style={{ fontSize: '1rem', fontWeight: 700, color: '#0f172a', marginBottom: '1rem' }}>
+            <div className="bg-white rounded-2xl p-6 border border-slate-200 shadow-sm">
+                <h2 className="text-sm font-bold text-slate-900 mb-4 uppercase tracking-wider">
                     सिस्टम स्टेटस
                 </h2>
                 {[
@@ -167,10 +160,10 @@ export default async function AdminDashboard() {
                     { name: 'Next.js Server', status: 'Running', color: '#059669' },
                     { name: 'Admin Session', status: 'Active', color: '#059669' },
                 ].map(item => (
-                    <div key={item.name} style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '0.6rem 0', borderBottom: '1px solid #f1f5f9' }}>
-                        <span style={{ color: '#475569', fontWeight: 500 }}>{item.name}</span>
-                        <span style={{ display: 'flex', alignItems: 'center', gap: '0.4rem', color: item.color, fontWeight: 700, fontSize: '0.85rem' }}>
-                            <span style={{ width: 8, height: 8, borderRadius: '50%', background: item.color, display: 'inline-block' }}></span>
+                    <div key={item.name} className="flex justify-between items-center py-3 border-b border-slate-50 last:border-0">
+                        <span className="text-slate-600 font-medium text-sm">{item.name}</span>
+                        <span className="flex items-center gap-2 font-bold text-xs" style={{ color: item.color }}>
+                            <span className="w-2 h-2 rounded-full" style={{ background: item.color }}></span>
                             {item.status}
                         </span>
                     </div>

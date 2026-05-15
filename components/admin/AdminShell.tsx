@@ -64,12 +64,14 @@ export default function AdminShell({ children }: { children: React.ReactNode }) 
                 {/* Brand & Close button on mobile */}
                 <div style={{ padding: '1.25rem', borderBottom: '1px solid rgba(255,255,255,0.08)', display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
                     <div>
-                        <div style={{ color: '#ef4444', fontWeight: 900, fontSize: '1.05rem', letterSpacing: '-0.02em', display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
-                            <FileText size={20} /> ThinkIndia.press
+                    <div className="overflow-hidden">
+                        <div className="text-red-500 font-black text-sm md:text-base tracking-tight flex items-center gap-2 whitespace-nowrap">
+                            <FileText size={18} /> ThinkIndia.press
                         </div>
-                        <div style={{ color: '#6366f1', fontSize: '0.68rem', marginTop: '2px', textTransform: 'uppercase', letterSpacing: '0.1em' }}>
+                        <div className="text-indigo-400 text-[10px] mt-0.5 uppercase tracking-widest font-bold truncate">
                             Admin Control Panel
                         </div>
+                    </div>
                     </div>
                     <button 
                         onClick={() => setIsSidebarOpen(false)}
@@ -126,16 +128,21 @@ export default function AdminShell({ children }: { children: React.ReactNode }) 
                     {navigation.map((item) => {
                         const isActive = pathname === item.href
                         return (
-                            <Link key={item.name} href={item.href} style={{
-                                display: 'flex', alignItems: 'center', gap: '0.75rem',
-                                padding: '0.65rem 0.85rem', borderRadius: '0.5rem',
-                                marginBottom: '2px',
-                                background: isActive ? 'rgba(239,68,68,0.9)' : 'transparent',
-                                color: isActive ? 'white' : '#94a3b8',
-                                fontWeight: isActive ? 700 : 500,
-                                fontSize: '0.875rem', textDecoration: 'none',
-                                transition: 'all 0.2s'
-                            }}>
+                            <Link 
+                                key={item.name} 
+                                href={item.href} 
+                                onClick={() => setIsSidebarOpen(false)}
+                                style={{
+                                    display: 'flex', alignItems: 'center', gap: '0.75rem',
+                                    padding: '0.65rem 0.85rem', borderRadius: '0.5rem',
+                                    marginBottom: '2px',
+                                    background: isActive ? 'rgba(239,68,68,0.9)' : 'transparent',
+                                    color: isActive ? 'white' : '#94a3b8',
+                                    fontWeight: isActive ? 700 : 500,
+                                    fontSize: '0.875rem', textDecoration: 'none',
+                                    transition: 'all 0.2s'
+                                }}
+                            >
                                 <span style={{ fontSize: '1rem', width: '20px', textAlign: 'center' as const }}>{item.icon}</span>
                                 {item.name}
                             </Link>
@@ -161,15 +168,7 @@ export default function AdminShell({ children }: { children: React.ReactNode }) 
             {/* ===== MAIN ===== */}
             <div className="flex-1 flex flex-col lg:ml-[240px]">
                 {/* Top Header */}
-                <header style={{
-                    height: '58px', background: 'white',
-                    borderBottom: '1px solid #e2e8f0',
-                    display: 'flex', alignItems: 'center',
-                    padding: '0 1rem lg:1.5rem',
-                    justifyContent: 'space-between',
-                    position: 'sticky', top: 0, zIndex: 40,
-                    boxShadow: '0 1px 3px rgba(0,0,0,0.05)'
-                }}>
+                <header className="h-[58px] bg-white border-b border-slate-200 flex items-center justify-between px-4 lg:px-6 sticky top-0 z-40 shadow-sm">
                     <div style={{ display: 'flex', alignItems: 'center', gap: '1rem' }}>
                         {/* Hamburger for mobile */}
                         <button 
@@ -195,26 +194,15 @@ export default function AdminShell({ children }: { children: React.ReactNode }) 
                     </div>
 
                     {/* Profile in Header */}
-                    <Link href="/admin/dashboard/settings" style={{
-                        display: 'flex', alignItems: 'center', gap: '0.6rem',
-                        textDecoration: 'none', padding: '0.3rem 0.75rem',
-                        borderRadius: '2rem', background: '#f8fafc',
-                        border: '1px solid #e2e8f0', transition: 'background 0.2s'
-                    }}>
-                        <div style={{
-                            width: '30px', height: '30px',
-                            borderRadius: '50%', overflow: 'hidden',
-                            background: '#dc2626',
-                            display: 'flex', alignItems: 'center', justifyContent: 'center'
-                        }}>
+                    <Link href="/admin/dashboard/settings" className="flex items-center gap-2 px-3 py-1.5 rounded-full bg-slate-50 border border-slate-200 hover:bg-slate-100 transition-colors">
+                        <div className="w-7 h-7 rounded-full overflow-hidden bg-brand-red flex items-center justify-center flex-shrink-0">
                             {profile.photoUrl ? (
-                                <img src={profile.photoUrl} alt=""
-                                    style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+                                <img src={profile.photoUrl} alt="" className="w-full h-full object-cover" />
                             ) : (
-                                <span style={{ color: 'white', fontWeight: 800, fontSize: '0.75rem' }}>{initials}</span>
+                                <span className="text-white font-black text-[10px]">{initials}</span>
                             )}
                         </div>
-                        <span style={{ color: '#374151', fontSize: '0.85rem', fontWeight: 600 }}>{profile.name}</span>
+                        <span className="hidden sm:inline text-slate-700 text-sm font-bold truncate max-w-[100px]">{profile.name}</span>
                     </Link>
                 </header>
 

@@ -113,26 +113,19 @@ export default function PostsPage() {
     return (
         <div>
             {/* Page Header */}
-            <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-8">
-                <div style={{ display: 'flex', alignItems: 'center', gap: '1rem' }}>
+            <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-4 mb-8">
+                <div className="flex items-center gap-3">
                     <Link
                         href="/admin/dashboard"
-                        style={{
-                            width: '38px', height: '38px',
-                            background: 'white', border: '1.5px solid #e2e8f0',
-                            borderRadius: '0.6rem', display: 'flex',
-                            alignItems: 'center', justifyContent: 'center',
-                            color: '#64748b', textDecoration: 'none',
-                            fontSize: '1.1rem', flexShrink: 0
-                        }}
+                        className="w-10 h-10 bg-white border border-slate-200 rounded-xl flex items-center justify-center color-slate-500 hover:bg-slate-50 transition-colors shadow-sm"
                     >
                         ←
                     </Link>
                     <div>
-                        <h1 style={{ fontSize: '1.5rem', fontWeight: 800, color: '#0f172a', margin: 0 }}>
+                        <h1 className="text-xl md:text-2xl font-black text-slate-900 leading-tight">
                             सभी खबरें
                         </h1>
-                        <p style={{ color: '#64748b', marginTop: '0.25rem', fontSize: '0.9rem' }}>
+                        <p className="text-slate-500 text-xs md:text-sm font-medium">
                             {loading ? 'लोड हो रहा है...' : `कुल ${filterEmpty ? displayedPosts.length : posts.length} खबरें`}
                         </p>
                     </div>
@@ -228,54 +221,28 @@ export default function PostsPage() {
 
             {/* Posts Table */}
             {!loading && posts.length > 0 && (
-                <div style={{ background: 'white', borderRadius: '1rem', overflow: 'hidden', boxShadow: '0 1px 4px rgba(0,0,0,0.08)', border: '1px solid #e2e8f0' }}>
+                <div className="bg-white rounded-2xl overflow-hidden shadow-sm border border-slate-200">
                     {/* Table Head */}
-                    <div style={{
-                        display: 'grid',
-                        gridTemplateColumns: '40px 1fr 60px 80px 100px',
-                        padding: '0.75rem 1rem',
-                        background: '#f8fafc',
-                        borderBottom: '1px solid #e2e8f0',
-                        fontSize: '0.75rem',
-                        fontWeight: 700,
-                        color: '#475569',
-                        textTransform: 'uppercase',
-                        letterSpacing: '0.05em',
-                        alignItems: 'center'
-                    }}
-                    className="md:grid-cols-[40px_1fr_100px_100px_100px_100px_100px]"
-                    >
+                    <div className="grid grid-cols-[40px_1fr_80px] sm:grid-cols-[40px_1fr_100px_100px] md:grid-cols-[40px_1fr_100px_100px_100px_100px_100px] px-4 py-3 bg-slate-50 border-b border-slate-200 text-[10px] font-bold text-slate-500 uppercase tracking-wider items-center">
                         <input
                             type="checkbox"
                             checked={posts.length > 0 && selectedPostIds.length === posts.length}
                             onChange={toggleSelectAll}
-                            style={{ width: '16px', height: '16px', cursor: 'pointer', accentColor: '#dc2626' }}
+                            className="w-4 h-4 cursor-pointer accent-brand-red"
                         />
                         <span>शीर्षक (Title)</span>
-                        <span className="hidden md:block">Photo</span>
-                        <span className="hidden md:block">Content</span>
-                        <span className="hidden sm:block">श्रेणी</span>
-                        <span className="hidden lg:block">तारीख</span>
-                        <span style={{ textAlign: 'right' }}>Actions</span>
+                        <span className="hidden md:block text-center">Photo</span>
+                        <span className="hidden md:block text-center">Body</span>
+                        <span className="hidden sm:block text-center">श्रेणी</span>
+                        <span className="hidden md:block">तारीख</span>
+                        <span className="text-right">Actions</span>
                     </div>
 
                     {/* Rows */}
                     {displayedPosts.map((post, idx) => (
                         <div
                             key={post._id}
-                            style={{
-                                display: 'grid',
-                                gridTemplateColumns: '40px 1fr 60px 80px 100px',
-                                padding: '0.6rem 1rem',
-                                borderBottom: idx < posts.length - 1 ? '1px solid #f1f5f9' : 'none',
-                                alignItems: 'center',
-                                transition: 'background 0.15s',
-                                background: selectedPostIds.includes(post._id) ? '#fef2f2' : 'transparent',
-                                fontSize: '0.85rem'
-                            }}
-                            className="md:grid-cols-[40px_1fr_100px_100px_100px_100px_100px]"
-                            onMouseEnter={e => { if (!selectedPostIds.includes(post._id)) e.currentTarget.style.background = '#f8fafc' }}
-                            onMouseLeave={e => { if (!selectedPostIds.includes(post._id)) e.currentTarget.style.background = 'transparent' }}
+                            className={`grid grid-cols-[40px_1fr_80px] sm:grid-cols-[40px_1fr_100px_100px] md:grid-cols-[40px_1fr_100px_100px_100px_100px_100px] px-4 py-3 items-center border-b border-slate-50 last:border-0 transition-colors ${selectedPostIds.includes(post._id) ? 'bg-red-50' : 'hover:bg-slate-50'}`}
                         >
                             <div>
                                 <input
@@ -285,54 +252,28 @@ export default function PostsPage() {
                                     style={{ width: '16px', height: '16px', cursor: 'pointer', accentColor: '#dc2626' }}
                                 />
                             </div>
-                            <div style={{ whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis', fontWeight: 500, color: '#0f172a' }}>
+                            <div className="text-sm font-bold text-slate-900 truncate pr-2">
                                 {post.title || 'No Title'}
                             </div>
-                            <div className="hidden md:block">
-                                <span style={{
-                                    display: 'inline-flex',
-                                    alignItems: 'center',
-                                    gap: '0.25rem',
-                                    padding: '2px 8px',
-                                    borderRadius: '12px',
-                                    fontSize: '0.7rem',
-                                    fontWeight: 600,
-                                    background: post.hasImage ? '#f0fdf4' : '#fff1f2',
-                                    color: post.hasImage ? '#16a34a' : '#e11d48',
-                                    border: `1px solid ${post.hasImage ? '#bbf7d0' : '#fecdd3'}`
-                                }}>
-                                    {post.hasImage ? '✓ Yes' : '✗ No'}
+                            <div className="hidden md:flex justify-center">
+                                <span className={`inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-bold border ${post.hasImage ? 'bg-emerald-50 text-emerald-600 border-emerald-100' : 'bg-rose-50 text-rose-600 border-rose-100'}`}>
+                                    {post.hasImage ? '✓' : '✗'}
                                 </span>
                             </div>
-                            <div className="hidden md:block">
-                                <span style={{
-                                    display: 'inline-flex',
-                                    alignItems: 'center',
-                                    gap: '0.25rem',
-                                    padding: '2px 8px',
-                                    borderRadius: '12px',
-                                    fontSize: '0.7rem',
-                                    fontWeight: 600,
-                                    background: post.hasBody ? '#f0fdf4' : '#fff1f2',
-                                    color: post.hasBody ? '#16a34a' : '#e11d48',
-                                    border: `1px solid ${post.hasBody ? '#bbf7d0' : '#fecdd3'}`
-                                }}>
-                                    {post.hasBody ? '✓ Yes' : '✗ No'}
+                            <div className="hidden md:flex justify-center">
+                                <span className={`inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-bold border ${post.hasBody ? 'bg-emerald-50 text-emerald-600 border-emerald-100' : 'bg-rose-50 text-rose-600 border-rose-100'}`}>
+                                    {post.hasBody ? '✓' : '✗'}
                                 </span>
                             </div>
-                            <div className="hidden sm:block">
-                                <span style={{
-                                    background: categoryColors[post.category] || '#64748b',
-                                    color: 'white',
-                                    padding: '2px 8px',
-                                    borderRadius: '4px',
-                                    fontSize: '0.65rem',
-                                    fontWeight: 700
-                                }}>
-                                    {post.category || 'N/A'}
+                            <div className="hidden sm:flex justify-center">
+                                <span 
+                                    className="px-2 py-0.5 rounded text-[10px] font-black text-white uppercase"
+                                    style={{ background: categoryColors[post.category] || '#64748b' }}
+                                >
+                                    {post.category?.substring(0, 8) || 'N/A'}
                                 </span>
                             </div>
-                            <div className="hidden lg:block" style={{ color: '#64748b', fontSize: '0.8rem' }}>
+                            <div className="hidden md:block text-slate-400 text-[11px] font-mono">
                                 {post.publishedAt ? new Date(post.publishedAt).toLocaleDateString('hi-IN', { day: '2-digit', month: 'short' }) : '—'}
                             </div>
                             <div style={{ display: 'flex', gap: '0.4rem', justifyContent: 'flex-end' }}>
