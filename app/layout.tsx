@@ -4,7 +4,6 @@ import Script from 'next/script'
 import './global.css'
 import PremiumLoader from '@/components/PremiumLoader'
 import { ErrorHandler } from './error-handler'
-import CookieBanner from '@/components/CookieBanner'
 import { Analytics } from '@vercel/analytics/react'
 import ChatBot from '@/components/ChatBot'
 import { ThemeProvider } from '@/lib/ThemeContext'
@@ -91,7 +90,6 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
             <main className="flex-grow">
               {children}
             </main>
-            <CookieBanner />
             <ChatBot />
             <Analytics />
           </div>
