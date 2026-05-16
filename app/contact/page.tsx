@@ -89,6 +89,32 @@ export default function ContactPage() {
                                             </div>
                                         </div>
 
+                                        <div className="flex items-start gap-6 group">
+                                            <div className="w-14 h-14 bg-brand-navy rounded-2xl flex items-center justify-center text-brand-gold shadow-lg group-hover:scale-110 transition-transform">
+                                                <Mail size={24} />
+                                            </div>
+                                            <div>
+                                                <h3 className="text-brand-navy font-black text-xs uppercase tracking-widest mb-2">Email Dispatch</h3>
+                                                <p className="text-gray-500 font-medium">
+                                                    editor@thinkindia.press<br />
+                                                    contact@thinkindia.press
+                                                </p>
+                                            </div>
+                                        </div>
+
+                                        <div className="flex items-start gap-6 group">
+                                            <div className="w-14 h-14 bg-brand-navy rounded-2xl flex items-center justify-center text-brand-gold shadow-lg group-hover:scale-110 transition-transform">
+                                                <Phone size={24} />
+                                            </div>
+                                            <div>
+                                                <h3 className="text-brand-navy font-black text-xs uppercase tracking-widest mb-2">Bureau Hotline</h3>
+                                                <p className="text-gray-500 font-medium">
+                                                    +91 94701 47551<br />
+                                                    <span className="text-[10px] text-brand-gold font-bold uppercase tracking-widest">WhatsApp Enabled</span>
+                                                </p>
+                                            </div>
+                                        </div>
+
                                         {/* Contact blocks (Scrubbed for Brand Neutrality) */}
                                         <div className="flex items-start gap-6 group">
                                             <div className="w-14 h-14 bg-brand-navy rounded-2xl flex items-center justify-center text-brand-gold shadow-lg group-hover:scale-110 transition-transform">
