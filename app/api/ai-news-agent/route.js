@@ -170,7 +170,8 @@ export async function GET(request) {
                 category: { _type: 'reference', _ref: `category-${detectedCategory}` }, // Pattern-based ref
                 publishedAt: new Date().toISOString(),
                 seoKeywords: stratosSEO.seoKeywords,
-                tags: stratosSEO.tags
+                tags: stratosSEO.tags,
+                originalSource: item.title
             };
 
             if (assetId) {
@@ -191,7 +192,8 @@ export async function GET(request) {
                     category: detectedCategory,
                     district: doc.district,
                     published_at: doc.publishedAt,
-                    highlights: oracleCheck.highlights || []
+                    highlights: oracleCheck.highlights || [],
+                    original_source: item.title
                 });
             } catch (sanityErr) {
                 console.warn('Sanity Create/DB Insert Fail:', sanityErr.message);
@@ -210,7 +212,8 @@ export async function GET(request) {
                            category: detectedCategory,
                            district: doc.district,
                            published_at: doc.publishedAt,
-                           highlights: oracleCheck.highlights || []
+                           highlights: oracleCheck.highlights || [],
+                           original_source: item.title
                        });
                     } catch (e) {
                        console.error('Final publication fallback failed:', e.message);

@@ -96,7 +96,8 @@ export async function POST(request) {
             category: { _type: 'reference', _ref: 'category-top-story' },
             publishedAt: new Date().toISOString(),
             seoKeywords: stratosSEO.seoKeywords,
-            tags: stratosSEO.tags
+            tags: stratosSEO.tags,
+            originalSource: tip
         };
 
         if (assetId) {
@@ -114,7 +115,8 @@ export async function POST(request) {
             category: 'top-story',
             district: doc.district,
             published_at: doc.publishedAt,
-            highlights: []
+            highlights: [],
+            original_source: tip
         });
 
         // SOCIAL PUSH
