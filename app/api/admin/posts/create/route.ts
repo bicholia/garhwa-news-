@@ -2,14 +2,6 @@ import { NextResponse } from 'next/server'
 import { createClient } from '@sanity/client'
 import { revalidatePath } from 'next/cache'
 
-const client = createClient({
-    projectId: process.env.NEXT_PUBLIC_SANITY_PROJECT_ID || 'cjfr2ckk',
-    dataset: process.env.NEXT_PUBLIC_SANITY_DATASET || 'production',
-    useCdn: false,
-    apiVersion: '2024-01-01',
-    token: process.env.SANITY_TOKEN
-})
-
 function makeSlug(title: string) {
     return (
         title
@@ -47,6 +39,14 @@ function htmlToBlocks(html: string) {
 }
 
 export async function POST(request: Request) {
+    const client = createClient({
+        projectId: process.env.NEXT_PUBLIC_SANITY_PROJECT_ID || 'cjfr2ckk',
+        dataset: process.env.NEXT_PUBLIC_SANITY_DATASET || 'production',
+        useCdn: false,
+        apiVersion: '2024-01-01',
+        token: process.env.SANITY_TOKEN
+    })
+
     try {
         const data = await request.json()
 

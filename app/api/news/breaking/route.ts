@@ -2,14 +2,16 @@ import { NextResponse } from 'next/server'
 import { createClient } from '@sanity/client'
 import { scrubBrandNames, normalizeText } from '@/lib/safety'
 
-const client = createClient({
-    projectId: process.env.NEXT_PUBLIC_SANITY_PROJECT_ID || 'cjfr2ckk',
-    dataset: process.env.NEXT_PUBLIC_SANITY_DATASET || 'production',
-    useCdn: true,
-    apiVersion: '2024-01-01',
-})
+export const dynamic = 'force-dynamic'
 
 export async function GET() {
+    const client = createClient({
+        projectId: process.env.NEXT_PUBLIC_SANITY_PROJECT_ID || 'cjfr2ckk',
+        dataset: process.env.NEXT_PUBLIC_SANITY_DATASET || 'production',
+        useCdn: true,
+        apiVersion: '2024-01-01',
+    })
+
     try {
         const data = await client.fetch(
             `*[_type == "breakingNews" && active == true] | order(publishedAt desc)[0...5] {
