@@ -12,24 +12,11 @@ import { AgentPulse, AgentStratos, AgentOracle, AgentVision, AgentSocial } from 
 export const maxDuration = 60; 
 export const dynamic = 'force-dynamic'; 
 
-const client = createClient({
-    projectId: process.env.NEXT_PUBLIC_SANITY_PROJECT_ID,
-    dataset: process.env.NEXT_PUBLIC_SANITY_DATASET,
-    apiVersion: '2024-01-01',
-    token: process.env.SANITY_TOKEN,
-    useCdn: false,
-});
-
-const builder = imageUrlBuilder(client);
-function urlFor(source) {
-    return builder.image(source);
-}
-
 const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY);
 
 // AI AGENTS (Shared logic moved to @/lib/neural-agents.js)
 
-async function uploadImageToSanity(imageUrl, title) {
+async function uploadImageToSanity(imageUrl, title, client) {
     try {
         const response = await fetch(imageUrl);
         if (!response.ok) throw new Error('Failed to fetch image');
@@ -89,6 +76,17 @@ function createSlug(title) {
 }
 
 export async function GET(request) {
+    // Create client inside handler - avoids build-time 'projectId' error
+    const client = createClient({
+        projectId: process.env.NEXT_PUBLIC_SANITY_PROJECT_ID,
+        dataset: process.env.NEXT_PUBLIC_SANITY_DATASET,
+        apiVersion: '2024-01-01',
+        token: process.env.SANITY_TOKEN,
+        useCdn: false,
+    });
+    const builder = imageUrlBuilder(client);
+    const urlFor = (source) => builder.image(source);
+
     const startTime = Date.now();
     const isManual = request.nextUrl.searchParams.get('manual') === 'true';
     const authHeader = request.headers.get('authorization');
@@ -146,7 +144,7 @@ export async function GET(request) {
             await logAgentAction({ agent_name: 'VISION', type: 'IMAGE', message: `Synthesizing cinematic visuals for the story.` });
             const visionArt = await AgentVision(pulseDraft);
             const imgUrl = await getImageUrl(visionArt.fluxPrompt);
-            const assetId = await uploadImageToSanity(imgUrl, pulseDraft.title);
+            const assetId = await uploadImageToSanity(imgUrl, pulseDraft.title, client);
             if (!assetId) {
                 await logAgentAction({ agent_name: 'VISION', type: 'FAIL', message: `Image synchronization failed. Continuing with text-only...`, status: 'warning' });
             }

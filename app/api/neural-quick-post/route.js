@@ -8,15 +8,7 @@ import { scrubBrandNames } from '@/lib/safety';
 export const maxDuration = 60;
 export const dynamic = 'force-dynamic';
 
-const client = createClient({
-    projectId: process.env.NEXT_PUBLIC_SANITY_PROJECT_ID,
-    dataset: process.env.NEXT_PUBLIC_SANITY_DATASET,
-    apiVersion: '2024-01-01',
-    token: process.env.SANITY_TOKEN,
-    useCdn: false,
-});
-
-async function uploadImageToSanity(imageUrl, title) {
+async function uploadImageToSanity(imageUrl, title, client) {
     try {
         const response = await fetch(imageUrl);
         if (!response.ok) throw new Error('Failed to fetch image');
@@ -48,6 +40,14 @@ async function getImageUrl(prompt) {
 }
 
 export async function POST(request) {
+    // Create client inside handler - avoids build-time 'projectId' error
+    const client = createClient({
+        projectId: process.env.NEXT_PUBLIC_SANITY_PROJECT_ID,
+        dataset: process.env.NEXT_PUBLIC_SANITY_DATASET,
+        apiVersion: '2024-01-01',
+        token: process.env.SANITY_TOKEN,
+        useCdn: false,
+    });
     try {
         const { tip, district = 'garhwa', secret } = await request.json();
 
@@ -76,7 +76,7 @@ export async function POST(request) {
         // 🎨 STEP 3: VISION (Image)
         const visionArt = await AgentVision(pulseDraft);
         const imgUrl = await getImageUrl(visionArt.fluxPrompt);
-        const assetId = await uploadImageToSanity(imgUrl, pulseDraft.title);
+        const assetId = await uploadImageToSanity(imgUrl, pulseDraft.title, client);
 
         // 📲 STEP 4: SOCIAL (Publicist)
         const socialHook = await AgentSocial(pulseDraft);
