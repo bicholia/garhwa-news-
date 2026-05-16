@@ -3,24 +3,18 @@
 // Features: Forgiving parse, weighted category detect, batch processing, dry-run
 
 import { NextRequest, NextResponse } from 'next/server'
-import { createClient } from '@sanity/client'
+import { getSanityClient } from '@/lib/sanity-client'
 import * as XLSX from 'xlsx'
 import { insertNews } from '@/lib/db'
 
-// ── Sanity Client ─────────────────────────────────────────────────────────────
-const client = createClient({
-    projectId: process.env.NEXT_PUBLIC_SANITY_PROJECT_ID || 'cjfr2ckk',
-    dataset: process.env.NEXT_PUBLIC_SANITY_DATASET || 'production',
-    useCdn: false,
-    apiVersion: '2024-01-01',
-    token: process.env.SANITY_TOKEN,
-})
+export const dynamic = 'force-dynamic'
 
 // ── Category → Sanity _id lookup ─────────────────────────────────────────────
 // We cache these at start of every batch request (avoids N+1 queries)
 let categoryCache: Record<string, string> = {}
 
 async function loadCategories() {
+    const client = getSanityClient()
     const cats = await client.fetch(
         `*[_type == "category"]{ _id, "slug": slug.current, title }`
     )
@@ -75,6 +69,7 @@ function detectCategory(title: string, body: string): { primary: string; all: st
 
 // ── Image Handling ───────────────────────────────────────────────────────────
 async function downloadAndUploadImage(title: string): Promise<string | null> {
+    const client = getSanityClient()
     try {
         // Extract keywords from title (English words or transliterated Hindi)
         const keywords = title.match(/[A-Z][a-z]{3,}/g)?.join(',') || 'news,india'
@@ -255,7 +250,7 @@ async function buildSanityDoc(
 
     // Tags
     const rawTags = row.tags
-        ? row.tags.split(/[,،;]/).map(t => t.trim()).filter(Boolean)
+        ? row.tags.split(/[,,;]/).map(t => t.trim()).filter(Boolean)
         : []
     const autoTags = rawTags.length > 0 ? rawTags : generateTags(row.title, row.district, categorySlug)
 
@@ -318,9 +313,6 @@ async function buildSanityDoc(
             _type: 'image',
             asset: { _type: 'reference', _ref: assetRef }
         }
-    } else {
-        // Fallback placeholder ref if possible, or just skip
-        // (Schema requires it, so in dry run we return placeholder info)
     }
 
     return doc
@@ -328,6 +320,7 @@ async function buildSanityDoc(
 
 // ── MAIN POST HANDLER ─────────────────────────────────────────────────────────
 export async function POST(req: NextRequest) {
+    const client = getSanityClient()
     const isDryRun = req.nextUrl.searchParams.get('dryRun') === 'true'
     const BATCH_SIZE = 50
 

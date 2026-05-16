@@ -1,26 +1,18 @@
 import { NextResponse } from 'next/server'
-import { createClient } from '@sanity/client'
+import { getSanityClient } from '@/lib/sanity-client'
 import { revalidatePath } from 'next/cache'
 
 export const dynamic = 'force-dynamic'
-
-const client = createClient({
-    projectId: process.env.NEXT_PUBLIC_SANITY_PROJECT_ID || 'cjfr2ckk',
-    dataset: process.env.NEXT_PUBLIC_SANITY_DATASET || 'production',
-    useCdn: false,
-    apiVersion: '2024-01-01',
-    token: process.env.SANITY_TOKEN
-})
 
 // ── GET: Fetch a single post for editing ──────────────────────────────────────
 export async function GET(
     request: Request,
     { params }: { params: Promise<{ id: string }> }
 ) {
+    const client = getSanityClient()
     try {
         const { id } = await params
 
-        // Use GROQ to expand category slug and image URL
         const post = await client.fetch(
             `*[_id == $id][0]{
                 _id,
@@ -61,6 +53,7 @@ export async function PUT(
     request: Request,
     { params }: { params: Promise<{ id: string }> }
 ) {
+    const client = getSanityClient()
     try {
         const { id } = await params
         const data = await request.json()
@@ -76,7 +69,6 @@ export async function PUT(
             featured: data.featured || false,
         }
 
-        // Update body HTML
         if (data.body) {
             patch.bodyHtml = data.body
             patch.body = [
@@ -97,7 +89,6 @@ export async function PUT(
             ]
         }
 
-        // Update category reference
         if (data.category) {
             patch.category = {
                 _type: 'reference',
@@ -107,7 +98,6 @@ export async function PUT(
             }
         }
 
-        // Update feature image
         if (data.featureImageId) {
             patch.featureImage = {
                 _type: 'image',
@@ -120,7 +110,6 @@ export async function PUT(
             patch.featureImageUrl = data.featureImageUrl
         }
 
-        // Update tags
         if (data.tags) {
             patch.tags = typeof data.tags === 'string'
                 ? data.tags.split(',').map((t: string) => t.trim()).filter(Boolean)
@@ -129,7 +118,6 @@ export async function PUT(
 
         const result = await client.patch(id).set(patch).commit()
 
-        // Revalidate pages
         revalidatePath('/')
         revalidatePath(`/news`)
         revalidatePath('/admin/dashboard/posts')
@@ -146,6 +134,7 @@ export async function DELETE(
     request: Request,
     { params }: { params: Promise<{ id: string }> }
 ) {
+    const client = getSanityClient()
     try {
         const { id } = await params
         await client.delete(id)

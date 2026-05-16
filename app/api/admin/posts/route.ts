@@ -1,16 +1,10 @@
 import { NextResponse } from 'next/server'
-import { createClient } from '@sanity/client'
+import { getSanityClient } from '@/lib/sanity-client'
 
 export const dynamic = 'force-dynamic'
 
 export async function GET() {
-    const client = createClient({
-        projectId: process.env.NEXT_PUBLIC_SANITY_PROJECT_ID || 'cjfr2ckk',
-        dataset: process.env.NEXT_PUBLIC_SANITY_DATASET || 'production',
-        useCdn: true,
-        apiVersion: '2024-01-01',
-    })
-
+    const client = getSanityClient()
     try {
         const posts = await client.fetch(`
       *[_type == "article"] | order(publishedAt desc) {

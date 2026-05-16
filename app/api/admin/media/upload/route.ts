@@ -1,19 +1,11 @@
 import { NextResponse } from 'next/server'
-import { createClient } from '@sanity/client'
+import { getSanityClient } from '@/lib/sanity-client'
 
 export const dynamic = 'force-dynamic'
 
-// ── Sanity Client ──────────────────────────────────────────────────────────────
-const client = createClient({
-    projectId: process.env.NEXT_PUBLIC_SANITY_PROJECT_ID || 'cjfr2ckk',
-    dataset: process.env.NEXT_PUBLIC_SANITY_DATASET || 'production',
-    useCdn: false,
-    apiVersion: '2024-01-01',
-    token: process.env.SANITY_TOKEN
-})
-
 // ── POST: Upload image to Sanity ───────────────────────────────────────────────
 export async function POST(request: Request) {
+    const client = getSanityClient()
     try {
         // Verify token is configured
         if (!process.env.SANITY_TOKEN) {
@@ -75,7 +67,7 @@ export async function POST(request: Request) {
         return NextResponse.json({
             success: true,
             url: asset.url,
-            assetId: asset._id,       // e.g. "image-abc123-jpg"
+            assetId: asset._id,
             width: asset.metadata?.dimensions?.width,
             height: asset.metadata?.dimensions?.height,
         })
@@ -87,7 +79,6 @@ export async function POST(request: Request) {
             response: error.response?.body,
         })
 
-        // Provide helpful error messages
         let userMessage = error.message || 'Unknown upload error'
 
         if (error.statusCode === 401 || error.statusCode === 403) {

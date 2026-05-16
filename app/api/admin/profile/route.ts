@@ -1,16 +1,11 @@
 import { NextResponse } from 'next/server'
-import { createClient } from '@sanity/client'
+import { getSanityClient } from '@/lib/sanity-client'
 
-const client = createClient({
-    projectId: process.env.NEXT_PUBLIC_SANITY_PROJECT_ID || 'cjfr2ckk',
-    dataset: process.env.NEXT_PUBLIC_SANITY_DATASET || 'production',
-    useCdn: false,
-    apiVersion: '2024-01-01',
-    token: process.env.SANITY_TOKEN
-})
+export const dynamic = 'force-dynamic'
 
 // Upload profile picture to Sanity
 export async function POST(request: Request) {
+    const client = getSanityClient()
     try {
         const formData = await request.formData()
         const file = formData.get('file') as File

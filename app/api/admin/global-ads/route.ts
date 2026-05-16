@@ -1,19 +1,12 @@
 import { NextResponse } from 'next/server'
-import { createClient } from '@sanity/client'
+import { getSanityClient } from '@/lib/sanity-client'
 import { revalidatePath } from 'next/cache'
 
 export const dynamic = 'force-dynamic'
 
-const client = createClient({
-    projectId: process.env.NEXT_PUBLIC_SANITY_PROJECT_ID || 'cjfr2ckk',
-    dataset: process.env.NEXT_PUBLIC_SANITY_DATASET || 'production',
-    useCdn: false,
-    apiVersion: '2024-01-01',
-    token: process.env.SANITY_TOKEN
-})
-
 // ── GET: All global banners ───────────────────────────────────────────────────
 export async function GET(request: Request) {
+    const client = getSanityClient()
     try {
         const { searchParams } = new URL(request.url)
         const activeOnly = searchParams.get('active') === 'true'
@@ -54,6 +47,7 @@ export async function GET(request: Request) {
 
 // ── POST: Create / Update / Delete ────────────────────────────────────────────
 export async function POST(request: Request) {
+    const client = getSanityClient()
     try {
         let body: any
         try {
