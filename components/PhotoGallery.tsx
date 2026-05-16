@@ -16,10 +16,10 @@ export default function PhotoGallery({ articles }: PhotoGalleryProps) {
     const otherPhotos = articles.slice(1, 5)
 
     return (
-        <div className="mb-16 bg-white">
+        <div className="mb-16">
             <div className="flex items-center justify-between border-b-2 border-ndtv-black mb-8 pb-3">
-                <h2 className="text-xl lg:text-2xl font-black text-black uppercase tracking-tight serif-font flex items-center gap-3">
-                    <span className="w-2 h-8 bg-ndtv-black inline-block" />
+                <h2 className="text-xl lg:text-2xl font-black text-black dark:text-white uppercase tracking-tight serif-font flex items-center gap-3">
+                    <span className="w-2 h-8 bg-ndtv-black dark:bg-white inline-block" />
                     <Camera size={24} className="text-brand-red" /> 
                     Visual Stories <span className="text-brand-red">/ Photos</span>
                 </h2>

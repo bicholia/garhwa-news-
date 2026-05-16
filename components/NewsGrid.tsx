@@ -81,7 +81,7 @@ export default function NewsGrid({
 
                 {/* Content Section */}
                 <div className="flex flex-col flex-1">
-                    <h3 className={`font-bold text-gray-900 leading-snug group-hover:text-brand-red transition-all duration-300 serif-font ${isSmall ? 'text-[14px] line-clamp-2' : 'text-[17px] line-clamp-3'}`}>
+                    <h3 className={`font-bold text-gray-900 dark:text-white leading-snug group-hover:text-brand-red transition-all duration-300 serif-font ${isSmall ? 'text-[14px] line-clamp-2' : 'text-[17px] line-clamp-3'}`}>
                         {article.title}
                     </h3>
                     {!isSmall && (
@@ -98,29 +98,29 @@ export default function NewsGrid({
     }
 
     return (
-        <div className="mb-8 md:mb-16">
+        <div className="mb-10 md:mb-14">
             {/* Header */}
-            <div className="flex items-center justify-between border-b border-gray-100 mb-4 md:mb-10 pb-4">
-                <h2 className="text-2xl lg:text-3xl font-black text-gray-900 uppercase tracking-tighter serif-font flex items-center gap-4">
-                    <span className="w-1.5 h-10 bg-brand-red inline-block rounded-full" />
+            <div className="flex items-center justify-between border-b border-gray-100 dark:border-white/5 mb-6 md:mb-10 pb-4">
+                <h2 className="text-2xl lg:text-3xl font-black text-gray-900 dark:text-white uppercase tracking-tighter serif-font flex items-center gap-4">
+                    <span className="w-1 h-10 bg-gradient-to-b from-brand-red to-brand-gold inline-block rounded-full" />
                     {title}
                 </h2>
                 {link && (
-                    <Link href={link} className="text-[11px] font-black text-brand-red hover:underline flex items-center gap-1 uppercase tracking-widest">
-                        {moreText} <ArrowRight size={12} />
+                    <Link href={link} className="text-[9px] font-black text-brand-red hover:text-brand-navy dark:hover:text-white flex items-center gap-2 uppercase tracking-[0.2em] transition-colors">
+                        Archive <ArrowRight size={12} />
                     </Link>
                 )}
             </div>
 
             {/* Layout Variants */}
             {variant === 'standard' && (
-                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-x-6 gap-y-10">
+                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-x-8 gap-y-12">
                     {displayArticles.map((article, index) => renderCard(article, index))}
                 </div>
             )}
 
             {variant === 'mixed' && (
-                <div className="grid grid-cols-1 lg:grid-cols-12 gap-8">
+                <div className="grid grid-cols-1 lg:grid-cols-12 gap-10">
                     {/* LHS: Large Featured */}
                     <motion.div
                         className="lg:col-span-12 xl:col-span-8"
@@ -130,35 +130,38 @@ export default function NewsGrid({
                     >
                         <Link 
                             href={`/news/${featuredArticle.slug?.current || featuredArticle.slug}`}
-                            className="group flex flex-col md:flex-row gap-6 bg-gray-50 p-6 rounded-sm border border-gray-100"
+                            className="group flex flex-col md:flex-row gap-8 bg-gray-50 dark:bg-white/5 p-6 rounded-[32px] border border-gray-100 dark:border-white/5 shadow-premium hover:shadow-2xl transition-all duration-500"
                         >
-                            <div className="md:w-1/2 aspect-video overflow-hidden rounded-sm bg-gray-200 relative">
+                            <div className="md:w-1/2 aspect-video overflow-hidden rounded-[20px] bg-gray-200 relative">
                                 {resolveImageUrl(featuredArticle, 600, 400) ? (
                                     <img 
                                         src={resolveImageUrl(featuredArticle, 600, 400) || ''} 
-                                        className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105"
+                                        className="w-full h-full object-cover transition-transform duration-1000 group-hover:scale-110"
                                     />
                                 ) : (
-                                    <div className="w-full h-full bg-gray-50 flex items-center justify-center text-gray-300">
-                                        <Clock size={40} />
+                                    <div className="w-full h-full bg-brand-navy flex items-center justify-center text-brand-gold/20">
+                                        <Clock size={50} />
                                     </div>
                                 )}
-                                <div className="absolute top-3 left-3 bg-brand-red text-white text-[9px] font-black px-2 py-0.5 uppercase">Spotlight</div>
+                                <div className="absolute top-4 left-4 bg-brand-red text-white text-[8px] font-black px-3 py-1.5 uppercase tracking-widest rounded-full shadow-lg">Bureau Elite</div>
                             </div>
-                            <div className="md:w-1/2 flex flex-col justify-center">
-                                <h3 className="text-xl md:text-2xl font-bold text-gray-900 leading-tight mb-4 group-hover:text-brand-red transition-colors serif-font">
+                            <div className="md:w-1/2 flex flex-col justify-center py-2">
+                                <span className="text-[9px] font-black text-brand-gold uppercase tracking-[0.3em] mb-3">Featured Report</span>
+                                <h3 className="text-xl md:text-3xl font-black text-gray-900 dark:text-white leading-[1.15] mb-5 group-hover:text-brand-red transition-colors serif-font">
                                     {featuredArticle.title}
                                 </h3>
-                                <p className="text-[14px] text-gray-600 line-clamp-3 leading-relaxed mb-4">
+                                <p className="text-sm text-gray-500 dark:text-gray-400 line-clamp-3 leading-relaxed mb-6 font-medium">
                                     {featuredArticle.excerpt || featuredArticle.description || "In-depth investigative report from ThinkIndia.press special unit."}
                                 </p>
-                                <span className="text-[10px] font-black text-brand-red uppercase tracking-widest">Full Report &rarr;</span>
+                                <div className="flex items-center gap-2 text-[9px] font-black text-brand-navy dark:text-white uppercase tracking-[0.2em]">
+                                    Full Investigation <ArrowRight size={12} className="group-hover:translate-x-2 transition-transform" />
+                                </div>
                             </div>
                         </Link>
                     </motion.div>
 
                     {/* RHS: List */}
-                    <div className="lg:col-span-12 xl:col-span-4 flex flex-col divide-y divide-gray-100">
+                    <div className="lg:col-span-12 xl:col-span-4 flex flex-col divide-y divide-gray-100 dark:divide-white/5">
                         {remainingArticles.slice(0, 5).map((article, index) => (
                             <motion.div
                                 key={index}
@@ -168,12 +171,15 @@ export default function NewsGrid({
                             >
                                 <Link 
                                     href={`/news/${article.slug?.current || article.slug}`}
-                                    className="py-3 flex gap-4 group"
+                                    className="py-5 flex gap-5 group"
                                 >
-                                <span className="text-2xl font-black text-gray-200 group-hover:text-brand-red transition-colors italic w-8 shrink-0">{index + 2}</span>
-                                <h4 className="text-[13px] font-bold text-gray-800 leading-snug line-clamp-3 group-hover:text-brand-red transition-colors serif-font">
-                                    {article.title}
-                                </h4>
+                                    <span className="text-4xl font-black text-gray-100 dark:text-white/10 group-hover:text-brand-red/30 transition-colors serif-font italic w-10 shrink-0">0{index + 2}</span>
+                                    <div className="space-y-1">
+                                        <h4 className="text-base font-bold text-gray-800 dark:text-white leading-tight line-clamp-3 group-hover:text-brand-red transition-colors serif-font">
+                                            {article.title}
+                                        </h4>
+                                        <span className="text-[8px] font-black text-gray-400 uppercase tracking-widest">Bureau Wire</span>
+                                    </div>
                                 </Link>
                             </motion.div>
                         ))}
@@ -182,7 +188,7 @@ export default function NewsGrid({
             )}
 
             {variant === 'list' && (
-                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-x-10 gap-y-2">
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-x-12 gap-y-4">
                     {displayArticles.map((article, index) => renderCard(article, index, true))}
                 </div>
             )}

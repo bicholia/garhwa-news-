@@ -1,134 +1,154 @@
 import { Metadata } from 'next'
-import { MapPin, Globe, ShieldCheck } from 'lucide-react'
+import { MapPin, Globe, ShieldCheck, Target, Users, Award, Heart, Camera } from 'lucide-react'
+import PublicLayout from '@/components/PublicLayout'
 
 export const metadata: Metadata = {
     title: 'हमारे बारे में | ThinkIndia.press',
-    description:
-        'ThinkIndia.press (थिंक इंडिया) - गढ़वा और पलामू जिले की सबसे तेज और भरोसेमंद हिंदी समाचार वेबसाइट। जानिए हमारी टीम, मिशन और विजन के बारे में।',
-    keywords: 'गढ़वा समाचार, पलामू न्यूज़, झारखंड हिंदी न्यूज़, स्थानीय पत्रकारिता',
-    openGraph: {
-        title: 'हमारे बारे में | ThinkIndia.press',
-        description: 'ThinkIndia.press (थिंक इंडिया) - गढ़वा और पलामू की आवाज',
-    },
+    description: 'ThinkIndia.press (थिंक इंडिया) - झारखंड की नंबर 1 न्यूज़ ब्यूरो। हमारी टीम, मिशन और विजन के बारे में जानें।',
 }
 
-import PublicLayout from '@/components/PublicLayout'
-import '@/app/global.css'
 export default function AboutPage() {
     return (
         <PublicLayout>
-            <div className="min-h-screen bg-gray-50 py-12">
-                <div className="container mx-auto px-4 max-w-4xl">
-
-                    {/* Header */}
-                    <div className="text-center mb-16">
-                        <h1 className="text-5xl font-black text-gray-900 mb-6 border-b-8 border-red-600 inline-block pb-2">
-                            हमारी कहानी
+            <div className="min-h-screen bg-white dark:bg-black">
+                {/* PREMIUM HERO SECTION */}
+                <div className="relative h-[60vh] lg:h-[80vh] flex items-center justify-center overflow-hidden">
+                    <img 
+                        src="/about_hero_bg_1778925406510.png" 
+                        className="absolute inset-0 w-full h-full object-cover opacity-60 dark:opacity-40" 
+                        alt="Think India Newsroom"
+                    />
+                    <div className="absolute inset-0 bg-gradient-to-b from-black/80 via-black/40 to-white dark:to-black" />
+                    
+                    <div className="container relative z-10 text-center">
+                        <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-brand-red/20 backdrop-blur-md border border-brand-red/30 text-brand-red text-xs font-black uppercase tracking-[0.3em] mb-8 animate-fade-in">
+                            The News Revolution
+                        </div>
+                        <h1 className="text-3xl lg:text-5xl font-black text-white leading-tight uppercase tracking-tighter serif-font mb-6 drop-shadow-2xl">
+                            Empowering <br />
+                            <span className="text-brand-red">The Digital Voice</span>
                         </h1>
-                        <p className="text-xl text-gray-600 mt-4 font-semibold">
-                            गढ़वा-पलामू का अपना डिजिटल न्यूज़ नेटवर्क — <span className="text-red-600">ThinkIndia.press</span>
+                        <p className="text-gray-300 text-lg lg:text-2xl max-w-2xl mx-auto font-medium leading-relaxed">
+                            ThinkIndia.press is Jharkhand's premier digital news bureau, delivering integrity, speed, and local intelligence.
                         </p>
                     </div>
+                </div>
 
-                    {/* Founder's Story / Digital Upliftment */}
-                    <div className="bg-white rounded-3xl shadow-xl overflow-hidden mb-12 border border-gray-100">
-                        <div className="md:flex">
-                            <div className="md:w-1/3 bg-red-600 p-12 flex flex-col justify-center text-white">
-                                <h2 className="text-3xl font-black mb-4">Editorial Vision</h2>
-                                <div className="w-16 h-1 bg-white opacity-50 mb-6"></div>
-                                <p className="text-red-100 italic">"हमारा लक्ष्य गढ़वा की हर आवाज़ को मुख्यधारा से जोड़ना है।"</p>
+                <div className="container py-12">
+                    {/* VISION & IMPACT */}
+                    <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center mb-16">
+                        <div>
+                            <div className="flex items-center gap-4 mb-8">
+                                <div className="w-12 h-1.5 bg-brand-red rounded-full" />
+                                <span className="text-xs font-black uppercase tracking-[0.4em] text-gray-400">Our Legacy</span>
                             </div>
-                            <div className="md:w-2/3 p-10">
-                                <h2 className="text-2xl font-bold text-gray-900 mb-6">सत्यता और निष्पक्षता (Authentic Journalism)</h2>
-                                <p className="text-gray-700 leading-relaxed mb-6 text-lg">
-                                    ThinkIndia.press की शुरुआत एक विजन के साथ हुई थी — गढ़वा और पलामू जैसे क्षेत्रों में खबरों के अभाव को मिटाना। हमने देखा कि हमारे क्षेत्र की खबरें बड़े मीडिया हाउसों में अक्सर जगह नहीं पा पाती थीं।
+                            <h2 className="text-2xl lg:text-4xl font-black text-black dark:text-white leading-[1.1] mb-10 serif-font uppercase tracking-tighter">
+                                Breaking Barriers, <br />
+                                <span className="text-brand-red">Defining Truth.</span>
+                            </h2>
+                            <div className="space-y-4 text-base text-gray-600 dark:text-gray-400 leading-relaxed font-medium">
+                                <p>
+                                    ThinkIndia.press की शुरुआत एक बड़े विजन के साथ हुई थी — झारखंड के हर कोने की आवाज़ को दुनिया तक पहुँचाना। हमने देखा कि स्थानीय क्षेत्रों की गंभीर समस्याएँ और अनसुनी कहानियाँ बड़े मीडिया हाउसों की चकाचौंध में अक्सर गुम हो जाती थीं।
                                 </p>
-                                <p className="text-gray-700 leading-relaxed mb-6 text-lg">
-                                    हमारा उद्देश्य केवल सूचना देना नहीं, बल्कि इस क्षेत्र की समस्याओं को सामने लाना और **ज़मीनी पत्रकारिता (Ground Journalism)** को बढ़ावा देना है। हम स्थानीय संवाददाताओं के साथ मिलकर एक ऐसा नेटवर्क बना रहे हैं जो पूरी तरह से विश्वसनीय और तथ्यों पर आधारित हो।
+                                <p>
+                                    आज, हम गर्व से झारखंड के पहले डिजिटल न्यूज़ नेटवर्क के रूप में खड़े हैं। हमारा उद्देश्य केवल सूचना देना नहीं, बल्कि ज़मीनी हकीकत को सामने लाना और **निडर पत्रकारिता (Fearless Journalism)** का एक नया मानक स्थापित करना है।
                                 </p>
                             </div>
                         </div>
+                        <div className="grid grid-cols-2 gap-6">
+                            <div className="bg-gray-50 dark:bg-white/5 p-10 rounded-3xl border border-gray-100 dark:border-white/5 flex flex-col gap-6 transform hover:-translate-y-2 transition-all">
+                                <Target className="text-brand-red" size={48} strokeWidth={1.5} />
+                                <h3 className="text-xl font-bold text-black dark:text-white">हमारा मिशन</h3>
+                                <p className="text-sm text-gray-500">सटीक और निष्पक्ष समाचार हर गाँव तक पहुँचाना।</p>
+                            </div>
+                            <div className="bg-brand-red p-10 rounded-3xl text-white flex flex-col gap-6 transform hover:-translate-y-2 transition-all mt-12">
+                                <Globe size={48} strokeWidth={1.5} />
+                                <h3 className="text-xl font-bold">हमारा विजन</h3>
+                                <p className="text-red-100/80 text-sm">झारखंड का सबसे भरोसेमंद न्यूज़ नेटवर्क बनना।</p>
+                            </div>
+                            <div className="bg-gray-900 p-10 rounded-3xl text-white flex flex-col gap-6 transform hover:-translate-y-2 transition-all">
+                                <ShieldCheck className="text-brand-red" size={48} strokeWidth={1.5} />
+                                <h3 className="text-xl font-bold">सत्यता</h3>
+                                <p className="text-gray-400 text-sm">हर खबर की गहन जाँच और तथ्यों का मिलान।</p>
+                            </div>
+                            <div className="bg-gray-50 dark:bg-white/5 p-10 rounded-3xl border border-gray-100 dark:border-white/5 flex flex-col gap-6 transform hover:-translate-y-2 transition-all mt-12">
+                                <Award className="text-brand-red" size={48} strokeWidth={1.5} />
+                                <h3 className="text-xl font-bold">सम्मान</h3>
+                                <p className="text-sm text-gray-500">पत्रकारिता के उच्चतम मानकों का पालन।</p>
+                            </div>
+                        </div>
                     </div>
 
-                    {/* Mission */}
-                    <div className="bg-white rounded-2xl shadow-lg p-8 mb-8">
-                        <h2 className="text-2xl font-bold text-red-600 mb-4">हमारा मिशन</h2>
-                        <p className="text-gray-700 leading-relaxed">
-                            गढ़वा और पलामू जिले के लोगों तक <strong>सटीक, तेज और निष्पक्ष</strong> समाचार पहुंचाना।
-                            हमारा लक्ष्य है कि हर छोटे से छोटे गांव की खबर भी दुनिया तक पहुंचे और
-                            स्थानीय मुद्दों को मुख्यधारा में लाया जाए।
-                        </p>
-                    </div>
+                    {/* LEADERSHIP TEAM - SUHASINI SHARMA */}
+                    <div className="mb-16">
+                        <div className="text-center mb-10">
+                            <h2 className="text-3xl lg:text-5xl font-black text-black dark:text-white uppercase tracking-tight serif-font">
+                                Leading The <span className="text-brand-red">Change</span>
+                            </h2>
+                            <p className="text-gray-500 mt-4 uppercase tracking-[0.2em] font-bold text-sm">The Mind Behind Think India Bureau</p>
+                        </div>
 
-                    {/* Vision */}
-                    <div className="bg-white rounded-2xl shadow-lg p-8 mb-8">
-                        <h2 className="text-2xl font-bold text-red-600 mb-4">हमारा विजन</h2>
-                        <p className="text-gray-700 leading-relaxed">
-                            झारखंड के सबसे भरोसेमंद डिजिटल न्यूज़ प्लेटफॉर्म के रूप में उभरना।
-                            हम चाहते हैं कि हर गढ़वा-पलामूवासी, चाहे वह दुनिया के किसी भी कोने में हो,
-                            अपने घर की खबरें एक क्लिक पर पा सके।
-                        </p>
-                    </div>
-
-                    {/* Team */}
-                    <div className="bg-white rounded-2xl shadow-lg p-8 mb-8">
-                        <h2 className="text-2xl font-bold text-red-600 mb-6">हमारी टीम</h2>
-
-                        <div className="grid md:grid-cols-2 gap-6">
-                            <div className="flex items-start space-x-4">
-                                <div style={{ background: '#fee2e2', padding: '12px', borderRadius: '50%', width: 48, height: 48, display: 'flex', alignItems: 'center', justifyContent: 'center', fontWeight: 800, color: '#dc2626' }}>R</div>
-                                <div>
-                                    <h3 className="font-bold text-lg">रूपेश कुमार</h3>
-                                    <p className="text-gray-600 text-sm">संपादक एवं संस्थापक</p>
-                                    <p className="text-gray-500 text-sm mt-1">
-                                        10+ वर्षों का पत्रकारिता अनुभव
-                                    </p>
+                        <div className="max-w-md mx-auto">
+                            <div className="group bg-white dark:bg-white/5 p-12 rounded-[48px] border border-gray-100 dark:border-white/5 text-center hover:shadow-2xl transition-all duration-500">
+                                <div className="w-32 h-32 bg-brand-red/10 rounded-full flex items-center justify-center text-4xl font-black text-brand-red mx-auto mb-8 group-hover:bg-brand-red group-hover:text-white transition-all duration-500">
+                                    S
                                 </div>
-                            </div>
-
-                            <div className="flex items-start space-x-4">
-                                <div style={{ background: '#fee2e2', padding: '12px', borderRadius: '50%', width: 48, height: 48, display: 'flex', alignItems: 'center', justifyContent: 'center', fontWeight: 800, color: '#dc2626' }}>S</div>
-                                <div>
-                                    <h3 className="font-bold text-lg">संजय तिवारी</h3>
-                                    <p className="text-gray-600 text-sm">
-                                        वरिष्ठ संवाददाता (गढ़वा)
-                                    </p>
-                                </div>
-                            </div>
-
-                            <div className="flex items-start space-x-4">
-                                <div style={{ background: '#fee2e2', padding: '12px', borderRadius: '50%', width: 48, height: 48, display: 'flex', alignItems: 'center', justifyContent: 'center', fontWeight: 800, color: '#dc2626' }}>P</div>
-                                <div>
-                                    <h3 className="font-bold text-lg">प्रीति सिंह</h3>
-                                    <p className="text-gray-600 text-sm">
-                                        संवाददाता (पलामू)
-                                    </p>
-                                </div>
-                            </div>
-
-                            <div className="flex items-start space-x-4">
-                                <div style={{ background: '#fee2e2', padding: '12px', borderRadius: '50%', width: 48, height: 48, display: 'flex', alignItems: 'center', justifyContent: 'center', fontWeight: 800, color: '#dc2626' }}>A</div>
-                                <div>
-                                    <h3 className="font-bold text-lg">अमित कुमार</h3>
-                                    <p className="text-gray-600 text-sm">डिजिटल डेस्क प्रमुख</p>
+                                <h3 className="text-3xl font-black text-black dark:text-white mb-3 serif-font">सुहासिनी शर्मा</h3>
+                                <p className="text-brand-red text-sm font-black uppercase tracking-[0.3em]">Editor-in-Chief & Director</p>
+                                <div className="mt-8 flex justify-center gap-6 opacity-0 group-hover:opacity-100 transition-opacity">
+                                    <div className="w-10 h-10 rounded-full bg-gray-100 dark:bg-white/10" />
+                                    <div className="w-10 h-10 rounded-full bg-gray-100 dark:bg-white/10" />
                                 </div>
                             </div>
                         </div>
                     </div>
 
-                    {/* Values */}
-                    <div className="bg-red-600 text-white rounded-2xl shadow-lg p-8">
-                        <h2 className="text-2xl font-bold mb-4">हमारे मूल्य</h2>
-                        <div className="grid grid-cols-2 md:grid-cols-4 gap-4 text-center">
-                            <div className="p-3 font-semibold">सटीकता</div>
-                            <div className="p-3 font-semibold">निष्पक्षता</div>
-                            <div className="p-3 font-semibold">तेजी</div>
-                            <div className="p-3 font-semibold">विश्वास</div>
+                    {/* CORE VALUES - PREMIUM STRIPE */}
+                    <div className="relative rounded-[40px] overflow-hidden bg-ndtv-black py-20 px-10 text-center border border-white/10">
+                        <div className="absolute inset-0 opacity-10 pointer-events-none">
+                            <Camera className="absolute -top-10 -left-10 w-64 h-64 text-white" />
+                        </div>
+                        <h2 className="text-3xl font-black text-white uppercase tracking-widest mb-16 serif-font">
+                            Our Core <span className="text-brand-red">Excellence</span>
+                        </h2>
+                        <div className="grid grid-cols-2 lg:grid-cols-4 gap-12">
+                            {[
+                                { title: 'Authenticity', desc: 'Verified by ground agents' },
+                                { title: 'Impartiality', desc: 'No political bias' },
+                                { title: 'Velocity', desc: 'Fastest reporting grid' },
+                                { title: 'Impact', desc: 'Driving real change' }
+                            ].map((v, i) => (
+                                <div key={i} className="space-y-4">
+                                    <div className="text-4xl font-black text-white/10">0{i+1}</div>
+                                    <h4 className="text-xl font-bold text-white uppercase tracking-tighter">{v.title}</h4>
+                                    <p className="text-gray-500 text-sm">{v.desc}</p>
+                                </div>
+                            ))}
                         </div>
                     </div>
 
+                    {/* STATS */}
+                    <div className="grid grid-cols-2 lg:grid-cols-4 gap-6 mt-16 text-center border-t border-gray-100 dark:border-white/5 pt-12">
+                        <div>
+                            <div className="text-3xl lg:text-5xl font-black text-black dark:text-white mb-2">5 Crore+</div>
+                            <p className="text-gray-500 text-xs font-black uppercase tracking-[0.2em]">Monthly Readers</p>
+                        </div>
+                        <div>
+                            <div className="text-3xl lg:text-5xl font-black text-black dark:text-white mb-2">3-Tier</div>
+                            <p className="text-gray-500 text-xs font-black uppercase tracking-[0.2em]">State • National • International</p>
+                        </div>
+                        <div>
+                            <div className="text-3xl lg:text-5xl font-black text-black dark:text-white mb-2">24/7</div>
+                            <p className="text-gray-500 text-xs font-black uppercase tracking-[0.2em]">Live News Grid</p>
+                        </div>
+                        <div>
+                            <div className="text-3xl lg:text-5xl font-black text-black dark:text-white mb-2">100%</div>
+                            <p className="text-gray-500 text-xs font-black uppercase tracking-[0.2em]">Authentic News</p>
+                        </div>
+                    </div>
                 </div>
             </div>
         </PublicLayout>
     )
 }
+

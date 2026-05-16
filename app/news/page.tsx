@@ -48,7 +48,7 @@ export default async function AllNewsPage({
 
     return (
         <PublicLayout>
-            <div className="bg-news-paper min-h-screen">
+            <div className="min-h-screen">
 
                 {/* Page Header */}
                 <div className="bg-brand-navy py-14 lg:py-20 px-4 relative overflow-hidden">

@@ -12,11 +12,11 @@ export default async function IndiaPage() {
 
     return (
         <PublicLayout>
-            <div className="bg-white min-h-screen">
+            <div className="min-h-screen">
                 <div className="container py-12">
                     <div className="flex flex-col gap-12">
                         <div className="border-b-4 border-ndtv-black pb-4">
-                            <h1 className="text-4xl lg:text-6xl font-black text-black uppercase tracking-tighter serif-font">
+                            <h1 className="text-2xl lg:text-4xl font-black text-black uppercase tracking-tighter serif-font">
                                 India <span className="text-brand-red">Reports</span>
                             </h1>
                             <p className="text-gray-500 font-bold uppercase tracking-widest mt-4 text-[12px]">

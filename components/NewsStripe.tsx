@@ -71,7 +71,7 @@ export default function NewsStripe({ articles, title, variant = 'horizontal' }: 
                                 <div className="absolute inset-0 bg-brand-red/5 opacity-0 group-hover:opacity-100 transition-opacity" />
                             </div>
                             <div className="flex-1 min-w-0">
-                                <h4 className="text-[14px] font-bold text-gray-900 leading-snug group-hover:text-brand-red transition-all duration-300 line-clamp-2 serif-font">
+                                <h4 className="text-[14px] font-bold text-gray-900 dark:text-white leading-snug group-hover:text-brand-red transition-all duration-300 line-clamp-2 serif-font">
                                     {article.title}
                                 </h4>
                                 <div className="mt-2 flex items-center gap-2">

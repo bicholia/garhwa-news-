@@ -51,11 +51,11 @@ export default async function CategoryPage({
 
     return (
         <PublicLayout>
-            <div className="bg-white min-h-screen pb-20">
+            <div className="min-h-screen pb-20">
                 {/* Category Header */}
-                <div className="bg-ndtv-black py-12 lg:py-16 border-b border-brand-red">
+                <div className="bg-ndtv-black py-6 lg:py-8 border-b border-brand-red">
                     <div className="container">
-                        <h1 className="text-4xl lg:text-7xl font-black text-white leading-tight uppercase tracking-tighter serif-font">
+                        <h1 className="text-2xl lg:text-4xl font-black text-white leading-tight uppercase tracking-tighter serif-font">
                             {categoryName} <span className="text-brand-red">REPORTS</span>
                         </h1>
                     </div>
@@ -65,7 +65,7 @@ export default async function CategoryPage({
                     {/* Main Feed */}
                     <div className="flex-1">
                         <div className="flex items-center justify-between border-b-2 border-gray-100 mb-10 pb-4">
-                            <h2 className="text-[14px] font-black text-black uppercase tracking-widest flex items-center gap-3">
+                            <h2 className="text-[14px] font-black text-black dark:text-white uppercase tracking-widest flex items-center gap-3">
                                 <span className="w-3 h-3 bg-brand-red rounded-full animate-pulse" />
                                 Latest {categoryName} Intelligence
                             </h2>
@@ -83,10 +83,10 @@ export default async function CategoryPage({
                                         const img = article.image_url || (article.featureImage?.asset ? urlFor(article.featureImage).width(400).height(250).url() : null)
                                         return (
                                             <Link key={i} href={`/news/${typeof article.slug === 'string' ? article.slug : article.slug?.current}`} className="group flex flex-col">
-                                                <div className="aspect-video relative overflow-hidden rounded-sm bg-gray-100 mb-4">
+                                                <div className="aspect-video relative overflow-hidden rounded-sm bg-gray-100 dark:bg-white/5 mb-4">
                                                     {img ? <img src={img} className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700" alt={article.title} /> : null}
                                                 </div>
-                                                <h3 className="text-[16px] font-bold text-gray-900 leading-[1.35] group-hover:text-brand-red transition-colors serif-font line-clamp-3">
+                                                <h3 className="text-[16px] font-bold text-gray-900 dark:text-white leading-[1.35] group-hover:text-brand-red transition-colors serif-font line-clamp-3">
                                                     {article.title}
                                                 </h3>
                                                 <div className="mt-4 pt-4 border-t border-gray-50 flex items-center justify-between text-[10px] font-bold text-gray-400 uppercase tracking-wider">
@@ -109,8 +109,8 @@ export default async function CategoryPage({
                     {/* Sidebar */}
                     <aside className="w-full lg:w-80 space-y-10">
                         <AdBanner slot="category_sidebar" width={300} height={250} />
-                        <div className="bg-[#F8F8F8] p-6 rounded-sm border-t-4 border-brand-red">
-                            <h3 className="text-[12px] font-black text-black uppercase tracking-widest mb-6 flex items-center gap-2">
+                        <div className="bg-[#F8F8F8] dark:bg-white/5 p-6 rounded-sm border-t-4 border-brand-red">
+                            <h3 className="text-[12px] font-black text-black dark:text-white uppercase tracking-widest mb-6 flex items-center gap-2">
                                 <ShieldCheck size={16} className="text-brand-red" /> Bureau Verified
                             </h3>
                             <p className="text-[13px] text-gray-500 font-medium leading-relaxed">

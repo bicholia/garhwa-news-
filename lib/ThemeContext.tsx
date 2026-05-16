@@ -16,12 +16,15 @@ export function ThemeProvider({ children }: { children: React.ReactNode }) {
 
     useEffect(() => {
         const savedTheme = localStorage.getItem('th_theme') as Theme
-        if (savedTheme) {
-            setTheme(savedTheme)
-            document.documentElement.setAttribute('data-theme', savedTheme)
-        } else if (window.matchMedia('(prefers-color-scheme: dark)').matches) {
-            setTheme('dark')
-            document.documentElement.setAttribute('data-theme', 'dark')
+        const initialTheme = savedTheme || (window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light')
+        setTheme(initialTheme)
+        
+        const root = document.documentElement
+        root.setAttribute('data-theme', initialTheme)
+        if (initialTheme === 'dark') {
+            root.classList.add('dark')
+        } else {
+            root.classList.remove('dark')
         }
     }, [])
 
@@ -29,7 +32,14 @@ export function ThemeProvider({ children }: { children: React.ReactNode }) {
         const newTheme = theme === 'light' ? 'dark' : 'light'
         setTheme(newTheme)
         localStorage.setItem('th_theme', newTheme)
-        document.documentElement.setAttribute('data-theme', newTheme)
+        
+        const root = document.documentElement
+        root.setAttribute('data-theme', newTheme)
+        if (newTheme === 'dark') {
+            root.classList.add('dark')
+        } else {
+            root.classList.remove('dark')
+        }
     }
 
     return (

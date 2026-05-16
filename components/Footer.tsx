@@ -35,19 +35,30 @@ export default function Footer() {
                             <span className="text-brand-red group-hover:text-black transition-colors">NEWS</span>
                         </span>
                     </Link>
-                    <div className="flex gap-4">
-                        <a href="https://www.facebook.com/think.indianews" target="_blank" rel="noopener noreferrer" className="w-10 h-10 bg-white border border-gray-200 rounded-full flex items-center justify-center text-gray-600 hover:text-brand-red hover:border-brand-red transition-all shadow-sm">
-                            <FaFacebookF />
+                    <div className="flex flex-col gap-4">
+                        {/* Instagram CTA */}
+                        <a 
+                            href="https://www.instagram.com/think.indianews/" 
+                            target="_blank" 
+                            rel="noopener noreferrer"
+                            className="inline-flex items-center gap-3 px-5 py-2.5 rounded-full text-white font-bold text-sm transition-all duration-300 hover:scale-105 hover:shadow-lg"
+                            style={{ background: 'linear-gradient(135deg, #f09433 0%, #e6683c 25%, #dc2743 50%, #cc2366 75%, #bc1888 100%)' }}
+                        >
+                            <FaInstagram size={20} />
+                            <span>Follow on Instagram</span>
                         </a>
-                        <a href="https://twitter.com/thinkindianews" target="_blank" rel="noopener noreferrer" className="w-10 h-10 bg-white border border-gray-200 rounded-full flex items-center justify-center text-gray-600 hover:text-brand-red hover:border-brand-red transition-all shadow-sm">
-                            <FaTwitter />
-                        </a>
-                        <a href="https://www.instagram.com/think.indianews/" target="_blank" rel="noopener noreferrer" className="w-10 h-10 bg-white border border-gray-200 rounded-full flex items-center justify-center text-gray-600 hover:text-brand-red hover:border-brand-red transition-all shadow-sm">
-                            <FaInstagram />
-                        </a>
-                        <a href="https://www.youtube.com/@thinkindianews" target="_blank" rel="noopener noreferrer" className="w-10 h-10 bg-white border border-gray-200 rounded-full flex items-center justify-center text-gray-600 hover:text-brand-red hover:border-brand-red transition-all shadow-sm">
-                            <FaYoutube />
-                        </a>
+                        {/* Other Social Icons */}
+                        <div className="flex gap-3">
+                            <a href="https://www.facebook.com/think.indianews" target="_blank" rel="noopener noreferrer" className="w-10 h-10 bg-white border border-gray-200 rounded-full flex items-center justify-center text-gray-600 hover:text-brand-red hover:border-brand-red transition-all shadow-sm">
+                                <FaFacebookF />
+                            </a>
+                            <a href="https://twitter.com/thinkindianews" target="_blank" rel="noopener noreferrer" className="w-10 h-10 bg-white border border-gray-200 rounded-full flex items-center justify-center text-gray-600 hover:text-brand-red hover:border-brand-red transition-all shadow-sm">
+                                <FaTwitter />
+                            </a>
+                            <a href="https://www.youtube.com/@thinkindianews" target="_blank" rel="noopener noreferrer" className="w-10 h-10 bg-white border border-gray-200 rounded-full flex items-center justify-center text-gray-600 hover:text-brand-red hover:border-brand-red transition-all shadow-sm">
+                                <FaYoutube />
+                            </a>
+                        </div>
                     </div>
                 </div>
 
@@ -91,7 +102,7 @@ export default function Footer() {
                         <div className="space-y-4">
                             <div className="flex gap-3 text-[14px] text-gray-600 font-medium">
                                 <MapPin size={18} className="text-brand-red/40 shrink-0" />
-                                <span>Main Road, Garhwa, Jharkhand — 822114</span>
+                                <span>New Delhi, Rajpath Marg</span>
                             </div>
 
                             <div className="inline-flex items-center gap-2 px-3 py-1.5 bg-gray-100 text-gray-700 border border-gray-200 rounded text-[10px] font-bold uppercase tracking-wider">

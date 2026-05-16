@@ -2,7 +2,7 @@
 
 import { useState } from 'react'
 import PublicLayout from '@/components/PublicLayout'
-import { Mail, Phone, MapPin, Clock, Send, ShieldCheck, Globe } from 'lucide-react'
+import { Mail, Phone, MapPin, Clock, Send, ShieldCheck, Globe, MessageSquare, Headphones } from 'lucide-react'
 
 export default function ContactPage() {
     const [formData, setFormData] = useState({
@@ -40,224 +40,163 @@ export default function ContactPage() {
         }
     }
 
-
-
     return (
         <PublicLayout>
-            <div className="min-h-screen bg-news-paper selection:bg-brand-gold/30 selection:text-brand-navy">
+            <div className="min-h-screen bg-white dark:bg-black">
                 
-                {/* HERO HEADER */}
-                <div className="bg-brand-navy pt-24 pb-32 relative overflow-hidden">
-                    <div className="absolute inset-0 opacity-10 pointer-events-none">
-                        <Globe size={600} className="absolute -top-20 -right-20 text-white" />
-                    </div>
+                {/* PREMIUM HERO HEADER */}
+                <div className="relative h-[50vh] lg:h-[60vh] flex items-center justify-center overflow-hidden">
+                    <img 
+                        src="/about_hero_bg_1778925406510.png" 
+                        className="absolute inset-0 w-full h-full object-cover opacity-40 grayscale" 
+                        alt="Contact Think India"
+                    />
+                    <div className="absolute inset-0 bg-gradient-to-b from-brand-navy via-brand-navy/90 to-white dark:to-black" />
+                    
                     <div className="container relative z-10 text-center">
-                        <div className="inline-flex items-center gap-2 bg-brand-gold text-white text-[10px] font-black uppercase tracking-[0.4em] px-6 py-2 rounded-full mb-8 italic shadow-xl">
-                            <ShieldCheck size={14} /> Official News Bureau
+                        <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-brand-gold/20 backdrop-blur-md border border-brand-gold/30 text-brand-gold text-xs font-black uppercase tracking-[0.4em] mb-8 animate-fade-in">
+                            <Headphones size={14} /> Global Bureau Support
                         </div>
-                        <h1 className="text-4xl lg:text-7xl font-black text-white font-serif mb-6 tracking-tighter leading-tight">
-                            Connect with <br/> <span className="text-brand-gold italic text-3xl lg:text-5xl uppercase tracking-widest font-black text-shadow-glow">ThinkIndia.press</span>
+                        <h1 className="text-3xl lg:text-5xl font-black text-white leading-tight uppercase tracking-tighter serif-font mb-6 drop-shadow-2xl">
+                            Get In <span className="text-brand-gold">Touch</span>
                         </h1>
-                        <p className="max-w-2xl mx-auto text-gray-400 text-lg lg:text-xl font-medium leading-relaxed">
-                            Report a story, inquire about strategic partnerships, or provide intelligence directly to our editorial bureau.
+                        <p className="text-gray-400 text-lg lg:text-xl max-w-2xl mx-auto font-medium">
+                            Reach out to Jharkhand's most trusted news network for reporting tips, business inquiries, or general feedback.
                         </p>
                     </div>
                 </div>
 
-                <div className="container -mt-16 relative z-20 pb-24">
-                    <div className="grid lg:grid-cols-12 gap-12 items-start">
+                <div className="container -mt-32 relative z-20 pb-32">
+                    <div className="grid lg:grid-cols-12 gap-12">
                         
-                        {/* LEFT: BUREAU INTELLIGENCE */}
-                        <div className="lg:col-span-5 space-y-8">
-                            <div className="bg-white rounded-3xl p-10 shadow-2xl border border-gray-100 flex flex-col gap-10">
-                                <section>
-                                    <h2 className="text-xs font-black uppercase tracking-[0.4em] text-brand-gold mb-8 flex items-center gap-2">
-                                        <div className="w-8 h-[1px] bg-brand-gold/30" /> Bureau Information
-                                    </h2>
-                                    
-                                    <div className="space-y-8">
-                                        <div className="flex items-start gap-6 group">
-                                            <div className="w-14 h-14 bg-brand-navy rounded-2xl flex items-center justify-center text-brand-gold shadow-lg group-hover:scale-110 transition-transform">
-                                                <MapPin size={24} />
-                                            </div>
-                                            <div>
-                                                <h3 className="text-brand-navy font-black text-xs uppercase tracking-widest mb-2">Bureau Headquarters</h3>
-                                                <p className="text-gray-500 font-medium leading-relaxed">
-                                                    Main Road, Garhwa<br />
-                                                    Jharkhand - 822114
-                                                </p>
-                                            </div>
-                                        </div>
-
-                                        <div className="flex items-start gap-6 group">
-                                            <div className="w-14 h-14 bg-brand-navy rounded-2xl flex items-center justify-center text-brand-gold shadow-lg group-hover:scale-110 transition-transform">
-                                                <Mail size={24} />
-                                            </div>
-                                            <div>
-                                                <h3 className="text-brand-navy font-black text-xs uppercase tracking-widest mb-2">Email Dispatch</h3>
-                                                <p className="text-gray-500 font-medium">
-                                                    editor@thinkindia.press<br />
-                                                    contact@thinkindia.press
-                                                </p>
-                                            </div>
-                                        </div>
-
-                                        <div className="flex items-start gap-6 group">
-                                            <div className="w-14 h-14 bg-brand-navy rounded-2xl flex items-center justify-center text-brand-gold shadow-lg group-hover:scale-110 transition-transform">
-                                                <Phone size={24} />
-                                            </div>
-                                            <div>
-                                                <h3 className="text-brand-navy font-black text-xs uppercase tracking-widest mb-2">Bureau Hotline</h3>
-                                                <p className="text-gray-500 font-medium">
-                                                    +91 94701 47551<br />
-                                                    <span className="text-[10px] text-brand-gold font-bold uppercase tracking-widest">WhatsApp Enabled</span>
-                                                </p>
-                                            </div>
-                                        </div>
-
-                                        {/* Contact blocks (Scrubbed for Brand Neutrality) */}
-                                        <div className="flex items-start gap-6 group">
-                                            <div className="w-14 h-14 bg-brand-navy rounded-2xl flex items-center justify-center text-brand-gold shadow-lg group-hover:scale-110 transition-transform">
-                                                <ShieldCheck size={24} />
-                                            </div>
-                                            <div>
-                                                <h3 className="text-brand-navy font-black text-xs uppercase tracking-widest mb-2">Independent Reporting</h3>
-                                                <p className="text-gray-500 font-medium leading-relaxed italic">
-                                                    Our bureau operates with 100% autonomy, ensuring unbiased journalistic precision.
-                                                </p>
-                                            </div>
-                                        </div>
-
-                                        <div className="flex items-start gap-6 group">
-                                            <div className="w-14 h-14 bg-brand-navy rounded-2xl flex items-center justify-center text-brand-gold shadow-lg group-hover:scale-110 transition-transform">
-                                                <Clock size={24} />
-                                            </div>
-                                            <div>
-                                                <h3 className="text-brand-navy font-black text-xs uppercase tracking-widest mb-2">Bureau Hours</h3>
-                                                <p className="text-gray-500 font-medium">
-                                                    Mon — Sat: 10:00 — 18:00 IST<br />
-                                                    <span className="text-[10px] text-brand-gold italic">Sunday: 24/7 Priority Monitoring</span>
-                                                </p>
-                                            </div>
-                                        </div>
+                        {/* LEFT: BUREAU CONTACT CARDS */}
+                        <div className="lg:col-span-5 space-y-6">
+                            <div className="grid grid-cols-1 gap-6">
+                                {/* Card 1: Address */}
+                                <div className="bg-white dark:bg-white/5 p-8 rounded-[32px] border border-gray-100 dark:border-white/5 shadow-xl hover:shadow-2xl transition-all group">
+                                    <div className="w-14 h-14 bg-brand-navy rounded-2xl flex items-center justify-center text-brand-gold mb-6 group-hover:scale-110 transition-transform">
+                                        <MapPin size={24} />
                                     </div>
-                                </section>
+                                    <h3 className="text-black dark:text-white font-black text-xs uppercase tracking-widest mb-4">Bureau Headquarters</h3>
+                                    <p className="text-gray-500 font-bold text-lg leading-relaxed">
+                                        New Delhi, Rajpath Marg<br />
+                                        India
+                                    </p>
+                                </div>
 
-                                <div className="p-6 bg-brand-navy/5 rounded-2xl border border-brand-navy/5">
-                                    <p className="text-[11px] text-gray-500 font-bold leading-relaxed italic">
-                                        "ThinkIndia.press operates as an independent regional media entity. Our bureau is committed to the highest standards of journalistic precision and ethical verification."
+                                {/* Card 2: Contact */}
+                                <div className="bg-white dark:bg-white/5 p-8 rounded-[32px] border border-gray-100 dark:border-white/5 shadow-xl hover:shadow-2xl transition-all group">
+                                    <div className="w-14 h-14 bg-brand-navy rounded-2xl flex items-center justify-center text-brand-gold mb-6 group-hover:scale-110 transition-transform">
+                                        <Phone size={24} />
+                                    </div>
+                                    <h3 className="text-black dark:text-white font-black text-xs uppercase tracking-widest mb-4">Bureau Hotline</h3>
+                                    <p className="text-brand-navy dark:text-brand-gold font-black text-3xl tracking-tight mb-2">
+                                        1800 696 874
+                                    </p>
+                                    <span className="text-[10px] text-gray-400 font-bold uppercase tracking-widest">Toll Free Support Available 24/7</span>
+                                </div>
+
+                                {/* Card 3: Email */}
+                                <div className="bg-white dark:bg-white/5 p-8 rounded-[32px] border border-gray-100 dark:border-white/5 shadow-xl hover:shadow-2xl transition-all group">
+                                    <div className="w-14 h-14 bg-brand-navy rounded-2xl flex items-center justify-center text-brand-gold mb-6 group-hover:scale-110 transition-transform">
+                                        <Mail size={24} />
+                                    </div>
+                                    <h3 className="text-black dark:text-white font-black text-xs uppercase tracking-widest mb-4">Official Dispatch</h3>
+                                    <p className="text-gray-500 font-bold text-lg">
+                                        contact@thinkindia.press<br />
+                                        editor@thinkindia.press
                                     </p>
                                 </div>
                             </div>
-                        </div>
 
-                        {/* RIGHT: SECURE SUBMISSION FORM */}
-                        <div className="lg:col-span-7">
-                            <div className="bg-white rounded-[40px] p-8 lg:p-14 shadow-2xl border border-gray-50 relative overflow-hidden">
-                                <div className="absolute top-0 right-0 w-40 h-40 bg-brand-gold/5 rounded-full -mr-20 -mt-20 pointer-events-none" />
-                                
-                                <div className="relative z-10">
-                                    <h2 className="text-3xl font-black text-brand-navy font-serif mb-2">Secure Communiqué</h2>
-                                    <p className="text-gray-500 font-medium mb-12">Submit your report or inquiry via our encrypted bureau channel.</p>
-
-                                    {submitted ? (
-                                        <div className="bg-brand-navy text-white rounded-3xl p-12 text-center shadow-2xl animate-in zoom-in duration-500">
-                                            <div className="w-20 h-20 bg-brand-gold rounded-full flex items-center justify-center mx-auto mb-8 shadow-lg">
-                                                <ShieldCheck size={40} className="text-brand-navy" strokeWidth={3} />
-                                            </div>
-                                            <h3 className="text-3xl font-black font-serif mb-4 uppercase tracking-tighter">Transmission Successful</h3>
-                                            <p className="text-gray-400 font-medium text-lg mb-10">Your communiqué has been received by the regional editorial board. We will contact you if further verification is required.</p>
-                                            <button
-                                                onClick={() => setSubmitted(false)}
-                                                className="bg-brand-gold text-brand-navy px-12 py-4 rounded-full font-black uppercase text-xs tracking-[0.2em] hover:bg-white transition-colors"
-                                            >
-                                                Send New Intel
-                                            </button>
-                                        </div>
-                                    ) : (
-                                        <form onSubmit={handleSubmit} className="space-y-6">
-                                            <div className="grid md:grid-cols-2 gap-6">
-                                                <div className="space-y-2">
-                                                    <label className="text-[10px] font-black uppercase tracking-widest text-brand-navy/40 ml-4">Full Identity</label>
-                                                    <input
-                                                        type="text"
-                                                        required
-                                                        placeholder="Agent Name / Source Name"
-                                                        value={formData.name}
-                                                        onChange={(e) => setFormData({ ...formData, name: e.target.value })}
-                                                        className="w-full bg-news-paper px-6 py-4 rounded-2xl border border-transparent focus:border-brand-gold/30 focus:bg-white outline-none transition-all font-medium text-brand-navy shadow-inner"
-                                                    />
-                                                </div>
-                                                <div className="space-y-2">
-                                                    <label className="text-[10px] font-black uppercase tracking-widest text-brand-navy/40 ml-4">Secure Email Address</label>
-                                                    <input
-                                                        type="email"
-                                                        required
-                                                        placeholder="email@example.com"
-                                                        value={formData.email}
-                                                        onChange={(e) => setFormData({ ...formData, email: e.target.value })}
-                                                        className="w-full bg-news-paper px-6 py-4 rounded-2xl border border-transparent focus:border-brand-gold/30 focus:bg-white outline-none transition-all font-medium text-brand-navy shadow-inner"
-                                                    />
-                                                </div>
-                                            </div>
-
-                                            <div className="grid md:grid-cols-2 gap-6">
-                                                <div className="space-y-2">
-                                                    <label className="text-[10px] font-black uppercase tracking-widest text-brand-navy/40 ml-4">Direct Contact Line</label>
-                                                    <input
-                                                        type="tel"
-                                                        placeholder="+91 (0) 0000-0000"
-                                                        value={formData.phone}
-                                                        onChange={(e) => setFormData({ ...formData, phone: e.target.value })}
-                                                        className="w-full bg-news-paper px-6 py-4 rounded-2xl border border-transparent focus:border-brand-gold/30 focus:bg-white outline-none transition-all font-medium text-brand-navy shadow-inner"
-                                                    />
-                                                </div>
-                                                <div className="space-y-2">
-                                                    <label className="text-[10px] font-black uppercase tracking-widest text-brand-navy/40 ml-4">Department of Inquiry</label>
-                                                    <select
-                                                        required
-                                                        value={formData.subject}
-                                                        onChange={(e) => setFormData({ ...formData, subject: e.target.value })}
-                                                        className="w-full bg-news-paper px-6 py-4 rounded-2xl border border-transparent focus:border-brand-gold/30 focus:bg-white outline-none transition-all font-medium text-brand-navy shadow-inner appearance-none cursor-pointer"
-                                                    >
-                                                        <option value="">Select Bureau Branch</option>
-                                                        <option value="news">News Tip / Story Lead</option>
-                                                        <option value="ad">Strategic Partnerships</option>
-                                                        <option value="feedback">Bureau Feedback</option>
-                                                        <option value="other">Other Intelligence</option>
-                                                    </select>
-                                                </div>
-                                            </div>
-
-                                            <div className="space-y-2">
-                                                <label className="text-[10px] font-black uppercase tracking-widest text-brand-navy/40 ml-4">Communiqué Details</label>
-                                                <textarea
-                                                    required
-                                                    rows={6}
-                                                    placeholder="Provide detailed information for our editorial board..."
-                                                    value={formData.message}
-                                                    onChange={(e) => setFormData({ ...formData, message: e.target.value })}
-                                                    className="w-full bg-news-paper px-6 py-4 rounded-[2rem] border border-transparent focus:border-brand-gold/30 focus:bg-white outline-none transition-all font-medium text-brand-navy shadow-inner resize-none"
-                                                />
-                                            </div>
-
-                                            <button
-                                                type="submit"
-                                                disabled={isSubmitting}
-                                                className="w-full bg-brand-navy text-white py-6 rounded-2xl font-black uppercase tracking-[0.4em] text-xs hover:bg-brand-gold transition-all shadow-xl hover:shadow-brand-gold/20 flex items-center justify-center gap-3 active:scale-[0.98]"
-                                            >
-                                                {isSubmitting ? (
-                                                    <div className="w-5 h-5 border-2 border-white/30 border-t-white rounded-full animate-spin" />
-                                                ) : (
-                                                    <>Transmit Data <Send size={16} /></>
-                                                )}
-                                            </button>
-                                        </form>
-                                    )}
-                                </div>
+                            <div className="p-8 bg-brand-red rounded-[32px] text-white overflow-hidden relative">
+                                <ShieldCheck size={120} className="absolute -bottom-10 -right-10 opacity-20" />
+                                <h4 className="text-xl font-black uppercase mb-4 serif-font">Bureau Standards</h4>
+                                <p className="text-sm text-red-100 leading-relaxed font-medium">
+                                    हम पत्रकारिता के उच्चतम मानकों का पालन करते हैं। आपकी हर सूचना पूरी तरह से गुप्त रखी जाएगी।
+                                </p>
                             </div>
                         </div>
 
+                        {/* RIGHT: SECURE FORM */}
+                        <div className="lg:col-span-7">
+                            <div className="bg-white dark:bg-[#121212] rounded-[48px] p-8 lg:p-16 shadow-2xl border border-gray-50 dark:border-white/5">
+                                <div className="flex items-center gap-4 mb-10">
+                                    <MessageSquare className="text-brand-red" size={32} />
+                                    <div>
+                                        <h2 className="text-3xl font-black text-black dark:text-white serif-font tracking-tighter uppercase">Secure Message</h2>
+                                        <p className="text-gray-500 font-medium">Transmitting directly to the editorial board</p>
+                                    </div>
+                                </div>
+
+                                {submitted ? (
+                                    <div className="text-center py-20 animate-in zoom-in duration-500">
+                                        <div className="w-24 h-24 bg-green-500/10 rounded-full flex items-center justify-center mx-auto mb-8">
+                                            <ShieldCheck size={48} className="text-green-500" />
+                                        </div>
+                                        <h3 className="text-4xl font-black text-black dark:text-white mb-4 serif-font">Transmission Successful</h3>
+                                        <p className="text-gray-500 text-lg mb-12">Your communiqué has been logged into our secure grid.</p>
+                                        <button
+                                            onClick={() => setSubmitted(false)}
+                                            className="bg-brand-navy dark:bg-brand-red text-white px-12 py-5 rounded-full font-black uppercase text-xs tracking-[0.3em] hover:scale-105 transition-transform"
+                                        >
+                                            New Transmission
+                                        </button>
+                                    </div>
+                                ) : (
+                                    <form onSubmit={handleSubmit} className="space-y-8">
+                                        <div className="grid md:grid-cols-2 gap-8">
+                                            <div className="space-y-3">
+                                                <label className="text-[10px] font-black uppercase tracking-[0.2em] text-gray-400 ml-4">Full Identity</label>
+                                                <input
+                                                    type="text"
+                                                    required
+                                                    placeholder="Your Name"
+                                                    value={formData.name}
+                                                    onChange={(e) => setFormData({ ...formData, name: e.target.value })}
+                                                    className="w-full bg-gray-50 dark:bg-white/5 px-8 py-5 rounded-3xl border border-transparent focus:border-brand-red focus:bg-white dark:focus:bg-black outline-none transition-all font-bold text-black dark:text-white"
+                                                />
+                                            </div>
+                                            <div className="space-y-3">
+                                                <label className="text-[10px] font-black uppercase tracking-[0.2em] text-gray-400 ml-4">Secure Email</label>
+                                                <input
+                                                    type="email"
+                                                    required
+                                                    placeholder="email@example.com"
+                                                    value={formData.email}
+                                                    onChange={(e) => setFormData({ ...formData, email: e.target.value })}
+                                                    className="w-full bg-gray-50 dark:bg-white/5 px-8 py-5 rounded-3xl border border-transparent focus:border-brand-red focus:bg-white dark:focus:bg-black outline-none transition-all font-bold text-black dark:text-white"
+                                                />
+                                            </div>
+                                        </div>
+
+                                        <div className="space-y-3">
+                                            <label className="text-[10px] font-black uppercase tracking-[0.2em] text-gray-400 ml-4">Your Communiqué</label>
+                                            <textarea
+                                                required
+                                                rows={6}
+                                                placeholder="Write your message here..."
+                                                value={formData.message}
+                                                onChange={(e) => setFormData({ ...formData, message: e.target.value })}
+                                                className="w-full bg-gray-50 dark:bg-white/5 px-8 py-5 rounded-[40px] border border-transparent focus:border-brand-red focus:bg-white dark:focus:bg-black outline-none transition-all font-bold text-black dark:text-white resize-none"
+                                            />
+                                        </div>
+
+                                        <button
+                                            type="submit"
+                                            disabled={isSubmitting}
+                                            className="w-full bg-brand-navy dark:bg-brand-red text-white py-6 rounded-3xl font-black uppercase tracking-[0.4em] text-xs hover:shadow-2xl hover:shadow-brand-red/30 transition-all flex items-center justify-center gap-3 active:scale-[0.98]"
+                                        >
+                                            {isSubmitting ? (
+                                                <div className="w-5 h-5 border-2 border-white/30 border-t-white rounded-full animate-spin" />
+                                            ) : (
+                                                <>Transmit Data <Send size={16} /></>
+                                            )}
+                                        </button>
+                                    </form>
+                                )}
+                            </div>
+                        </div>
                     </div>
                 </div>
 

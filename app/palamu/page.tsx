@@ -40,8 +40,8 @@ export default async function PalamuPage({ searchParams }: { searchParams: Promi
 
     return (
         <PublicLayout>
-            <div className="bg-white min-h-screen">
-                <div className="bg-ndtv-black py-12 lg:py-16 border-b border-brand-red">
+            <div className="min-h-screen">
+                <div className="bg-ndtv-black py-6 lg:py-8 border-b border-brand-red">
                     <div className="container">
                         <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-8">
                             <div>
@@ -53,7 +53,7 @@ export default async function PalamuPage({ searchParams }: { searchParams: Promi
                                         <MapPin size={14} className="text-brand-red" /> Jharkhand / Palamu
                                     </div>
                                 </div>
-                                <h1 className="text-4xl lg:text-6xl font-black text-white leading-tight uppercase tracking-tighter serif-font">
+                                <h1 className="text-2xl lg:text-4xl font-black text-white leading-tight uppercase tracking-tighter serif-font">
                                     PALAMU <span className="text-brand-red">NEWS</span>
                                 </h1>
                             </div>

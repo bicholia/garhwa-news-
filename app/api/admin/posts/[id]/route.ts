@@ -110,6 +110,13 @@ export async function PUT(
             patch.featureImageUrl = data.featureImageUrl
         }
 
+        if (data.author) {
+            patch.author = {
+                _type: 'reference',
+                _ref: data.author
+            }
+        }
+
         if (data.tags) {
             patch.tags = typeof data.tags === 'string'
                 ? data.tags.split(',').map((t: string) => t.trim()).filter(Boolean)

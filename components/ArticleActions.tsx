@@ -63,12 +63,22 @@ export default function ArticleActions({ title, slug, excerpt }: ArticleActionsP
     const shareSocial = (platform: string) => {
         const encodedUrl = encodeURIComponent(url)
         const encodedText = encodeURIComponent(title)
+        const isMobile = /Android|iPhone|iPad|iPod/i.test(navigator.userAgent)
         
         let shareUrl = ''
         if (platform === 'facebook') shareUrl = `https://www.facebook.com/sharer/sharer.php?u=${encodedUrl}`
         if (platform === 'twitter') shareUrl = `https://twitter.com/intent/tweet?text=${encodedText}&url=${encodedUrl}`
-        if (platform === 'whatsapp') shareUrl = `https://api.whatsapp.com/send?text=${encodedText}%20${encodedUrl}`
-        if (platform === 'telegram') shareUrl = `https://t.me/share/url?url=${encodedUrl}&text=${encodedText}`
+        if (platform === 'whatsapp') {
+            // Use app scheme on mobile for direct WhatsApp app opening
+            shareUrl = isMobile
+                ? `whatsapp://send?text=${encodedText}%20${url}`
+                : `https://api.whatsapp.com/send?text=${encodedText}%20${encodedUrl}`
+        }
+        if (platform === 'telegram') {
+            shareUrl = isMobile
+                ? `tg://msg_url?url=${encodedUrl}&text=${encodedText}`
+                : `https://t.me/share/url?url=${encodedUrl}&text=${encodedText}`
+        }
         
         if (shareUrl) window.open(shareUrl, '_blank', 'noopener,noreferrer')
     }

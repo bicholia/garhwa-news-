@@ -39,8 +39,8 @@ export default async function JharkhandPage({ searchParams }: { searchParams: Pr
 
     return (
         <PublicLayout>
-            <div className="bg-white min-h-screen">
-                <div className="bg-ndtv-black py-16 lg:py-20 border-b-4 border-brand-red">
+            <div className="min-h-screen">
+                <div className="bg-ndtv-black py-6 lg:py-8 border-b-4 border-brand-red">
                     <div className="container">
                         <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-10">
                             <div>
@@ -52,7 +52,7 @@ export default async function JharkhandPage({ searchParams }: { searchParams: Pr
                                         <MapPin size={16} className="text-brand-red" /> India / Jharkhand
                                     </div>
                                 </div>
-                                <h1 className="text-5xl lg:text-8xl font-black text-white leading-tight uppercase tracking-tighter serif-font">
+                                <h1 className="text-2xl lg:text-4xl font-black text-white leading-tight uppercase tracking-tighter serif-font">
                                     JHARKHAND <span className="text-brand-red">BUREAU</span>
                                 </h1>
                             </div>

@@ -66,6 +66,7 @@ export default function PostForm({ initialData, isEditing }: PostFormProps) {
         featureImageUrl: initialData?.featureImageUrl || '',
         featureImageId: initialData?.featureImageId || '',
         tags: initialData?.tags || '',
+        author: initialData?.author?._ref || 'author-suhasini',
     })
 
     const set = (key: string) => (e: any) =>
@@ -585,6 +586,24 @@ export default function PostForm({ initialData, isEditing }: PostFormProps) {
                                 }} />
                             </span>
                         </label>
+                    </div>
+
+                    {/* Author Selection */}
+                    <div style={{ background: 'white', padding: '1.5rem', borderRadius: '1rem', border: '1px solid #e2e8f0' }}>
+                        <label style={labelStyle}>खबर किसने लिखी? (Author)</label>
+                        <select
+                            value={formData.author}
+                            onChange={set('author')}
+                            style={{ ...inputStyle }}
+                            onFocus={e => e.target.style.borderColor = '#dc2626'}
+                            onBlur={e => e.target.style.borderColor = '#e2e8f0'}
+                        >
+                            <option value="author-suhasini">सुहासिनी शर्मा</option>
+                            <option value="author-admin">ThinkIndia Bureau</option>
+                        </select>
+                        <p style={{ fontSize: '0.7rem', color: '#94a3b8', marginTop: '0.5rem' }}>
+                            News publish karne wale ka naam yaha se select karein.
+                        </p>
                     </div>
                 </div>
             </div>
