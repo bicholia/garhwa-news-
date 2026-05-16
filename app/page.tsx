@@ -17,8 +17,16 @@ import { normalizeText } from '@/lib/safety'
 export const revalidate = 60 // Revalidate every minute
 
 export const metadata: Metadata = {
-  title: 'ThinkIndia News | गढ़वा और झारखंड की नंबर 1 ताज़ा ख़बरें',
-  description: 'ThinkIndia News: गढ़वा, पलामू और झारखंड की सबसे तेज़ और विश्वसनीय न्यूज़। ब्रेकिंग न्यूज़, अपराध, और राजनीति की ताज़ा खबरें हिंदी में।',
+  title: 'ThinkIndia News | गढ़वा, पलामू और झारखंड की नंबर 1 ताज़ा ख़बरें',
+  description: 'ThinkIndia News (थिंक इंडिया) प्रदान करता है सबसे तेज़ हिंदी समाचार। गढ़वा, पलामू और झारखंड की ताज़ा खबरें, ब्रेकिंग न्यूज़, राजनीति और अपराध की विस्तृत रिपोर्ट्स।',
+  keywords: [
+    'ThinkIndia News', 'ThinkIndia News Hindi', 'Garhwa News', 'Palamu News', 'Jharkhand News',
+    'Hindi News Jharkhand', 'गढ़वा न्यूज़', 'पलामू न्यूज़', 'झारखंड समाचार', 'ताज़ा खबरें',
+    'Breaking News Garhwa', 'Latest News Jharkhand', 'ThinkIndia.press'
+  ],
+  alternates: {
+    canonical: 'https://thinkindia.press'
+  }
 }
 
 async function getHomepageData() {
