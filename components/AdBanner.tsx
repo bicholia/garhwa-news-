@@ -166,6 +166,7 @@ export default async function AdBanner({
             className={`my-8 text-center ${className}`}
             style={{
                 maxWidth: finalWidth,
+                minHeight: finalHeight,
                 margin: '2rem auto',
                 ...style
             }}

@@ -4,6 +4,8 @@ import { getAllNews } from '@/lib/db'
 
 const baseUrl = 'https://thinkindia.press'
 
+export const revalidate = 3600 // Cache for 1 hour
+
 async function getSiteData() {
   const query = `
     *[_type == "article"] {

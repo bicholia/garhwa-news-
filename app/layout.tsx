@@ -61,6 +61,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
   return (
     <html lang="hi" className="scroll-smooth" suppressHydrationWarning>
       <head>
+        <meta name="google-site-verification" content="GqzuQC8w-SoLJ9GtdOAiMXUlTTgenc0cRbtqt4VB68Q" />
         <meta name="theme-color" content="#E31E24" />
         <meta name="mobile-web-app-capable" content="yes" />
         <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />

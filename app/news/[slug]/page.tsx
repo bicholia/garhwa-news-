@@ -13,7 +13,7 @@ import ArticleActions from '@/components/ArticleActions'
 import FloatingShareBar from '@/components/FloatingShareBar'
 import { scrubBrandNames, scrubSlug, scrubPortableText } from '@/lib/safety'
 
-export const revalidate = 0 
+export const revalidate = 300 // ISR: Cache for 5 minutes at the edge
 
 async function getArticle(slug: string) {
     const postgresArticle: any = await getNewsBySlug(slug)
@@ -112,13 +112,13 @@ export default async function Page({ params }: { params: Promise<{ slug: string 
             "@id": `${domain}/news/${decodedSlug}`
         },
         "headline": article.title,
-        "image": imageUrl ? [imageUrl] : [],
+        "image": imageUrl ? [imageUrl] : [`${domain}/og-image.png`],
         "datePublished": date,
         "dateModified": article._updatedAt || date,
         "author": [{
             "@type": "Person",
             "name": article.author?.name || "ThinkIndia.press Bureau",
-            "url": "https://thinkindia.press/author/bureau"
+            "url": article.author?.slug ? `${domain}/author/${article.author.slug}` : `${domain}/author/bureau`
         }],
         "publisher": {
             "@type": "Organization",
@@ -204,7 +204,7 @@ export default async function Page({ params }: { params: Promise<{ slug: string 
 
                             {imageUrl && (
                                 <div className="relative aspect-video rounded-sm overflow-hidden mb-8 bg-gray-100">
-                                    <Image src={imageUrl} alt={article.title} fill className="object-cover" priority />
+                                    <Image src={imageUrl} alt={article.title} fill className="object-cover" priority fetchPriority="high" />
                                     <div className="absolute bottom-0 left-0 right-0 bg-black/60 backdrop-blur-md p-4 text-white text-[12px] font-medium italic">
                                         Representative Image — ThinkIndia.press Bureau
                                     </div>

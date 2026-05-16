@@ -2,6 +2,8 @@ import { client } from '@/lib/sanity'
 import { getAllNews } from '@/lib/db'
 import { NextResponse } from 'next/server'
 
+export const revalidate = 900 // Cache for 15 minutes
+
 export async function GET() {
     try {
         const query = `
