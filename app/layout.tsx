@@ -77,6 +77,12 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
           `}
         </Script>
         <Script
+          src="https://news.google.com/swg/js/v1/swg-basic.js"
+          data-publication-id="CAowy83GDA"
+          data-allow-on-dev="true"
+          strategy="afterInteractive"
+        />
+        <Script
           async
           src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-0000000000000000"
           crossOrigin="anonymous"
