@@ -2,11 +2,12 @@
 
 import React, { useState, useEffect } from 'react'
 import Link from 'next/link'
-import { Menu, X, Search, Calendar, Globe, TrendingUp, PlayCircle, Sun, Moon } from 'lucide-react'
+import { Menu, X, Search, Calendar, Globe, TrendingUp, PlayCircle, Sun, Moon, Share2 } from 'lucide-react'
 import { usePathname, useRouter } from 'next/navigation'
 import { useTheme } from '@/lib/ThemeContext'
 import WeatherWidget from '@/components/WeatherWidget'
 import Image from 'next/image'
+import { FaInstagram } from 'react-icons/fa'
 
 export default function Header() {
     const [mounted, setMounted] = useState(false)
@@ -53,6 +54,21 @@ export default function Header() {
         setMobileOpen(false)
         setSearchOpen(false)
     }, [pathname])
+
+    const handleShare = async () => {
+        const url = window.location.href
+        const title = document.title
+        if (navigator.share) {
+            try {
+                await navigator.share({ title, url })
+            } catch (err) {
+                if ((err as Error).name !== 'AbortError') console.error('Error sharing:', err)
+            }
+        } else {
+            navigator.clipboard.writeText(url)
+            alert('Link copied to clipboard!')
+        }
+    }
 
     const handleSearch = (e: React.KeyboardEvent<HTMLInputElement>) => {
         if (e.key === 'Enter' && searchQuery.trim()) {
@@ -122,6 +138,22 @@ export default function Header() {
 
                         {/* Actions */}
                         <div className="flex items-center gap-3 lg:gap-5">
+                            <a 
+                                href="https://www.instagram.com/think.indianews/" 
+                                target="_blank" 
+                                rel="noopener noreferrer"
+                                className="hidden md:flex p-2.5 hover:bg-white/10 rounded-full transition-all duration-300 text-pink-500 group"
+                                aria-label="Instagram"
+                            >
+                                <FaInstagram size={20} className="group-hover:scale-110 transition-transform" />
+                            </a>
+                            <button 
+                                onClick={handleShare}
+                                className="p-2.5 hover:bg-white/10 rounded-full transition-all duration-300 text-brand-gold group"
+                                aria-label="Share"
+                            >
+                                <Share2 size={18} className="group-hover:scale-110 transition-transform" />
+                            </button>
                             <button 
                                 onClick={() => setSearchOpen(true)}
                                 className="p-2.5 hover:bg-white/10 rounded-full transition-all duration-300 group"
@@ -189,6 +221,21 @@ export default function Header() {
                                     {item.name}
                                 </Link>
                             ))}
+                            <a 
+                                href="https://www.instagram.com/think.indianews/" 
+                                target="_blank" 
+                                rel="noopener noreferrer"
+                                className="flex items-center gap-2 text-pink-500"
+                                onClick={() => setMobileOpen(false)}
+                            >
+                                <FaInstagram size={24} /> INSTAGRAM
+                            </a>
+                            <button 
+                                onClick={() => { handleShare(); setMobileOpen(false); }}
+                                className="flex items-center gap-2 text-brand-gold text-left"
+                            >
+                                <Share2 size={24} /> SHARE APP
+                            </button>
                         </nav>
                         <div className="mt-auto space-y-4 pt-10 border-t border-white/10">
                             <WeatherWidget />

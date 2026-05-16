@@ -36,13 +36,16 @@ export default function Footer() {
                         </span>
                     </Link>
                     <div className="flex gap-4">
-                        <a href="#" className="w-10 h-10 bg-white border border-gray-200 rounded-full flex items-center justify-center text-gray-600 hover:text-brand-red hover:border-brand-red transition-all shadow-sm">
+                        <a href="https://www.facebook.com/think.indianews" target="_blank" rel="noopener noreferrer" className="w-10 h-10 bg-white border border-gray-200 rounded-full flex items-center justify-center text-gray-600 hover:text-brand-red hover:border-brand-red transition-all shadow-sm">
                             <FaFacebookF />
                         </a>
-                        <a href="#" className="w-10 h-10 bg-white border border-gray-200 rounded-full flex items-center justify-center text-gray-600 hover:text-brand-red hover:border-brand-red transition-all shadow-sm">
+                        <a href="https://twitter.com/thinkindianews" target="_blank" rel="noopener noreferrer" className="w-10 h-10 bg-white border border-gray-200 rounded-full flex items-center justify-center text-gray-600 hover:text-brand-red hover:border-brand-red transition-all shadow-sm">
                             <FaTwitter />
                         </a>
-                        <a href="#" className="w-10 h-10 bg-white border border-gray-200 rounded-full flex items-center justify-center text-gray-600 hover:text-brand-red hover:border-brand-red transition-all shadow-sm">
+                        <a href="https://www.instagram.com/think.indianews/" target="_blank" rel="noopener noreferrer" className="w-10 h-10 bg-white border border-gray-200 rounded-full flex items-center justify-center text-gray-600 hover:text-brand-red hover:border-brand-red transition-all shadow-sm">
+                            <FaInstagram />
+                        </a>
+                        <a href="https://www.youtube.com/@thinkindianews" target="_blank" rel="noopener noreferrer" className="w-10 h-10 bg-white border border-gray-200 rounded-full flex items-center justify-center text-gray-600 hover:text-brand-red hover:border-brand-red transition-all shadow-sm">
                             <FaYoutube />
                         </a>
                     </div>
