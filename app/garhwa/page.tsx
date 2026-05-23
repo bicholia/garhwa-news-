@@ -42,7 +42,7 @@ export default async function GarhwaPage({ searchParams }: { searchParams: Promi
         <PublicLayout>
             <div className="min-h-screen">
                 {/* NDTV Style District Header */}
-                <div className="bg-ndtv-black py-6 lg:py-8 border-b border-brand-red">
+                <div className="bg-white dark:bg-[#0B1120] py-8 lg:py-12 border-b border-gray-100 dark:border-white/5">
                     <div className="container">
                         <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-8">
                             <div>
@@ -50,21 +50,21 @@ export default async function GarhwaPage({ searchParams }: { searchParams: Promi
                                     <span className="bg-brand-red text-white text-[10px] font-black uppercase tracking-widest px-3 py-1 rounded shadow-lg">
                                         REGIONAL BUREAU
                                     </span>
-                                    <div className="flex items-center gap-2 text-gray-400 text-[11px] font-bold uppercase tracking-wider">
+                                    <div className="flex items-center gap-2 text-gray-500 dark:text-gray-400 text-[11px] font-bold uppercase tracking-wider">
                                         <MapPin size={14} className="text-brand-red" /> Jharkhand / Garhwa
                                     </div>
                                 </div>
-                                <h1 className="text-2xl lg:text-4xl font-black text-white leading-tight uppercase tracking-tighter serif-font">
+                                <h1 className="text-2xl lg:text-4xl font-black text-gray-900 dark:text-white leading-tight uppercase tracking-tighter serif-font">
                                     GARHWA <span className="text-brand-red">NEWS</span>
                                 </h1>
                             </div>
-                            <div className="flex items-center gap-4 bg-white/5 p-4 rounded-sm border border-white/10">
-                                <div className="w-12 h-12 rounded-full bg-brand-red/20 flex items-center justify-center text-brand-red">
+                            <div className="flex items-center gap-4 bg-gray-50 dark:bg-white/5 p-4 rounded-xl border border-gray-100 dark:border-white/10 shadow-sm">
+                                <div className="w-12 h-12 rounded-full bg-brand-red/10 flex items-center justify-center text-brand-red">
                                     <ShieldCheck size={24} />
                                 </div>
                                 <div>
-                                    <div className="text-white text-[12px] font-black uppercase">Verified Reports</div>
-                                    <div className="text-gray-500 text-[10px] font-bold uppercase tracking-widest">ThinkIndia.press HQ Monitoring</div>
+                                    <div className="text-gray-900 dark:text-white text-[12px] font-black uppercase">Verified Reports</div>
+                                    <div className="text-gray-400 dark:text-gray-500 text-[10px] font-bold uppercase tracking-widest">ThinkIndia.press HQ Monitoring</div>
                                 </div>
                             </div>
                         </div>
@@ -105,7 +105,7 @@ export default async function GarhwaPage({ searchParams }: { searchParams: Promi
                                                         {article.excerpt || "Detailed news report from the Garhwa regional bureau."}
                                                     </p>
                                                     <div className="mt-4 pt-4 border-t border-gray-50 flex items-center justify-between text-[10px] font-bold text-gray-400 uppercase tracking-wider">
-                                                        <span>{new Date(article.publishedAt || article.published_at).toLocaleDateString()}</span>
+                                                        <span suppressHydrationWarning>{new Date(article.publishedAt || article.published_at).toLocaleDateString('hi-IN')}</span>
                                                         <span className="group-hover:text-brand-red transition-colors">Read Report &rarr;</span>
                                                     </div>
                                                 </Link>

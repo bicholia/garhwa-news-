@@ -32,25 +32,25 @@ export default function ShareButton({ title, slug, excerpt, className = "" }: Sh
     const shareLinks = [
         {
             label: 'WhatsApp',
-            icon: <FaWhatsapp size={17} />,
+            icon: <FaWhatsapp size={15} />,
             bg: 'bg-[#25D366]',
             href: (url: string) => `https://api.whatsapp.com/send?text=${encodeURIComponent(title + '\n' + url)}`,
         },
         {
             label: 'Facebook',
-            icon: <FaFacebookF size={16} />,
+            icon: <FaFacebookF size={14} />,
             bg: 'bg-[#1877F2]',
             href: (url: string) => `https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(url)}`,
         },
         {
             label: 'Telegram',
-            icon: <FaTelegramPlane size={17} />,
+            icon: <FaTelegramPlane size={15} />,
             bg: 'bg-[#0088cc]',
             href: (url: string) => `https://t.me/share/url?url=${encodeURIComponent(url)}&text=${encodeURIComponent(title)}`,
         },
         {
             label: 'Twitter',
-            icon: <FaTwitter size={16} />,
+            icon: <FaTwitter size={14} />,
             bg: 'bg-[#1DA1F2]',
             href: (url: string) => `https://twitter.com/intent/tweet?text=${encodeURIComponent(title)}&url=${encodeURIComponent(url)}`,
         },
@@ -88,64 +88,63 @@ export default function ShareButton({ title, slug, excerpt, className = "" }: Sh
             {/* Trigger Button */}
             <button
                 onClick={handleToggle}
-                className="flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-gray-50 hover:bg-brand-red hover:text-white transition-all duration-300 group/share text-gray-700"
+                className={`flex items-center gap-1.5 px-3 py-1.5 rounded-full transition-all duration-300 group/share shadow-sm ${open ? 'bg-brand-red text-white' : 'bg-brand-red text-white hover:bg-red-700'}`}
                 title="Share News"
                 aria-label="Share this news"
             >
                 {copied ? (
                     <>
-                        <Check size={14} className="text-green-500 group-hover/share:text-white" />
-                        <span className="text-[10px] font-bold uppercase tracking-wider">Copied!</span>
+                        <Check size={12} />
+                        <span className="text-[9px] font-black uppercase tracking-widest">Done</span>
                     </>
                 ) : (
                     <>
-                        <Share2 size={14} />
-                        <span className="text-[10px] font-bold uppercase tracking-wider">Share</span>
+                        <Share2 size={12} strokeWidth={2.5} />
+                        <span className="text-[9px] font-black uppercase tracking-widest">SHARE</span>
                     </>
                 )}
             </button>
 
-            {/* Dropdown Panel */}
+            {/* Dropdown Panel - Aligned to Left of button to avoid screen edge cutting */}
             {open && (
                 <div
-                    className="absolute bottom-full mb-2 left-1/2 -translate-x-1/2 z-[500] bg-white rounded-2xl shadow-2xl border border-gray-100 p-3 flex flex-col gap-2 min-w-[170px] animate-fade-in"
-                    style={{ animation: 'fadeInUp 0.18s ease' }}
+                    className="absolute bottom-full mb-2 left-0 z-[500] bg-white rounded-xl shadow-[0_10px_30px_rgba(0,0,0,0.15)] border border-gray-100 p-1.5 flex flex-col gap-1 min-w-[130px] animate-fade-in origin-bottom-left"
+                    style={{ animation: 'fadeInUp 0.15s ease-out' }}
                     onClick={e => e.stopPropagation()}
                 >
-                    {/* Arrow */}
-                    <div className="absolute -bottom-2 left-1/2 -translate-x-1/2 w-4 h-4 bg-white border-b border-r border-gray-100 rotate-45" />
-
-                    <p className="text-[9px] font-black uppercase tracking-widest text-gray-400 text-center mb-1">
-                        Share करें
-                    </p>
-
                     {/* Platform buttons */}
                     {shareLinks.map(platform => (
                         <button
                             key={platform.label}
                             onClick={(e) => handlePlatformShare(e, platform.href)}
-                            className={`${platform.bg} text-white flex items-center gap-3 px-4 py-2 rounded-xl text-[12px] font-bold hover:opacity-90 hover:scale-[1.03] transition-all duration-150 w-full`}
+                            className={`${platform.bg} text-white flex items-center gap-2 px-2.5 py-1.5 rounded-lg text-[10px] font-bold hover:brightness-110 active:scale-95 transition-all w-full`}
                         >
-                            {platform.icon}
-                            {platform.label} पर Share करें
+                            <div className="w-4 flex justify-center shrink-0">
+                                {platform.icon}
+                            </div>
+                            <span className="flex-1 text-left">{platform.label}</span>
                         </button>
                     ))}
+
+                    <div className="h-px bg-gray-50 my-0.5" />
 
                     {/* Copy Link */}
                     <button
                         onClick={handleCopy}
-                        className="flex items-center gap-3 px-4 py-2 rounded-xl text-[12px] font-bold bg-gray-100 hover:bg-gray-200 text-gray-700 transition-all duration-150 w-full"
+                        className="flex items-center gap-2 px-2.5 py-1.5 rounded-lg text-[10px] font-bold bg-gray-50 hover:bg-gray-100 text-gray-600 transition-all w-full"
                     >
-                        {copied ? <Check size={14} className="text-green-500" /> : <LinkIcon size={14} />}
-                        {copied ? 'Link Copied!' : 'Copy Link'}
+                        <div className="w-4 flex justify-center shrink-0">
+                            {copied ? <Check size={12} className="text-green-500" /> : <LinkIcon size={12} />}
+                        </div>
+                        {copied ? 'Copied' : 'Copy'}
                     </button>
                 </div>
             )}
 
             <style jsx>{`
                 @keyframes fadeInUp {
-                    from { opacity: 0; transform: translateX(-50%) translateY(8px); }
-                    to { opacity: 1; transform: translateX(-50%) translateY(0); }
+                    from { opacity: 0; transform: translateY(5px); }
+                    to { opacity: 1; transform: translateY(0); }
                 }
             `}</style>
         </div>

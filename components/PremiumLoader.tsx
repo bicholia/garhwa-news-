@@ -12,14 +12,14 @@ export default function PremiumLoader() {
         setLoading(true)
         const timer = setTimeout(() => {
             setLoading(false)
-        }, 800)
+        }, 400)
         return () => clearTimeout(timer)
     }, [pathname, searchParams])
 
     if (!loading) return null
 
     return (
-        <div className="fixed inset-0 w-full h-full bg-white/80 backdrop-blur-md z-[99999] flex flex-col items-center justify-center pointer-events-none">
+        <div className="fixed inset-0 w-full h-full bg-white z-[99999] flex flex-col items-center justify-center pointer-events-none">
             <div className="relative flex flex-col items-center">
                 <div className="w-16 h-16 border-4 border-gray-100 border-t-brand-red rounded-full animate-spin mb-4" />
                 <div className="text-xl font-black tracking-tighter animate-pulse">

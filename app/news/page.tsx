@@ -51,23 +51,20 @@ export default async function AllNewsPage({
             <div className="min-h-screen">
 
                 {/* Page Header */}
-                <div className="bg-brand-navy py-14 lg:py-20 px-4 relative overflow-hidden">
-                    <div className="absolute inset-0 opacity-5 pointer-events-none">
-                        <Newspaper className="absolute -bottom-10 -right-10 w-72 h-72 text-white" />
-                    </div>
+                <div className="bg-white dark:bg-[#0B1120] py-12 lg:py-16 border-b border-gray-100 dark:border-white/5 relative overflow-hidden">
                     <div className="container max-w-6xl mx-auto relative z-10">
-                        <div className="text-brand-gold font-black uppercase tracking-[0.4em] text-xs mb-4">
+                        <div className="text-brand-red font-black uppercase tracking-[0.4em] text-xs mb-4">
                             ThinkIndia.press Bureau
                         </div>
-                        <h1 className="text-4xl lg:text-6xl font-black text-white font-serif leading-tight mb-4">
+                        <h1 className="text-4xl lg:text-6xl font-black text-gray-900 dark:text-white font-serif leading-tight mb-4">
                             सभी समाचार
                         </h1>
-                        <p className="text-gray-400 font-medium max-w-xl">
+                        <p className="text-gray-500 dark:text-gray-400 font-medium max-w-xl">
                             गढ़वा, पलामू और झारखंड की सभी ताज़ा और विश्वसनीय खबरें एक ही जगह।
                         </p>
-                        <div className="mt-6 flex items-center gap-3 text-xs font-bold uppercase tracking-widest text-gray-500">
-                            <span className="text-brand-gold">{total}+</span> कुल खबरें
-                            <span className="w-1 h-1 rounded-full bg-gray-600 inline-block" />
+                        <div className="mt-6 flex items-center gap-3 text-xs font-bold uppercase tracking-widest text-gray-400 dark:text-gray-500">
+                            <span className="text-brand-red">{total}+</span> कुल खबरें
+                            <span className="w-1 h-1 rounded-full bg-gray-300 dark:bg-gray-700 inline-block" />
                             पेज {currentPage} / {totalPages}
                         </div>
                     </div>

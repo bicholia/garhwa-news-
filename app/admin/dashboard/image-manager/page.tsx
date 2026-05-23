@@ -3,7 +3,7 @@
 import { useState, useEffect } from 'react'
 import { Image as ImageIcon, Sparkles, CheckCircle, Trash2, ExternalLink, RefreshCw } from 'lucide-react'
 import Link from 'next/link'
-import { fetchMissingImageArticles, attachAIImage, deleteArticle } from './actions'
+import { fetchMissingImageArticles, attachAIImage, deleteArticle, bulkAttachAIImages } from './actions'
 
 export default function ImageManager() {
     const [articles, setArticles] = useState<any[]>([])
@@ -29,6 +29,14 @@ export default function ImageManager() {
         } else {
             alert('फोटो अपडेट करने में समस्या आई: ' + res.error)
         }
+        setProcessing(null)
+    }
+
+    const handleBulkFix = async () => {
+        if (!confirm(`क्या आप वाकई इन सभी ${articles.length} खबरों में AI फोटो लगाना चाहते हैं? इसमें कुछ समय लग सकता है।`)) return
+        setProcessing('bulk')
+        await bulkAttachAIImages(articles)
+        await loadData()
         setProcessing(null)
     }
 
@@ -63,6 +71,16 @@ export default function ImageManager() {
                     <p className="text-gray-500 mt-1 font-medium">इन खबरों में फोटो नहीं लगी है। इन्हें तुरंत फिक्स करें।</p>
                 </div>
                 <div className="flex items-center gap-3">
+                    {articles.length > 0 && (
+                        <button 
+                            onClick={handleBulkFix}
+                            disabled={!!processing}
+                            className="bg-blue-600 hover:bg-blue-700 disabled:opacity-50 text-white px-6 py-2 rounded-2xl font-black shadow-lg flex items-center gap-2 transition-all active:scale-95"
+                        >
+                            {processing === 'bulk' ? <RefreshCw className="animate-spin" size={18} /> : <Sparkles size={18} />}
+                            सभी फिक्स करें
+                        </button>
+                    )}
                     <button 
                         onClick={loadData}
                         className="p-2 hover:bg-gray-100 rounded-full transition-colors"

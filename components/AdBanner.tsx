@@ -171,7 +171,7 @@ export default async function AdBanner({
                 ...style
             }}
         >
-            <span className="inline-block text-[9px] font-black uppercase tracking-[0.3em] text-brand-gold mb-2 italic">
+            <span className="inline-block text-[9px] font-black uppercase tracking-[0.3em] text-brand-red mb-2 italic">
                 Strategic Partner Briefing
             </span>
             {/* Only wrap in <a> if we actually have a target URL */}

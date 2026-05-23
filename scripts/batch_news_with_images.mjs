@@ -163,6 +163,13 @@ async function runBatch() {
         try {
             console.log(`\n>[${i+1}/${uniqueNews.length}] प्रोसेस हो रहा है: "${item.title}"`);
             
+            // CHECK IF ALREADY EXISTS IN SANITY
+            const existing = await client.fetch(`*[_type == "article" && title == $title][0]`, { title: item.title });
+            if (existing) {
+                console.log(`⏭️ यह खबर पहले से मौजूद है, स्किप कर रहे हैं।`);
+                continue;
+            }
+            
             // Generate Text
             const prompt = `Rewrite this news for 'ThinkIndia.press' in Hindi. It should be engaging, informative, and around 150-200 words.
 Title: ${item.title}
@@ -215,7 +222,7 @@ Example format:
                 title: aiResult.title,
                 slug: { 
                     _type: 'slug', 
-                    current: createSlug(aiResult.title) + '-' + Math.random().toString(36).substring(7) 
+                    current: createSlug(aiResult.title)
                 },
                 excerpt: aiResult.excerpt,
                 featureImage: {

@@ -53,9 +53,9 @@ export default async function CategoryPage({
         <PublicLayout>
             <div className="min-h-screen pb-20">
                 {/* Category Header */}
-                <div className="bg-ndtv-black py-6 lg:py-8 border-b border-brand-red">
+                <div className="bg-white dark:bg-[#0B1120] py-8 lg:py-12 border-b border-gray-100 dark:border-white/5">
                     <div className="container">
-                        <h1 className="text-2xl lg:text-4xl font-black text-white leading-tight uppercase tracking-tighter serif-font">
+                        <h1 className="text-2xl lg:text-4xl font-black text-gray-900 dark:text-white leading-tight uppercase tracking-tighter serif-font">
                             {categoryName} <span className="text-brand-red">REPORTS</span>
                         </h1>
                     </div>
@@ -90,7 +90,7 @@ export default async function CategoryPage({
                                                     {article.title}
                                                 </h3>
                                                 <div className="mt-4 pt-4 border-t border-gray-50 flex items-center justify-between text-[10px] font-bold text-gray-400 uppercase tracking-wider">
-                                                    <span>{new Date(article.publishedAt || article.published_at).toLocaleDateString()}</span>
+                                                    <span suppressHydrationWarning>{new Date(article.publishedAt || article.published_at).toLocaleDateString('hi-IN')}</span>
                                                     <span className="group-hover:text-brand-red transition-colors">Read More &rarr;</span>
                                                 </div>
                                             </Link>

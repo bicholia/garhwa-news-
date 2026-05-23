@@ -3,13 +3,12 @@ import { getAllNews, getNewsByCategory, getNewsByDistrict, mergeAndSortNews } fr
 import NewsGrid from '@/components/NewsGrid'
 import NDTVHero from '@/components/NDTVHero'
 import BreakingNews from '@/components/BreakingNews'
-import CityGrid from '@/components/CityGrid'
 import PhotoGallery from '@/components/PhotoGallery'
 import PublicLayout from '@/components/PublicLayout'
 import AdBanner from '@/components/AdBanner'
 import NewsStripe from '@/components/NewsStripe'
 import Link from 'next/link'
-import { ArrowRight, ShieldCheck, Globe, PlayCircle, TrendingUp } from 'lucide-react'
+import { ArrowRight, ShieldCheck, Globe, PlayCircle, TrendingUp, MessageCircle, Send, Instagram } from 'lucide-react'
 import { Suspense } from 'react'
 import { Metadata } from 'next'
 import { normalizeText } from '@/lib/safety'
@@ -56,7 +55,9 @@ async function getHomepageData() {
   ])
 
   const snFeatured = await client.fetch(`*[_type == "article"] | order(publishedAt desc)[0...60] { _id, title, "slug": slug.current, excerpt, featureImage, publishedAt, author->{name} }`)
-  
+  const snAstrology = await client.fetch(`*[_type == "article" && category->slug.current == "astrology"] | order(publishedAt desc)[0...3] { _id, title, "slug": slug.current, excerpt, featureImage, publishedAt, author->{name} }`)
+  const snLove = await client.fetch(`*[_type == "article" && category->slug.current == "love-relationships"] | order(publishedAt desc)[0...3] { _id, title, "slug": slug.current, excerpt, featureImage, publishedAt, author->{name} }`)
+
   return {
     featured: mergeAndSortNews(pgFeatured, snFeatured, 30),
     garhwa: mergeAndSortNews(pgGarhwa.articles || pgGarhwa, [], 10),
@@ -68,6 +69,8 @@ async function getHomepageData() {
     latehar: pgLatehar.articles || pgLatehar,
     chatra: pgChatra.articles || pgChatra,
     india: mergeAndSortNews(pgIndia.articles || pgIndia, [], 10),
+    astrology: snAstrology || [],
+    loveRelationships: snLove || [],
   }
 }
 
@@ -144,6 +147,11 @@ export default async function Home() {
   const adSecondaryNews = filterNews(allFeatured, 3)
   const adSidebarNews = filterNews(allFeatured, 5)
 
+  // Filter gallery stories to ensure they have valid images
+  const galleryStories = allFeatured
+    .filter(s => s && (s.image_url || s.featureImage))
+    .slice(0, 5)
+
   const orgSchema = {
     "@context": "https://schema.org",
     "@type": "NewsMediaOrganization",
@@ -176,12 +184,8 @@ export default async function Home() {
       <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(websiteSchema) }} />
       <div className="min-h-screen">
         {/* TIER 0: LEADERBOARD */}
-        <div className="bg-white border-b border-gray-100 py-3 hidden lg:flex justify-center flex-col items-center">
-            <AdBanner slot="top_max_leaderboard" width={970} height={90}>
-                <div className="container">
-                    <NewsStripe articles={adTopNews} title="Trending Now" />
-                </div>
-            </AdBanner>
+        <div className="bg-white border-b border-gray-100 py-2 hidden lg:flex justify-center items-center">
+            <AdBanner slot="top_max_leaderboard" width={970} height={90} className="w-full max-w-[970px] px-4 my-1" hidePlaceholder={true} />
         </div>
 
         {/* TIER 1: BREAKING TICKER (Edge to Edge) */}
@@ -189,74 +193,66 @@ export default async function Home() {
           <BreakingNews />
         </Suspense>
 
-        <div className="container py-6 lg:py-10">
+        {/* TIER 1.5: TRENDING SWIPE (After Bureau Alert) - HIDDEN ON MOBILE HERE */}
+        <div className="container mt-4 lg:mt-6 hidden lg:block">
+            <NewsStripe articles={adTopNews} title="Trending Now" />
+        </div>
+
+        <div className="container py-2 lg:py-6">
           
-          {/* TIER 2: NDTV PACKED HERO */}
           <NDTVHero 
             mainStory={mainStory} 
             topStories={topStories} 
             trendingStories={trendingStories} 
           />
 
-          <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 xl:gap-12">
+          {/* MOBILE ONLY TRENDING (Moved from top) */}
+          <div className="lg:hidden mb-6">
+              <NewsStripe articles={adTopNews} title="Trending Now" />
+          </div>
+
+          <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 xl:gap-8">
             {/* MAIN FEED (LHS) */}
             <div className="lg:col-span-8 xl:col-span-9">
               
               {/* NATIONAL SECTION */}
-              <NewsGrid title="Digital Bureau: National" articles={fIndia} variant="mixed" link="/india" />
-
-              <div className="my-6 lg:my-8">
-                <AdBanner slot="mid_home_india" width={728} height={90}>
-                    <div className="bg-brand-navy p-1 rounded-[32px]">
-                        <NewsStripe articles={adIndiaNews} title="Global Dispatch" />
-                    </div>
-                </AdBanner>
-              </div>
+              <NewsGrid title="Local & National News" articles={fIndia} variant="mixed" link="/india" />
 
               {/* BIG STORY GRID: GARHWA */}
-              <NewsGrid title="Bureau Reports: Garhwa" articles={fGarhwa} variant="standard" link="/garhwa" />
-
-              <div className="my-6 lg:my-8">
-                <AdBanner slot="mid_home_1" width={728} height={90}>
-                    <div className="bg-gray-100 dark:bg-white/5 p-1 rounded-[32px]">
-                        <NewsStripe articles={adGarhwaNews} title="Regional Wire" />
-                    </div>
-                </AdBanner>
-              </div>
+              <NewsGrid title="Local News: Garhwa" articles={fGarhwa} variant="standard" limit={8} link="/garhwa" />
 
               {/* DENSE GRID: PALAMU */}
-              <NewsGrid title="Bureau Reports: Palamu" articles={fPalamu} variant="standard" link="/palamu" />
+              <NewsGrid title="Local News: Palamu" articles={fPalamu} variant="standard" limit={8} link="/palamu" />
 
               {/* PHOTO GALLERY HOOK */}
-              <div className="my-8">
-                <PhotoGallery articles={allFeatured.slice(15, 20)} />
+              <div className="my-12 lg:my-20">
+                <PhotoGallery articles={galleryStories} />
               </div>
 
               {/* POLITICS & CRIME (DENSE LISTS) */}
               <div className="grid grid-cols-1 md:grid-cols-2 gap-8 lg:gap-12">
-                 <NewsGrid title="Political Intel" articles={fPolitics} variant="list" link="/category/politics" />
-                 <NewsGrid title="Crime & Justice" articles={fCrime} variant="list" link="/category/crime" />
+                 <NewsGrid title="Local Politics" articles={fPolitics} variant="list" link="/category/politics" />
+                 <NewsGrid title="Local Crime News" articles={fCrime} variant="list" link="/category/crime" />
               </div>
 
-              <div className="my-6 lg:my-8">
+              <div className="my-10 lg:my-16">
                 <AdBanner slot="mid_home_2" width={728} height={90}>
                     <NewsStripe articles={adSecondaryNews} title="National Briefing" />
                 </AdBanner>
               </div>
 
               {/* SECONDARY CATEGORIES */}
-              <NewsGrid title="Bureau: Excellence in Education" articles={fEducation} variant="standard" limit={4} link="/category/education" />
-              <NewsGrid title="Bureau: Sports Arena" articles={fSports} variant="mixed" limit={6} link="/category/sports" />
+              <NewsGrid title="Local Education News" articles={fEducation} variant="standard" limit={4} link="/category/education" />
+              <NewsGrid title="Local Sports Arena" articles={fSports} variant="mixed" limit={6} link="/category/sports" />
 
             </div>
 
             {/* SIDEBAR (RHS) */}
             <aside className="lg:col-span-4 xl:col-span-3 space-y-8">
-              <div className="sticky top-24 space-y-8">
+              {/* TOP PORTION: SCROLLABLE */}
+              <div className="space-y-8">
                   <AdBanner slot="sidebar_skyscraper" width={300} height={600}>
-                      <div className="bg-white dark:bg-white/5 p-6 rounded-[32px] border border-gray-100 dark:border-white/5 shadow-premium">
-                        <NewsStripe articles={adSidebarNews} title="Live Wire" variant="vertical" />
-                      </div>
+                      <NewsStripe articles={adSidebarNews} title="Live Wire" variant="vertical" />
                   </AdBanner>
                   
                   {/* Sidebar Most Read */}
@@ -266,38 +262,80 @@ export default async function Home() {
                         <TrendingUp size={14} /> Bureau Intel
                     </h3>
                     <div className="space-y-4 relative z-10">
-                        {allFeatured.slice(20, 25).map((s, i) => (
-                            <Link key={i} href={`/news/${s.slug}`} className="group block border-b border-white/5 pb-3 last:border-0">
-                                <h4 className="text-[13px] font-bold text-gray-100 leading-snug group-hover:text-brand-gold transition-colors line-clamp-3 serif-font">
-                                    {s.title}
+                        {allFeatured.slice(20, 25).map((article: any, i: number) => (
+                          <Link key={i} href={`/news/${article.slug}`} className="group block border-b border-white/5 pb-3 last:border-0">
+                            <div className="flex flex-col flex-1">
+                              <div className='min-h-[36px] lg:min-h-[40px]'>
+                                <h4 className='font-bold text-gray-100 leading-snug group-hover:text-brand-gold transition-all duration-300 serif-font text-[12px] lg:text-[14px] line-clamp-2'>
+                                    {article.title}
                                 </h4>
-                            </Link>
+                              </div>
+                            </div>
+                          </Link>
                         ))}
                     </div>
                   </div>
+              </div>
 
-                  <div className="bg-brand-red p-6 rounded-[32px] text-white shadow-2xl relative overflow-hidden group">
-                    <div className="absolute inset-0 bg-black opacity-0 group-hover:opacity-10 transition-opacity" />
-                    <h4 className="text-[9px] font-black uppercase tracking-[0.3em] text-white mb-3">Bureau Wire</h4>
-                    <p className="text-[13px] text-red-50 font-medium leading-relaxed">Join 50,000+ readers receiving our elite daily briefing.</p>
-                    <Link href="/contact" className="mt-6 block text-center py-3 bg-white text-brand-red text-[10px] font-black uppercase tracking-[0.2em] rounded-xl hover:scale-105 transition-all shadow-xl">
-                        Subscribe Now
-                    </Link>
+              {/* BOTTOM PORTION: STICKY WHEN SCROLLING */}
+              <div className="sticky top-24 space-y-8">
+                  {/* Astrology Widget */}
+                  {data.astrology && data.astrology.length > 0 && (
+                    <div className="bg-gradient-to-br from-amber-50 to-orange-50 dark:from-[#1E1B1B] dark:to-[#1a1310] p-6 rounded-[24px] border border-orange-100 dark:border-orange-950/30 shadow-card">
+                      <h3 className="text-[10px] font-black uppercase tracking-[0.3em] text-amber-600 dark:text-amber-400 mb-5 flex items-center gap-2">
+                        🌟 दैनिक राशिफल (Horoscope)
+                      </h3>
+                      <div className="space-y-4">
+                        {data.astrology.map((article: any, i: number) => (
+                          <Link key={i} href={`/news/${article.slug}`} className="group block border-b border-orange-100/50 dark:border-orange-950/20 pb-3 last:border-0">
+                            <h4 className="font-bold text-gray-800 dark:text-gray-100 leading-snug group-hover:text-amber-600 transition-colors serif-font text-[13px] line-clamp-2">
+                              {article.title}
+                            </h4>
+                          </Link>
+                        ))}
+                      </div>
+                    </div>
+                  )}
+
+                  {/* Relationships Widget */}
+                  {data.loveRelationships && data.loveRelationships.length > 0 && (
+                    <div className="bg-gradient-to-br from-rose-50 to-pink-50 dark:from-[#21161B] dark:to-[#1B1115] p-6 rounded-[24px] border border-rose-100 dark:border-rose-950/30 shadow-card">
+                      <h3 className="text-[10px] font-black uppercase tracking-[0.3em] text-rose-600 dark:text-rose-400 mb-5 flex items-center gap-2">
+                        ❤️ प्रेम और रिश्ते (Relationships)
+                      </h3>
+                      <div className="space-y-4">
+                        {data.loveRelationships.map((article: any, i: number) => (
+                          <Link key={i} href={`/news/${article.slug}`} className="group block border-b border-rose-100/50 dark:border-rose-950/20 pb-3 last:border-0">
+                            <h4 className="font-bold text-gray-800 dark:text-gray-100 leading-snug group-hover:text-rose-600 transition-colors serif-font text-[13px] line-clamp-2">
+                              {article.title}
+                            </h4>
+                          </Link>
+                        ))}
+                      </div>
+                    </div>
+                  )}
+
+                  {/* Latest News Sidebar Widget */}
+                  <div className="bg-white/85 dark:bg-[#0B1120]/80 backdrop-blur-xl p-6 rounded-[24px] border border-gray-200/50 dark:border-white/10 shadow-premium relative overflow-hidden">
+                    <h3 className="text-[10px] font-black uppercase tracking-[0.3em] text-brand-red mb-5 flex items-center gap-2">
+                      ⚡ मुख्य समाचार (Latest News)
+                    </h3>
+                    <div className="space-y-4">
+                      {allFeatured.slice(25, 29).map((article: any, i: number) => (
+                        <Link key={i} href={`/news/${article.slug}`} className="group block border-b border-gray-100 dark:border-white/5 pb-3 last:border-0">
+                          <h4 className="font-bold text-gray-800 dark:text-gray-100 leading-snug group-hover:text-brand-red transition-colors serif-font text-[13px] line-clamp-2">
+                            {article.title}
+                          </h4>
+                        </Link>
+                      ))}
+                    </div>
                   </div>
               </div>
             </aside>
           </div>
         </div>
 
-        {/* TIER 3: CITY GRID (BOTTOM PACK) */}
-        <CityGrid 
-          cities={[
-            { name: 'Garhwa', articles: data.garhwa },
-            { name: 'Palamu', articles: data.palamu },
-            { name: 'Latehar', articles: data.latehar },
-            { name: 'Chatra', articles: data.chatra }
-          ]} 
-        />
+
       </div>
     </PublicLayout>
   )

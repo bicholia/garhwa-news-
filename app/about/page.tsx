@@ -12,7 +12,7 @@ export default function AboutPage() {
         <PublicLayout>
             <div className="min-h-screen bg-white dark:bg-black">
                 {/* PREMIUM HERO SECTION */}
-                <div className="relative h-[60vh] lg:h-[80vh] flex items-center justify-center overflow-hidden">
+                <div className="relative h-[20vh] lg:h-[40vh] flex items-center justify-center overflow-hidden">
                     <img 
                         src="/about_hero_bg_1778925406510.png" 
                         className="absolute inset-0 w-full h-full object-cover opacity-60 dark:opacity-40" 
@@ -34,7 +34,7 @@ export default function AboutPage() {
                     </div>
                 </div>
 
-                <div className="container py-12">
+                <div className="container py-1 lg:py-4">
                     {/* VISION & IMPACT */}
                     <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center mb-16">
                         <div>
@@ -118,32 +118,32 @@ export default function AboutPage() {
                                 { title: 'Velocity', desc: 'Fastest reporting grid' },
                                 { title: 'Impact', desc: 'Driving real change' }
                             ].map((v, i) => (
-                                <div key={i} className="space-y-4">
-                                    <div className="text-4xl font-black text-white/10">0{i+1}</div>
-                                    <h4 className="text-xl font-bold text-white uppercase tracking-tighter">{v.title}</h4>
-                                    <p className="text-gray-500 text-sm">{v.desc}</p>
+                                <div key={i} className="space-y-2">
+                                    <div className="text-3xl font-black text-white/10">0{i+1}</div>
+                                    <h4 className="text-lg font-bold text-white uppercase tracking-tighter">{v.title}</h4>
+                                    <p className="text-gray-500 text-[10px] uppercase tracking-widest">{v.desc}</p>
                                 </div>
                             ))}
                         </div>
                     </div>
 
                     {/* STATS */}
-                    <div className="grid grid-cols-2 lg:grid-cols-4 gap-6 mt-16 text-center border-t border-gray-100 dark:border-white/5 pt-12">
+                    <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 mt-8 text-center border-t border-gray-100 dark:border-white/5 pt-8">
                         <div>
-                            <div className="text-3xl lg:text-5xl font-black text-black dark:text-white mb-2">5 Crore+</div>
-                            <p className="text-gray-500 text-xs font-black uppercase tracking-[0.2em]">Monthly Readers</p>
+                            <div className="text-2xl lg:text-4xl font-black text-black dark:text-white mb-1">5 Crore+</div>
+                            <p className="text-gray-500 text-[9px] font-black uppercase tracking-[0.2em]">Monthly Readers</p>
                         </div>
                         <div>
-                            <div className="text-3xl lg:text-5xl font-black text-black dark:text-white mb-2">3-Tier</div>
-                            <p className="text-gray-500 text-xs font-black uppercase tracking-[0.2em]">State • National • International</p>
+                            <div className="text-2xl lg:text-4xl font-black text-black dark:text-white mb-1">3-Tier</div>
+                            <p className="text-gray-500 text-[9px] font-black uppercase tracking-[0.2em]">State • National • International</p>
                         </div>
                         <div>
-                            <div className="text-3xl lg:text-5xl font-black text-black dark:text-white mb-2">24/7</div>
-                            <p className="text-gray-500 text-xs font-black uppercase tracking-[0.2em]">Live News Grid</p>
+                            <div className="text-2xl lg:text-4xl font-black text-black dark:text-white mb-1">24/7</div>
+                            <p className="text-gray-500 text-[9px] font-black uppercase tracking-[0.2em]">Live News Grid</p>
                         </div>
                         <div>
-                            <div className="text-3xl lg:text-5xl font-black text-black dark:text-white mb-2">100%</div>
-                            <p className="text-gray-500 text-xs font-black uppercase tracking-[0.2em]">Authentic News</p>
+                            <div className="text-2xl lg:text-4xl font-black text-black dark:text-white mb-1">100%</div>
+                            <p className="text-gray-500 text-[9px] font-black uppercase tracking-[0.2em]">Authentic News</p>
                         </div>
                     </div>
                 </div>

@@ -10,15 +10,15 @@ const navLinks = {
         { label: 'India News', href: '/india' },
         { label: 'Garhwa News', href: '/garhwa' },
         { label: 'Palamu News', href: '/palamu' },
-        { label: 'World News', href: '/jharkhand' },
-        { label: 'Opinion', href: '/category/crime' },
+        { label: 'Jharkhand News', href: '/jharkhand' },
+        { label: 'Crime News', href: '/category/crime' },
     ],
     other: [
         { label: 'About Us', href: '/about' },
         { label: 'Contact Us', href: '/contact' },
         { label: 'Privacy Policy', href: '/privacy-policy' },
         { label: 'Terms of Service', href: '/terms' },
-        { label: 'Disclaimer', href: '/corrections' },
+        { label: 'Disclaimer', href: '/disclaimer' },
         { label: 'RSS', href: '/feed.xml' },
     ],
 }
@@ -105,8 +105,8 @@ export default function Footer() {
                                 <span>New Delhi, Rajpath Marg</span>
                             </div>
 
-                            <div className="inline-flex items-center gap-2 px-3 py-1.5 bg-gray-100 text-gray-700 border border-gray-200 rounded text-[10px] font-bold uppercase tracking-wider">
-                                <ShieldCheck size={12} className="text-brand-red" /> Verified Publisher
+                            <div className="inline-flex items-center gap-2 px-3 py-1.5 bg-gray-100 dark:bg-white/5 text-gray-700 dark:text-gray-300 border border-gray-200 dark:border-white/10 rounded text-[10px] font-bold uppercase tracking-wider">
+                                <ShieldCheck size={12} className="text-brand-red" /> Verified Publisher · IPRD Certified
                             </div>
                         </div>
                     </div>

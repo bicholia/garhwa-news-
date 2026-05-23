@@ -15,6 +15,20 @@ export default function PhotoGallery({ articles }: PhotoGalleryProps) {
     const mainPhoto = articles[0]
     const otherPhotos = articles.slice(1, 5)
 
+    const resolveImageUrl = (photo: any, w: number, h: number) => {
+        if (!photo) return null;
+        if (photo.image_url) return photo.image_url;
+        if (typeof photo.featureImage === 'string') return photo.featureImage;
+        if (photo.featureImage?.asset?._ref) {
+            try {
+                return urlFor(photo.featureImage).width(w).height(h).url();
+            } catch (e) {
+                // Fallback handled below
+            }
+        }
+        return `/placeholder_${Math.abs((photo._id?.length || 0) % 4) + 1}.png`;
+    };
+
     return (
         <div className="mb-16">
             <div className="flex items-center justify-between border-b-2 border-ndtv-black mb-8 pb-3">
@@ -28,18 +42,14 @@ export default function PhotoGallery({ articles }: PhotoGalleryProps) {
                 </Link>
             </div>
 
-            <div className="grid grid-cols-1 lg:grid-cols-12 gap-1 relative">
+            <div className="grid grid-cols-1 lg:grid-cols-12 gap-1.5 relative items-stretch">
                 {/* Main Large Photo */}
-                <div className="lg:col-span-8 relative aspect-[16/9] lg:aspect-auto overflow-hidden group">
-                    <Link href={`/news/${mainPhoto.slug}`}>
-                        {mainPhoto.image_url || (mainPhoto.featureImage?.asset?._ref && mainPhoto.featureImage.asset._ref.startsWith('image-')) ? (
-                            <img 
-                                src={mainPhoto.image_url || urlFor(mainPhoto.featureImage).width(1200).height(800).url()} 
-                                className="w-full h-full object-cover transition-transform duration-1000 group-hover:scale-110"
-                            />
-                        ) : (
-                            <div className="w-full h-full bg-gray-200 flex items-center justify-center text-gray-400">No Image</div>
-                        )}
+                <div className="lg:col-span-8 relative aspect-video lg:aspect-auto lg:h-full overflow-hidden group">
+                    <Link href={`/news/${mainPhoto.slug?.current || mainPhoto.slug}`} className="w-full h-full block relative">
+                        <img 
+                            src={resolveImageUrl(mainPhoto, 1200, 800) || '/placeholder_1.png'} 
+                            className="w-full h-full object-cover transition-transform duration-1000 group-hover:scale-110"
+                        />
                         <div className="absolute inset-0 bg-gradient-to-t from-black via-transparent to-transparent opacity-90" />
                         <div className="absolute bottom-0 left-0 p-6 lg:p-10 w-full">
                             <span className="bg-brand-red text-white text-[10px] font-black px-3 py-1 uppercase mb-4 inline-block tracking-widest shadow-lg">Story In Photos</span>
@@ -51,25 +61,25 @@ export default function PhotoGallery({ articles }: PhotoGalleryProps) {
                 </div>
 
                 {/* Smaller Photo Grid */}
-                <div className="lg:col-span-4 grid grid-cols-2 lg:grid-cols-1 gap-1">
+                <div className="lg:col-span-4 grid grid-cols-2 lg:flex lg:flex-col gap-1.5">
                     {otherPhotos.map((photo, i) => (
-                        <Link key={i} href={`/news/${photo.slug}`} className="relative aspect-video lg:aspect-auto lg:h-[calc(50%-1px)] overflow-hidden group">
-                            {photo.image_url || (photo.featureImage?.asset?._ref && photo.featureImage.asset._ref.startsWith('image-')) ? (
-                                <img 
-                                    src={photo.image_url || urlFor(photo.featureImage).width(600).height(400).url()} 
-                                    className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110"
-                                />
-                            ) : (
-                                <div className="w-full h-full bg-gray-200 flex items-center justify-center text-gray-400">No Image</div>
-                            )}
-                            <div className="absolute inset-0 bg-black/30 group-hover:bg-black/0 transition-all" />
-                            <div className="absolute bottom-0 left-0 p-4 w-full">
-                                <h4 className="text-white text-[13px] font-bold leading-tight line-clamp-2 serif-font group-hover:underline">
+                        <Link 
+                            key={i} 
+                            href={`/news/${photo.slug?.current || photo.slug}`} 
+                            className="relative aspect-video lg:aspect-auto lg:flex-1 overflow-hidden group"
+                        >
+                            <img 
+                                src={resolveImageUrl(photo, 600, 400) || '/placeholder_2.png'} 
+                                className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110"
+                            />
+                            <div className="absolute inset-0 bg-black/40 group-hover:bg-black/10 transition-all duration-300" />
+                            <div className="absolute bottom-0 left-0 p-4 w-full bg-gradient-to-t from-black/80 to-transparent">
+                                <h4 className="text-white text-[11px] lg:text-[13px] font-bold leading-tight line-clamp-2 serif-font group-hover:underline">
                                     {photo.title}
                                 </h4>
                             </div>
                             <div className="absolute top-3 left-3 bg-white/20 backdrop-blur-md rounded-full p-2 text-white">
-                                <Globe size={14} />
+                                <Globe size={12} />
                             </div>
                         </Link>
                     ))}

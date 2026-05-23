@@ -13,7 +13,7 @@ export default function NewsStripe({ articles, title, variant = 'horizontal' }: 
 
     if (variant === 'vertical') {
         return (
-            <div className="bg-white border border-gray-100 p-6 rounded-md shadow-premium hover:shadow-premium-hover transition-all duration-500">
+            <div className="bg-white/60 dark:bg-[#0B1120]/80 backdrop-blur-xl border border-gray-200/50 dark:border-white/10 p-6 lg:p-8 rounded-[20px] shadow-premium transition-all duration-500">
                 {title && (
                     <h3 className="text-[12px] font-black uppercase tracking-[0.15em] text-brand-red mb-6 flex items-center gap-2 border-b border-gray-50 pb-3">
                         <TrendingUp size={16} /> {title}
@@ -38,14 +38,14 @@ export default function NewsStripe({ articles, title, variant = 'horizontal' }: 
     }
 
     return (
-        <div className="my-10 bg-white border border-gray-100 rounded-md overflow-hidden shadow-premium hover:shadow-premium-hover transition-all duration-500">
-            <div className="bg-gray-50/50 px-6 py-3 border-b border-gray-100 flex items-center justify-between">
+        <div className="my-10 bg-white/80 dark:bg-[#0B1120]/80 backdrop-blur-xl border border-gray-200/50 dark:border-white/10 rounded-[20px] overflow-hidden shadow-premium transition-all duration-500">
+            <div className="bg-gray-50/50 dark:bg-white/5 px-6 py-4 border-b border-gray-100 dark:border-white/10 flex items-center justify-between">
                 <span className="text-[11px] font-black uppercase tracking-[0.2em] text-brand-red flex items-center gap-2">
                     <span className="w-1.5 h-4 bg-brand-red rounded-full" /> {title || 'Live Updates'}
                 </span>
                 <span className="text-[9px] font-bold text-news-muted uppercase tracking-widest opacity-60">ThinkIndia News Briefing</span>
             </div>
-            <div className="p-6 grid grid-cols-1 md:grid-cols-3 lg:grid-cols-3 gap-8">
+            <div className="p-5 lg:p-8 flex lg:grid lg:grid-cols-3 gap-6 lg:gap-10 overflow-x-auto lg:overflow-x-visible snap-x snap-mandatory no-scrollbar">
                 {articles.slice(0, 3).map((article, i) => {
                     const imageUrl = article.featureImage?.asset?._ref && article.featureImage.asset._ref.startsWith('image-') 
                         ? urlFor(article.featureImage).width(150).height(100).url() 
@@ -54,7 +54,7 @@ export default function NewsStripe({ articles, title, variant = 'horizontal' }: 
                         <Link 
                             key={i} 
                             href={`/news/${article.slug}`} 
-                            className="group flex gap-5 items-center"
+                            className="group flex gap-6 items-center shrink-0 w-[85%] lg:w-auto snap-start"
                         >
                             <div className="shrink-0 w-28 h-20 bg-gray-100 rounded-md overflow-hidden relative shadow-sm transition-all duration-500 group-hover:shadow-md">
                                 {imageUrl ? (
@@ -74,10 +74,7 @@ export default function NewsStripe({ articles, title, variant = 'horizontal' }: 
                                 <h4 className="text-[14px] font-bold text-gray-900 dark:text-white leading-snug group-hover:text-brand-red transition-all duration-300 line-clamp-2 serif-font">
                                     {article.title}
                                 </h4>
-                                <div className="mt-2 flex items-center gap-2">
-                                    <span className="w-1 h-1 bg-brand-red/30 rounded-full" />
-                                    <span className="text-[10px] font-bold text-news-muted uppercase tracking-widest opacity-70">Flash Update</span>
-                                </div>
+                                {/* Flash Update removed as per user request */}
                             </div>
                         </Link>
                     )

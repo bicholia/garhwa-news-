@@ -56,3 +56,17 @@ export async function deleteArticle(id: string) {
         return { success: false, error: error.message }
     }
 }
+
+export async function bulkAttachAIImages(articles: any[]) {
+    const results = []
+    for (const article of articles) {
+        try {
+            const res = await attachAIImage(article._id, article.title)
+            results.push({ id: article._id, success: res.success })
+        } catch (e) {
+            results.push({ id: article._id, success: false })
+        }
+    }
+    revalidatePath('/')
+    return results
+}

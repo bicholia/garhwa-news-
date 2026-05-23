@@ -10,14 +10,14 @@ const config: Config = {
     theme: {
         extend: {
             colors: {
-                'brand-navy': '#0F172A',
-                'brand-gold': '#B45309',
-                'brand-red': '#E31E24',
-                'brand-accent': '#C21807',
-                'ndtv-black': '#000000',
+                'brand-navy': '#0B1120',
+                'brand-gold': '#C5A059',
+                'brand-red': '#D91616',
+                'brand-accent': '#8B0000',
+                'ndtv-black': '#050505',
                 'ndtv-gray': '#F8FAFC',
                 'news-paper': '#FDFDFD',
-                'news-text': '#1E293B',
+                'news-text': '#0B1120',
                 'news-muted': '#64748B',
             },
             fontFamily: {

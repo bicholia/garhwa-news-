@@ -94,9 +94,9 @@ export default function Header() {
                         {/* Logo */}
                         <div className="flex items-center gap-8 lg:gap-12">
                             <Link href="/" className="shrink-0 flex items-center group">
-                                <span className="text-2xl lg:text-3xl font-black tracking-tighter flex items-center gap-2">
-                                    <span className="text-white uppercase group-hover:text-brand-red transition-all duration-300">THINKINDIA</span>
-                                    <span className="text-brand-red uppercase group-hover:text-white transition-all duration-300">NEWS</span>
+                                <span className="text-xl lg:text-3xl font-black tracking-tighter flex items-center gap-1.5 serif-font">
+                                    <span className="bg-brand-red text-white px-2.5 py-0.5 rounded-md uppercase tracking-tight shadow-md">THINK</span>
+                                    <span className="text-white uppercase tracking-tight">INDIA</span>
                                 </span>
                             </Link>
 
@@ -108,11 +108,11 @@ export default function Header() {
                                             <li key={item.name} className="h-full flex items-center relative group/nav">
                                                 <Link 
                                                     href={item.href} 
-                                                    className={`hover:text-brand-red transition-all duration-300 uppercase ${pathname === item.href ? 'text-brand-red' : 'text-gray-300'}`}
+                                                    className={`transition-all duration-300 uppercase ${pathname === item.href ? 'text-brand-red' : 'text-gray-300'}`}
                                                 >
                                                     {item.name}
                                                 </Link>
-                                                <span className={`absolute bottom-0 left-0 w-full h-0.5 bg-brand-red transition-transform duration-300 origin-left ${pathname === item.href ? 'scale-x-100' : 'scale-x-0 group-hover/nav:scale-x-100'}`} />
+                                                <span className={`absolute bottom-0 left-0 w-full h-0.5 bg-brand-red transition-transform duration-300 origin-left ${pathname === item.href ? 'scale-x-100' : 'scale-x-0'}`} />
                                             </li>
                                         ))}
                                     </ul>
@@ -139,7 +139,7 @@ export default function Header() {
                                     className="p-2.5 hover:bg-white/10 rounded-full transition-all duration-300 group"
                                     aria-label="Search"
                                 >
-                                    <Search size={18} className="group-hover:scale-110 transition-transform" />
+                                    <Search size={18} className="transition-transform" />
                                 </button>
                             )}
                             <button 
@@ -147,7 +147,7 @@ export default function Header() {
                                 className="p-2.5 hover:bg-white/10 rounded-full transition-all duration-300 text-brand-red group"
                                 aria-label="Toggle Theme"
                             >
-                                {theme === 'dark' ? <Sun size={18} className="group-hover:rotate-90 transition-transform" /> : <Moon size={18} className="group-hover:-rotate-12 transition-transform" />}
+                                {theme === 'dark' ? <Sun size={18} className="transition-transform" /> : <Moon size={18} className="transition-transform" />}
                             </button>
                             {!isDesktop && (
                                 <button 
@@ -174,7 +174,7 @@ export default function Header() {
                                     <Link 
                                         key={idx} 
                                         href={link.href}
-                                        className="whitespace-nowrap text-[12px] font-medium text-gray-600 hover:text-brand-red border-r border-gray-200 last:border-0 pr-6"
+                                        className="whitespace-nowrap text-[12px] font-medium text-gray-600 border-r border-gray-200 last:border-0 pr-6"
                                     >
                                         {link.name}
                                     </Link>
@@ -191,8 +191,9 @@ export default function Header() {
                     <div className="absolute inset-0 bg-black/60 backdrop-blur-sm" onClick={() => setMobileOpen(false)} />
                     <div className="absolute top-0 right-0 w-[280px] h-full bg-ndtv-black text-white p-6 shadow-2xl flex flex-col">
                         <div className="flex justify-between items-center mb-10">
-                            <span className="text-xl font-black tracking-tighter">
-                                THINK<span className="text-brand-red">INDIA</span> NEWS
+                            <span className="text-xl font-black tracking-tighter flex items-center gap-1 serif-font">
+                                <span className="bg-brand-red text-white px-2 py-0.5 rounded uppercase tracking-tight text-sm">THINK</span>
+                                <span className="text-white uppercase tracking-tight text-sm">INDIA</span>
                             </span>
                             <button onClick={() => setMobileOpen(false)} className="hover:rotate-90 transition-transform" aria-label="Close menu"><X size={24} /></button>
                         </div>
@@ -206,7 +207,7 @@ export default function Header() {
                             <div className="relative flex items-center mt-2">
                                 <input
                                     type="text"
-                                    placeholder="खोजें..."
+                                    placeholder="Search news..."
                                     value={searchQuery}
                                     onChange={(e) => setSearchQuery(e.target.value)}
                                     onKeyDown={(e) => {
@@ -243,21 +244,22 @@ export default function Header() {
 
             {/* Search Overlay */}
             {searchOpen && (
-                <div className="fixed inset-0 bg-ndtv-black/95 z-[3000] flex items-center justify-center p-6 backdrop-blur-md">
-                    <button onClick={() => setSearchOpen(false)} className="absolute top-8 right-8 text-white hover:rotate-90 transition-transform" aria-label="Close search">
+                <div className="fixed inset-0 bg-ndtv-black/95 z-[3000] flex flex-col items-center justify-center p-6 backdrop-blur-md">
+                    <button onClick={() => setSearchOpen(false)} className="absolute top-8 right-8 text-white/60 hover:text-white hover:rotate-90 transition-all duration-300" aria-label="Close search">
                         <X size={36} strokeWidth={1.5} />
                     </button>
-                    <div className="w-full max-w-2xl">
+                    <div className="w-full max-w-2xl text-center">
+                        <div className="text-[10px] font-black text-brand-red uppercase tracking-[0.3em] mb-4">Search News Archives</div>
                         <input
                             type="text"
-                            placeholder="Type to search..."
+                            placeholder="Search keywords, locations, topics..."
                             autoFocus
                             value={searchQuery}
                             onChange={(e) => setSearchQuery(e.target.value)}
                             onKeyDown={handleSearch}
-                            className="w-full bg-transparent border-b-4 border-white pb-4 text-4xl lg:text-6xl text-white font-bold outline-none placeholder:text-white/20"
+                            className="w-full bg-transparent border-b-2 border-white/30 hover:border-white/60 focus:border-brand-red pb-4 text-3xl lg:text-5xl text-white font-bold text-center outline-none transition-colors placeholder:text-white/20"
                         />
-                        <p className="mt-6 text-white/40 font-medium">Press ENTER to reveal the news archives.</p>
+                        <p className="mt-6 text-white/40 text-xs font-bold uppercase tracking-widest">Press ENTER to begin intelligence query.</p>
                     </div>
                 </div>
             )}

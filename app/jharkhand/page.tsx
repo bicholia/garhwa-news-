@@ -40,7 +40,7 @@ export default async function JharkhandPage({ searchParams }: { searchParams: Pr
     return (
         <PublicLayout>
             <div className="min-h-screen">
-                <div className="bg-ndtv-black py-6 lg:py-8 border-b-4 border-brand-red">
+                <div className="bg-white dark:bg-[#0B1120] py-8 lg:py-12 border-b border-gray-100 dark:border-white/5">
                     <div className="container">
                         <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-10">
                             <div>
@@ -48,11 +48,11 @@ export default async function JharkhandPage({ searchParams }: { searchParams: Pr
                                     <span className="bg-brand-red text-white text-[12px] font-black uppercase tracking-[0.25em] px-4 py-1.5 rounded-sm shadow-2xl">
                                         STATE HEADQUARTERS
                                     </span>
-                                    <div className="flex items-center gap-2 text-gray-400 text-[12px] font-bold uppercase tracking-widest">
+                                    <div className="flex items-center gap-2 text-gray-500 dark:text-gray-400 text-[12px] font-bold uppercase tracking-widest">
                                         <MapPin size={16} className="text-brand-red" /> India / Jharkhand
                                     </div>
                                 </div>
-                                <h1 className="text-2xl lg:text-4xl font-black text-white leading-tight uppercase tracking-tighter serif-font">
+                                <h1 className="text-2xl lg:text-4xl font-black text-gray-900 dark:text-white leading-tight uppercase tracking-tighter serif-font">
                                     JHARKHAND <span className="text-brand-red">BUREAU</span>
                                 </h1>
                             </div>
@@ -91,7 +91,7 @@ export default async function JharkhandPage({ searchParams }: { searchParams: Pr
                                                     </h3>
                                                     <div className="mt-6 flex items-center justify-between border-t border-gray-50 pt-4">
                                                         <span className="text-[10px] font-black uppercase tracking-widest text-gray-300">ThinkIndia.press Bureau</span>
-                                                        <span className="text-[10px] font-bold text-gray-400">{new Date(article.publishedAt || article.published_at).toLocaleDateString()}</span>
+                                                        <span className="text-[10px] font-bold text-gray-400" suppressHydrationWarning>{new Date(article.publishedAt || article.published_at).toLocaleDateString('hi-IN')}</span>
                                                     </div>
                                                 </Link>
                                             )

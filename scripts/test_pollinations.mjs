@@ -6,9 +6,9 @@ JSON प्रारूप में जवाब दें: {"title": "", "exce
 संदर्भ: आज गढ़वा में भारी बारिश हुई है।`;
 
 async function testPollinations() {
-    console.log('Testing Pollinations Fallback...');
+    console.log('Testing Pollinations Fallback with model=openai...');
     try {
-        const res = await fetch(`https://text.pollinations.ai/${encodeURIComponent(geoPrompt)}`);
+        const res = await fetch(`https://text.pollinations.ai/${encodeURIComponent(geoPrompt)}?model=openai&json=true`);
         const text = await res.text();
         console.log('Raw Response:', text);
         const jsonStr = text.substring(text.indexOf('{'), text.lastIndexOf('}') + 1);

@@ -1,6 +1,6 @@
 import Link from 'next/link'
 import { createClient } from '@sanity/client'
-import { Newspaper, Sparkles, Megaphone, CheckCircle2, PenLine, ClipboardList, IndianRupee, UploadCloud } from 'lucide-react'
+import { Newspaper, Sparkles, Megaphone, CheckCircle2, PenLine, ClipboardList, IndianRupee, UploadCloud, Image as ImageIcon } from 'lucide-react'
 
 const client = createClient({
     projectId: process.env.NEXT_PUBLIC_SANITY_PROJECT_ID || 'cjfr2ckk',
@@ -53,7 +53,7 @@ export default async function AdminDashboard() {
                 <h1 className="text-2xl lg:text-[1.75rem] font-extrabold text-slate-900 m-0">
                     नमस्ते, Admin!
                 </h1>
-                <p className="text-slate-500 mt-1 lg:mt-1.5 text-xs lg:text-sm">
+                <p className="text-slate-500 mt-1 lg:mt-1.5 text-xs lg:text-sm" suppressHydrationWarning>
                     ThinkIndia.press Admin Panel — आज की तारीख: {new Date().toLocaleDateString('hi-IN', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' })}
                 </p>
             </div>
@@ -129,6 +129,23 @@ export default async function AdminDashboard() {
                     <div>
                         <div style={{ fontSize: '1.1rem', fontWeight: 800, color: '#dc2626' }}>🖼️ इमेज मैनेजर</div>
                         <div style={{ fontSize: '0.82rem', color: '#64748b', marginTop: '0.2rem' }}>बिना फोटो वाली खबरें फिक्स करें</div>
+                    </div>
+                </Link>
+
+                <Link href="/admin/dashboard/image-manager/gallery" style={{
+                    display: 'flex', alignItems: 'center', gap: '1rem',
+                    background: 'linear-gradient(135deg, #fffbeb, #fef3c7)',
+                    border: '2px solid #d97706',
+                    color: '#0f172a', padding: '1.5rem', borderRadius: '1rem',
+                    textDecoration: 'none', fontWeight: 700,
+                    transition: 'box-shadow 0.2s',
+                    cursor: 'pointer'
+                }}
+                >
+                    <span style={{ fontSize: '2.5rem', display: 'flex', alignItems: 'center' }}><ImageIcon size={36} color="#d97706" /></span>
+                    <div>
+                        <div style={{ fontSize: '1.1rem', fontWeight: 800, color: '#d97706' }}>📸 फोटो गैलरी</div>
+                        <div style={{ fontSize: '0.82rem', color: '#64748b', marginTop: '0.2rem' }}>सभी न्यूज़ फोटोज यहाँ देखें</div>
                     </div>
                 </Link>
 

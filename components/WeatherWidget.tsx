@@ -66,17 +66,22 @@ export default function WeatherWidget() {
     if (!mounted || !activeCity || (!weather && loading)) return null
 
     return (
-        <div className={`flex items-center gap-2 text-[11px] font-bold bg-white/10 px-3 py-1.5 rounded-full border transition-colors ${weather?.isLive ? 'border-white/10' : 'border-brand-gold/30'}`} title={weather?.isLive ? 'Live Weather' : 'Demo Mode (Add API Key)'}>
-            <div className="flex-1 min-w-0">
-                <div className="text-[10px] font-bold text-white tracking-widest uppercase mb-0.5 truncate flex items-center gap-1.5">
-                    <MapPin size={10} className="text-brand-gold" />
-                    {activeCity.name}
-                </div>
-                <div className="text-[9px] font-bold text-gray-500 uppercase tracking-[0.2em] flex items-center gap-2">
-                    <span className="w-1.5 h-1.5 rounded-full bg-brand-gold animate-pulse" />
-                    Live Bureau Alert
-                </div>
+        <div 
+            className={`flex items-center gap-3 text-[11px] font-bold bg-white/10 px-3 py-1.5 rounded-full border transition-colors ${weather?.isLive ? 'border-white/10' : 'border-brand-gold/30'}`} 
+            title={weather?.isLive ? 'Live Weather' : 'Demo Mode (Add API Key)'}
+        >
+            <div className="flex items-center gap-1.5 shrink-0 border-r border-white/10 pr-2">
+                <MapPin size={11} className="text-brand-gold" />
+                <span className="text-[10px] font-black text-white uppercase tracking-wider">{activeCity.name}</span>
             </div>
+            
+            {weather && (
+                <div className="flex items-center gap-2">
+                    {getWeatherIcon(weather.condition)}
+                    <span className="text-[11px] font-black text-white">{weather.temp}°C</span>
+                    <span className="text-[9px] font-bold text-brand-gold uppercase tracking-[0.1em] hidden sm:inline truncate max-w-[50px]">{weather.condition}</span>
+                </div>
+            )}
         </div>
     )
 }

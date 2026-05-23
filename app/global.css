@@ -1,28 +1,28 @@
-@import url('https://fonts.googleapis.com/css2?family=Outfit:wght@100;200;300;400;500;600;700;800;900&family=Playfair+Display:ital,wght@0,400;0,500;0,600;0,700;0,800;0,900;1,400;1,500;1,600;1,700;1,800;1,900&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@100;200;300;400;500;600;700;800;900&family=Noto+Serif+Devanagari:wght@100;200;300;400;500;600;700;800;900&family=Outfit:wght@100;200;300;400;500;600;700;800;900&family=Playfair+Display:ital,wght@0,400;0,500;0,600;0,700;0,800;0,900;1,400;1,500;1,600;1,700;1,800;1,900&display=swap');
 
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
 
 :root {
-  --brand-red: #E31E24;
-  --brand-navy: #0F172A;
+  --brand-red: #D91616;
+  --brand-navy: #0B1120;
   --brand-gold: #C5A059;
-  --ndtv-black: #000000;
-  --ndtv-gray: #F1F5F9;
-  --news-text: #0F172A;
+  --ndtv-black: #050505;
+  --ndtv-gray: #F8FAFC;
+  --news-text: #0B1120;
   --news-text-muted: #64748B;
   --white: #ffffff;
-  --border: rgba(15, 23, 42, 0.08);
-  --radius: 12px;
-  --bg-color: #ffffff;
+  --border: rgba(11, 17, 32, 0.06);
+  --radius: 8px;
+  --bg-color: #FAFAFA;
   
   /* PREMIUM FONT STACKS */
-  --font-serif: 'Playfair Display', serif;
-  --font-sans: 'Outfit', sans-serif;
+  --font-serif: 'Noto Serif Devanagari', 'Playfair Display', serif;
+  --font-sans: 'Poppins', 'Outfit', sans-serif;
   
   /* LUXURY SHADOWS */
-  --shadow-premium: 0 10px 40px -10px rgba(15, 23, 42, 0.12);
+  --shadow-premium: 0 10px 40px -10px rgba(11, 17, 32, 0.08);
 }
 
 .dark, [data-theme='dark'] {
@@ -59,7 +59,6 @@ html {
 body {
   font-family: var(--font-sans);
   background-color: var(--bg-color);
-  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.65' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)' opacity='0.03'/%3E%3C/svg%3E");
   color: var(--news-text);
   line-height: 1.7;
   -webkit-font-smoothing: antialiased;
@@ -133,10 +132,10 @@ button {
 .section-title::before {
   content: '';
   display: block;
-  width: 5px;
-  height: 32px;
-  background: linear-gradient(to bottom, var(--brand-red), var(--brand-gold));
-  border-radius: 4px;
+  width: 4px;
+  height: 28px;
+  background: var(--brand-red);
+  border-radius: 2px;
 }
 
 .lead-text {
@@ -267,10 +266,26 @@ button {
 /* ============================================================
    HIDE SCROLLBAR UTILITY
    ============================================================ */
-.hide-scrollbar::-webkit-scrollbar {
+.no-scrollbar::-webkit-scrollbar {
   display: none;
 }
-.hide-scrollbar {
+.no-scrollbar {
   -ms-overflow-style: none;
   scrollbar-width: none;
+}
+
+.pb-safe {
+  padding-bottom: env(safe-area-inset-bottom);
+}
+
+.shadow-premium {
+  box-shadow: var(--shadow-premium);
+}
+
+.shadow-card {
+  box-shadow: 0 4px 20px -2px rgba(11, 17, 32, 0.05);
+}
+
+.dark .shadow-card {
+  box-shadow: 0 4px 20px -2px rgba(0, 0, 0, 0.4);
 }

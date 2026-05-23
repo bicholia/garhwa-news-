@@ -47,7 +47,7 @@ export default function CityGrid({ cities }: CityGridProps) {
                                             {article.title}
                                         </h4>
                                         <div className="mt-2 text-[9px] font-bold uppercase tracking-widest text-gray-600" suppressHydrationWarning>
-                                            Bureau Report · {new Date(article.publishedAt || article.published_at).toLocaleDateString()}
+                                            Bureau Report · <span suppressHydrationWarning>{new Date(article.publishedAt || article.published_at).toLocaleDateString('hi-IN')}</span>
                                         </div>
                                     </Link>
                                 ))}
