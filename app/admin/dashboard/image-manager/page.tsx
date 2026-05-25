@@ -148,8 +148,8 @@ export default function ImageManager() {
                             const imgId = article.featureImage?.asset?._id || article.image_url
                             const imgUrl = article.featureImage?.asset?.url || article.image_url
                             const isMissing = !imgId
-                            const isDuplicate = imgId && duplicateMap[imgId] > 1
-                            const isOriginal = imgId && duplicateMap[imgId] === 1
+                            const isDuplicate = imgId && (duplicateMap[imgId] || 0) > 1
+                            const isOriginal = imgId && (duplicateMap[imgId] || 0) === 1
 
                             return (
                                 <tr key={article._id} className="hover:bg-gray-50 transition-colors">
