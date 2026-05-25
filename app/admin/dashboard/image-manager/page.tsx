@@ -1,19 +1,35 @@
 'use client'
 
-import { useState, useEffect } from 'react'
-import { Image as ImageIcon, Sparkles, CheckCircle, Trash2, ExternalLink, RefreshCw } from 'lucide-react'
-import Link from 'next/link'
-import { fetchMissingImageArticles, attachAIImage, deleteArticle, bulkAttachAIImages } from './actions'
+import { useState, useEffect, useRef } from 'react'
+import { ImageIcon, RefreshCw, Upload, Link as LinkIcon, X } from 'lucide-react'
+import { fetchAllArticles, uploadImageAction } from './actions'
 
 export default function ImageManager() {
     const [articles, setArticles] = useState<any[]>([])
     const [loading, setLoading] = useState(true)
     const [processing, setProcessing] = useState<string | null>(null)
+    const [duplicateMap, setDuplicateMap] = useState<Record<string, number>>({})
+
+    // Modal state
+    const [selectedArticleId, setSelectedArticleId] = useState<string | null>(null)
+    const [uploadType, setUploadType] = useState<'file'|'url'>('file')
+    const [imageUrlInput, setImageUrlInput] = useState('')
+    const fileInputRef = useRef<HTMLInputElement>(null)
 
     const loadData = async () => {
         setLoading(true)
-        const data = await fetchMissingImageArticles()
+        const data = await fetchAllArticles()
         setArticles(data)
+        
+        // Compute duplicates
+        const counts: Record<string, number> = {}
+        data.forEach((article: any) => {
+            const imgId = article.featureImage?.asset?._id || article.image_url
+            if (imgId) {
+                counts[imgId] = (counts[imgId] || 0) + 1
+            }
+        })
+        setDuplicateMap(counts)
         setLoading(false)
     }
 
@@ -21,158 +37,189 @@ export default function ImageManager() {
         loadData()
     }, [])
 
-    const handleAIUpdate = async (id: string, title: string) => {
-        setProcessing(id)
-        const res = await attachAIImage(id, title)
-        if (res.success) {
-            setArticles(prev => prev.filter(a => a._id !== id))
+    const handleUploadSubmit = async (e?: React.FormEvent) => {
+        if (e) e.preventDefault()
+        if (!selectedArticleId) return
+        
+        const formData = new FormData()
+        
+        if (uploadType === 'file') {
+            const file = fileInputRef.current?.files?.[0]
+            if (!file) return alert('Please select a file')
+            formData.append('file', file)
         } else {
-            alert('फोटो अपडेट करने में समस्या आई: ' + res.error)
+            if (!imageUrlInput.trim()) return alert('Please enter an image URL')
+            formData.append('url', imageUrlInput.trim())
+        }
+
+        setProcessing(selectedArticleId)
+        setSelectedArticleId(null)
+        
+        const res = await uploadImageAction(selectedArticleId, formData)
+        if (res.success) {
+            await loadData()
+        } else {
+            alert('Error updating image: ' + res.error)
         }
         setProcessing(null)
+        setImageUrlInput('')
     }
 
-    const handleBulkFix = async () => {
-        if (!confirm(`क्या आप वाकई इन सभी ${articles.length} खबरों में AI फोटो लगाना चाहते हैं? इसमें कुछ समय लग सकता है।`)) return
-        setProcessing('bulk')
-        await bulkAttachAIImages(articles)
-        await loadData()
-        setProcessing(null)
-    }
+    // Modal Component inline
+    const renderModal = () => {
+        if (!selectedArticleId) return null;
+        const article = articles.find(a => a._id === selectedArticleId)
+        return (
+            <div className="fixed inset-0 bg-black/60 z-50 flex items-center justify-center p-4">
+                <div className="bg-white rounded-2xl w-full max-w-md p-6 shadow-2xl relative">
+                    <button onClick={() => setSelectedArticleId(null)} className="absolute top-4 right-4 text-gray-500 hover:text-gray-800">
+                        <X size={24} />
+                    </button>
+                    <h2 className="text-xl font-bold mb-2">Update Image</h2>
+                    <p className="text-sm text-gray-500 mb-6 line-clamp-1">{article?.title}</p>
+                    
+                    <div className="flex gap-2 mb-6">
+                        <button 
+                            onClick={() => setUploadType('file')}
+                            className={`flex-1 py-2 rounded-lg font-bold flex items-center justify-center gap-2 ${uploadType === 'file' ? 'bg-blue-600 text-white' : 'bg-gray-100 text-gray-600'}`}
+                        >
+                            <Upload size={18} /> File
+                        </button>
+                        <button 
+                            onClick={() => setUploadType('url')}
+                            className={`flex-1 py-2 rounded-lg font-bold flex items-center justify-center gap-2 ${uploadType === 'url' ? 'bg-blue-600 text-white' : 'bg-gray-100 text-gray-600'}`}
+                        >
+                            <LinkIcon size={18} /> URL
+                        </button>
+                    </div>
 
-    const handleDelete = async (id: string) => {
-        if (!confirm('क्या आप वाकई इस न्यूज़ को डिलीट करना चाहते हैं?')) return
-        setProcessing(id)
-        const res = await deleteArticle(id)
-        if (res.success) {
-            setArticles(prev => prev.filter(a => a._id !== id))
-        } else {
-            alert('डिलीट करने में समस्या आई: ' + res.error)
-        }
-        setProcessing(null)
+                    <form onSubmit={handleUploadSubmit}>
+                        {uploadType === 'file' ? (
+                            <div className="mb-6">
+                                <input type="file" ref={fileInputRef} accept="image/*" className="w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-blue-50 file:text-blue-700 hover:file:bg-blue-100 cursor-pointer" />
+                            </div>
+                        ) : (
+                            <div className="mb-6">
+                                <input type="url" value={imageUrlInput} onChange={e => setImageUrlInput(e.target.value)} placeholder="Paste image URL here..." className="w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 outline-none" required />
+                            </div>
+                        )}
+                        <button type="submit" className="w-full bg-blue-600 hover:bg-blue-700 text-white font-bold py-3 rounded-xl transition-colors">
+                            Update Image
+                        </button>
+                    </form>
+                </div>
+            </div>
+        )
     }
 
     if (loading) {
         return (
             <div className="flex flex-col items-center justify-center min-h-[400px]">
                 <RefreshCw className="animate-spin text-red-600 mb-4" size={32} />
-                <p className="text-gray-500 font-medium">खबरें लोड हो रही हैं...</p>
+                <p className="text-gray-500 font-medium">Loading News...</p>
             </div>
         )
     }
 
     return (
-        <div className="max-w-6xl mx-auto px-4 py-8">
-            <div className="flex flex-col md:flex-row justify-between items-start md:items-center mb-8 gap-4">
-                <div>
-                    <h1 className="text-3xl font-extrabold text-gray-900 tracking-tight flex items-center gap-2">
-                        <ImageIcon className="text-red-600" /> इमेज मैनेजर
-                    </h1>
-                    <p className="text-gray-500 mt-1 font-medium">इन खबरों में फोटो नहीं लगी है। इन्हें तुरंत फिक्स करें।</p>
-                </div>
-                <div className="flex items-center gap-3">
-                    {articles.length > 0 && (
-                        <button 
-                            onClick={handleBulkFix}
-                            disabled={!!processing}
-                            className="bg-blue-600 hover:bg-blue-700 disabled:opacity-50 text-white px-6 py-2 rounded-2xl font-black shadow-lg flex items-center gap-2 transition-all active:scale-95"
-                        >
-                            {processing === 'bulk' ? <RefreshCw className="animate-spin" size={18} /> : <Sparkles size={18} />}
-                            सभी फिक्स करें
-                        </button>
-                    )}
-                    <button 
-                        onClick={loadData}
-                        className="p-2 hover:bg-gray-100 rounded-full transition-colors"
-                        title="रिफ्रेश करें"
-                    >
-                        <RefreshCw size={20} className="text-gray-600" />
-                    </button>
-                    <div className="bg-red-50 text-red-600 px-6 py-2 rounded-2xl font-black border-2 border-red-100 shadow-sm">
-                        पेंडिंग: {articles.length}
-                    </div>
-                </div>
+        <div className="max-w-7xl mx-auto px-2 sm:px-4 py-8">
+            <div className="flex justify-between items-center mb-6">
+                <h1 className="text-2xl sm:text-3xl font-extrabold text-gray-900 flex items-center gap-2">
+                    <ImageIcon className="text-red-600" /> Image Manager
+                </h1>
+                <button onClick={loadData} className="bg-gray-900 text-white px-4 py-2 rounded-lg font-bold flex items-center gap-2 hover:bg-gray-800">
+                    <RefreshCw size={16} /> Refresh
+                </button>
             </div>
 
-            {articles.length === 0 ? (
-                <div className="bg-white p-16 rounded-[2rem] border-2 border-dashed border-gray-200 text-center shadow-sm">
-                    <div className="w-20 h-20 bg-green-50 rounded-full flex items-center justify-center mx-auto mb-6">
-                        <CheckCircle className="text-green-500" size={40} />
-                    </div>
-                    <h3 className="text-2xl font-black text-gray-900">सब चकाचक है!</h3>
-                    <p className="text-gray-500 mt-2 max-w-sm mx-auto">ऐसी कोई खबर नहीं मिली जिसमें फोटो न हो। आप रिलैक्स कर सकते हैं।</p>
-                    <button 
-                        onClick={loadData} 
-                        className="mt-8 bg-gray-900 text-white px-8 py-3 rounded-xl font-bold hover:bg-gray-800 transition-all shadow-lg"
-                    >
-                        रिफ्रेश करें
-                    </button>
-                </div>
-            ) : (
-                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8">
-                    {articles.map((article) => (
-                        <div key={article._id} className="bg-white rounded-[1.5rem] border border-gray-200 overflow-hidden hover:shadow-xl transition-all duration-300 flex flex-col group">
-                            <div className="h-48 bg-gray-50 flex items-center justify-center border-b border-gray-100 relative group-hover:bg-gray-100 transition-colors">
-                                <ImageIcon size={48} className="text-gray-200 group-hover:scale-110 transition-transform duration-500" />
-                                <div className="absolute top-4 right-4 bg-red-600 text-white text-[10px] px-3 py-1.5 rounded-full font-black uppercase tracking-widest shadow-md">
-                                    No Image
-                                </div>
-                            </div>
-                            <div className="p-6 flex-1 flex flex-col">
-                                <div className="flex items-center gap-2 mb-3">
-                                    <span className="text-[10px] font-bold text-blue-600 bg-blue-50 px-2 py-0.5 rounded uppercase tracking-wider">
-                                        {new Date(article.publishedAt).toLocaleDateString('hi-IN')}
-                                    </span>
-                                </div>
-                                <h3 className="font-black text-gray-900 line-clamp-2 mb-3 text-lg leading-[1.2]">
-                                    {article.title}
-                                </h3>
-                                <p className="text-gray-500 text-sm line-clamp-3 mb-6 flex-1 leading-relaxed">
-                                    {article.excerpt}
-                                </p>
-                                
-                                <div className="space-y-3 pt-6 border-t border-gray-100">
-                                    <button 
-                                        onClick={() => handleAIUpdate(article._id, article.title)}
-                                        disabled={!!processing}
-                                        className="w-full bg-gradient-to-r from-blue-600 to-indigo-700 hover:from-blue-700 hover:to-indigo-800 disabled:opacity-50 text-white py-3.5 rounded-xl font-black text-sm flex items-center justify-center gap-2.5 transition-all shadow-md active:scale-[0.98]"
-                                    >
-                                        {processing === article._id ? (
-                                            <>
-                                                <RefreshCw className="animate-spin" size={18} />
-                                                काम जारी है...
-                                            </>
-                                        ) : (
-                                            <>
-                                                <Sparkles size={18} /> 
-                                                AI फोटो जेनरेट करें
-                                            </>
-                                        )}
-                                    </button>
+            <div className="bg-white rounded-xl shadow border border-gray-200 overflow-hidden overflow-x-auto">
+                <table className="w-full text-left border-collapse min-w-[800px]">
+                    <thead>
+                        <tr className="bg-gray-50 border-b border-gray-200 text-sm uppercase text-gray-500 font-black tracking-wider">
+                            <th className="p-4 w-16 text-center">S.No</th>
+                            <th className="p-4 w-1/3">News</th>
+                            <th className="p-4 text-center w-1/5">Blank Image</th>
+                            <th className="p-4 text-center w-1/5">Duplicate Images</th>
+                            <th className="p-4 text-center w-1/5">Original Image</th>
+                        </tr>
+                    </thead>
+                    <tbody className="divide-y divide-gray-100">
+                        {articles.map((article, index) => {
+                            const imgId = article.featureImage?.asset?._id || article.image_url
+                            const imgUrl = article.featureImage?.asset?.url || article.image_url
+                            const isMissing = !imgId
+                            const isDuplicate = imgId && duplicateMap[imgId] > 1
+                            const isOriginal = imgId && duplicateMap[imgId] === 1
+
+                            return (
+                                <tr key={article._id} className="hover:bg-gray-50 transition-colors">
+                                    <td className="p-4 text-center font-bold text-gray-400">{index + 1}</td>
+                                    <td className="p-4">
+                                        <p className="font-bold text-gray-900 line-clamp-2 text-sm leading-snug">{article.title}</p>
+                                        <span className="text-[10px] text-gray-500">{new Date(article.publishedAt).toLocaleDateString()}</span>
+                                    </td>
                                     
-                                    <div className="flex gap-2">
-                                        <Link 
-                                            href={`/news/${article.slug}`} 
-                                            target="_blank"
-                                            className="flex-1 bg-gray-100 hover:bg-gray-200 text-gray-700 py-3 rounded-xl font-bold text-xs flex items-center justify-center gap-2 transition-colors border border-gray-200"
-                                        >
-                                            <ExternalLink size={14} /> वेब पर देखें
-                                        </Link>
-                                        <button 
-                                            onClick={() => handleDelete(article._id)}
-                                            disabled={!!processing}
-                                            className="bg-red-50 hover:bg-red-100 text-red-600 p-3 rounded-xl transition-colors border border-red-100 flex items-center justify-center disabled:opacity-50"
-                                            title="डिलीट करें"
-                                        >
-                                            <Trash2 size={18} />
-                                        </button>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    ))}
-                </div>
-            )}
+                                    {/* Blank Image Column */}
+                                    <td className="p-4 text-center align-middle">
+                                        {isMissing && (
+                                            <button 
+                                                onClick={() => setSelectedArticleId(article._id)}
+                                                disabled={processing === article._id}
+                                                className="w-24 h-16 mx-auto border-2 border-dashed border-red-300 rounded-lg flex flex-col items-center justify-center text-red-500 hover:bg-red-50 hover:border-red-400 transition-colors group"
+                                            >
+                                                {processing === article._id ? <RefreshCw className="animate-spin" size={20} /> : <Upload size={20} className="group-hover:scale-110 transition-transform" />}
+                                                <span className="text-[10px] font-bold mt-1">Upload</span>
+                                            </button>
+                                        )}
+                                    </td>
+
+                                    {/* Duplicate Images Column */}
+                                    <td className="p-4 text-center align-middle bg-orange-50/30">
+                                        {isDuplicate && (
+                                            <div className="flex flex-col items-center">
+                                                <div className="relative w-24 h-16 rounded-lg overflow-hidden border border-orange-200 mb-2">
+                                                    {/* eslint-disable-next-line @next/next/no-img-element */}
+                                                    <img src={imgUrl} alt="Duplicate" className="object-cover w-full h-full" />
+                                                    <div className="absolute inset-0 bg-orange-600/10" />
+                                                    <span className="absolute top-0 right-0 bg-orange-500 text-white text-[10px] font-black px-1.5 rounded-bl-lg">x{duplicateMap[imgId]}</span>
+                                                </div>
+                                                <button 
+                                                    onClick={() => setSelectedArticleId(article._id)}
+                                                    disabled={processing === article._id}
+                                                    className="text-[11px] font-bold text-orange-700 bg-orange-100 hover:bg-orange-200 px-3 py-1 rounded-full transition-colors flex items-center gap-1"
+                                                >
+                                                    {processing === article._id ? <RefreshCw className="animate-spin" size={12} /> : "Change"}
+                                                </button>
+                                            </div>
+                                        )}
+                                    </td>
+
+                                    {/* Original Image Column */}
+                                    <td className="p-4 text-center align-middle bg-green-50/30">
+                                        {isOriginal && (
+                                            <div className="flex flex-col items-center">
+                                                <div className="relative w-24 h-16 rounded-lg overflow-hidden border border-green-200 mb-2">
+                                                    {/* eslint-disable-next-line @next/next/no-img-element */}
+                                                    <img src={imgUrl} alt="Original" className="object-cover w-full h-full" />
+                                                </div>
+                                                <button 
+                                                    onClick={() => setSelectedArticleId(article._id)}
+                                                    disabled={processing === article._id}
+                                                    className="text-[11px] font-bold text-green-700 bg-green-100 hover:bg-green-200 px-3 py-1 rounded-full transition-colors flex items-center gap-1"
+                                                >
+                                                    {processing === article._id ? <RefreshCw className="animate-spin" size={12} /> : "Edit"}
+                                                </button>
+                                            </div>
+                                        )}
+                                    </td>
+                                </tr>
+                            )
+                        })}
+                    </tbody>
+                </table>
+            </div>
+            
+            {renderModal()}
         </div>
     )
 }

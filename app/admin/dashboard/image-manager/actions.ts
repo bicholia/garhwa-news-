@@ -11,38 +11,67 @@ const client = createClient({
     token: process.env.SANITY_TOKEN
 })
 
-export async function fetchMissingImageArticles() {
-    return await client.fetch(`*[_type == "article" && !defined(featureImage)] | order(publishedAt desc) {
+export async function fetchAllArticles() {
+    return await client.fetch(`*[_type == "article"] | order(publishedAt desc) {
         _id,
         title,
         excerpt,
         "slug": slug.current,
-        publishedAt
+        publishedAt,
+        featureImage {
+           asset-> { _id, url }
+        },
+        image_url
     }`)
 }
 
-export async function attachAIImage(id: string, title: string) {
+export async function uploadImageAction(articleId: string, formData: FormData) {
     try {
-        const imgUrl = `https://pollinations.ai/p/${encodeURIComponent(title)}?width=800&height=450&nologo=true`
-        const response = await fetch(imgUrl)
-        const arrayBuffer = await response.arrayBuffer()
-        
-        const asset = await client.assets.upload('image', Buffer.from(arrayBuffer), {
-            filename: `${id}-ai.jpg`
-        })
-        
-        await client.patch(id).set({
+        const file = formData.get('file') as File | null;
+        const url = formData.get('url') as string | null;
+
+        let assetId = null;
+
+        if (file && file.size > 0) {
+            const arrayBuffer = await file.arrayBuffer();
+            const buffer = Buffer.from(arrayBuffer);
+            const asset = await client.assets.upload('image', buffer, {
+                filename: file.name || `${articleId}.jpg`
+            });
+            assetId = asset._id;
+        } else if (url && url.trim().length > 0) {
+            const response = await fetch(url.trim());
+            if (!response.ok) throw new Error("Failed to fetch image from URL");
+            const arrayBuffer = await response.arrayBuffer();
+            const buffer = Buffer.from(arrayBuffer);
+            
+            const urlParts = url.split('/');
+            let filename = urlParts[urlParts.length - 1] || `${articleId}.jpg`;
+            if (filename.indexOf('.') === -1) filename += '.jpg';
+            
+            const asset = await client.assets.upload('image', buffer, {
+                filename: filename
+            });
+            assetId = asset._id;
+        } else {
+             return { success: false, error: 'No image provided' };
+        }
+
+        await client.patch(articleId).set({
             featureImage: {
                 _type: 'image',
-                asset: { _type: 'reference', _ref: asset._id }
-            }
-        }).commit()
+                asset: { _type: 'reference', _ref: assetId }
+            },
+            image_url: null 
+        }).commit();
+
+        revalidatePath('/');
+        revalidatePath('/admin/dashboard/image-manager');
         
-        revalidatePath('/admin/dashboard/image-manager')
-        return { success: true }
+        return { success: true };
     } catch (error: any) {
-        console.error('attachAIImage error:', error)
-        return { success: false, error: error.message }
+        console.error('uploadImageAction error:', error);
+        return { success: false, error: error.message };
     }
 }
 
@@ -55,18 +84,4 @@ export async function deleteArticle(id: string) {
         console.error('deleteArticle error:', error)
         return { success: false, error: error.message }
     }
-}
-
-export async function bulkAttachAIImages(articles: any[]) {
-    const results = []
-    for (const article of articles) {
-        try {
-            const res = await attachAIImage(article._id, article.title)
-            results.push({ id: article._id, success: res.success })
-        } catch (e) {
-            results.push({ id: article._id, success: false })
-        }
-    }
-    revalidatePath('/')
-    return results
 }
