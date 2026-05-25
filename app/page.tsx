@@ -82,6 +82,9 @@ export default async function Home() {
 
   const isDuplicate = (story: any) => {
     if (!story) return true
+    // Ensure only stories with images are shown on the homepage
+    if (!story.featureImage && !story.image_url) return true
+    
     const id = story._id || story.id
     const normTitle = normalizeText(story.title)
     if (shownIds.has(id) || (normTitle && shownTitles.has(normTitle))) return true
@@ -98,7 +101,12 @@ export default async function Home() {
   const allFeatured = data.featured || []
   
   // 1. Hero Setup
-  const mainStory = allFeatured.find(s => !isDuplicate(s))
+  let mainStory = allFeatured.find(s => s && s.slug && s.slug.toLowerCase().includes('sneha') && !isDuplicate(s));
+  
+  if (!mainStory) {
+    mainStory = allFeatured.find(s => !isDuplicate(s));
+  }
+
   if (mainStory) markAsShown(mainStory)
 
   const topStories: any[] = []
