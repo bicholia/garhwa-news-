@@ -121,6 +121,11 @@ export default function NDTVHero({ mainStory, topStories, trendingStories }: NDT
                                 <h4 className="text-[13px] lg:text-base font-bold text-gray-900 dark:text-white leading-[1.3] group-hover:text-brand-red transition-all duration-300 serif-font">
                                     {story.title}
                                 </h4>
+                                {story.excerpt && (
+                                    <p className="text-gray-500 dark:text-gray-400 text-xs line-clamp-2">
+                                        {story.excerpt}
+                                    </p>
+                                )}
                                 <div className="flex items-center gap-2 text-[9px] font-bold text-gray-400 uppercase tracking-widest pt-1">
                                     <Clock size={10} /> <span suppressHydrationWarning>{new Date(story.publishedAt || story.published_at).toLocaleDateString('hi-IN')}</span>
                                 </div>

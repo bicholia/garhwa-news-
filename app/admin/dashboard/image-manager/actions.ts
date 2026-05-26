@@ -12,7 +12,7 @@ const client = createClient({
 })
 
 export async function fetchAllArticles() {
-    return await client.fetch(`*[_type == "article"] | order(publishedAt desc) {
+    return await client.fetch(`*[_type == "article"] | order(publishedAt desc)[0...5000] {
         _id,
         title,
         excerpt,

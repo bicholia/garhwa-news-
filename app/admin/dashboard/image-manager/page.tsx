@@ -135,7 +135,7 @@ export default function ImageManager() {
             <div className="bg-white rounded-xl shadow border border-gray-200 overflow-hidden overflow-x-auto">
                 <table className="w-full text-left border-collapse min-w-[800px]">
                     <thead>
-                        <tr className="bg-gray-50 border-b border-gray-200 text-sm uppercase text-gray-500 font-black tracking-wider">
+                        <tr className="bg-gray-50 border-b border-gray-200 text-sm uppercase text-gray-500 font-black tracking-wider divide-x divide-gray-200">
                             <th className="p-4 w-16 text-center">S.No</th>
                             <th className="p-4 w-1/3">News</th>
                             <th className="p-4 text-center w-1/5">Blank Image</th>
@@ -152,7 +152,7 @@ export default function ImageManager() {
                             const isOriginal = imgId && (duplicateMap[imgId] || 0) === 1
 
                             return (
-                                <tr key={article._id} className="hover:bg-gray-50 transition-colors">
+                                <tr key={article._id} className="hover:bg-gray-50 transition-colors divide-x divide-gray-100">
                                     <td className="p-4 text-center font-bold text-gray-400">{index + 1}</td>
                                     <td className="p-4">
                                         <p className="font-bold text-gray-900 line-clamp-2 text-sm leading-snug">{article.title}</p>

@@ -79,10 +79,20 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
         </Script>
         <Script
           src="https://news.google.com/swg/js/v1/swg-basic.js"
-          data-publication-id="CAowy83GDA"
-          data-allow-on-dev="true"
           strategy="afterInteractive"
         />
+        <Script id="google-swg-basic" strategy="afterInteractive">
+          {`
+            (self.SWG_BASIC = self.SWG_BASIC || []).push( basicSubscriptions => {
+              basicSubscriptions.init({
+                type: "NewsArticle",
+                isPartOfType: ["Product"],
+                isPartOfProductId: "CAowy83GDA:openaccess",
+                clientOptions: { theme: "light", lang: "en" },
+              });
+            });
+          `}
+        </Script>
         <Script
           async
           src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-0000000000000000"

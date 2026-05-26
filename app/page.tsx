@@ -111,7 +111,7 @@ export default async function Home() {
 
   const topStories: any[] = []
   for (const s of allFeatured) {
-    if (topStories.length >= 15) break
+    if (topStories.length >= 6) break
     if (!isDuplicate(s)) {
       topStories.push(s)
       markAsShown(s)

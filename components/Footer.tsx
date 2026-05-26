@@ -29,10 +29,14 @@ export default function Footer() {
             <div className="container">
                 {/* Branding & Social */}
                 <div className="flex flex-col lg:flex-row justify-between items-start lg:items-center gap-8 mb-12 pb-8 border-b border-gray-200">
-                    <Link href="/" className="shrink-0 flex items-center group">
+                    <Link href="/" className="shrink-0 flex flex-col items-start group">
                         <span className="text-3xl font-black tracking-tighter flex items-center gap-2">
                             <span className="text-black group-hover:text-brand-red transition-colors">THINKINDIA</span>
                             <span className="text-brand-red group-hover:text-black transition-colors">NEWS</span>
+                        </span>
+                        <span className="text-[11px] font-bold tracking-[0.2em] text-gray-500 uppercase mt-1.5 flex items-center gap-2">
+                            <span className="w-6 h-[2px] bg-brand-red rounded-full"></span>
+                            Trusted News Since 2014
                         </span>
                     </Link>
                     <div className="flex flex-col gap-4">
@@ -67,7 +71,7 @@ export default function Footer() {
                     <div className="col-span-2">
                         <h3 className="text-[12px] font-black uppercase tracking-[0.15em] text-brand-red mb-6">About ThinkIndia News</h3>
                         <p className="text-[14px] text-gray-600 leading-relaxed font-medium">
-                            ThinkIndia News is your premium source for regional and national reporting. We focus on in-depth journalism from Garhwa, Palamu, and across Jharkhand, combined with modern digital news standards.
+                            ThinkIndia News is your premium source for regional and national reporting. Delivering trusted news, in-depth journalism, and bringing you the latest from Garhwa, Palamu, Jharkhand, and beyond since 2014.
                         </p>
                     </div>
 
@@ -113,7 +117,7 @@ export default function Footer() {
                 </div>
 
                 <div className="border-t border-gray-200 pt-8 flex flex-col md:flex-row justify-between items-center gap-4 text-[11px] font-bold text-gray-500 uppercase tracking-widest">
-                    <span>© 2026 THINKINDIA NEWS · ALL RIGHTS RESERVED</span>
+                    <span>© 2014-2026 THINKINDIA NEWS · ALL RIGHTS RESERVED</span>
                     <div className="flex flex-wrap justify-center md:justify-end gap-6">
                         <Link href="/privacy-policy" className="hover:text-black">Privacy</Link>
                         <Link href="/terms" className="hover:text-black">Terms</Link>
