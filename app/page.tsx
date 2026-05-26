@@ -188,8 +188,8 @@ export default async function Home() {
 
   return (
     <PublicLayout>
-      <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(orgSchema) }} />
-      <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(websiteSchema) }} />
+      <script type="application/ld+json" suppressHydrationWarning dangerouslySetInnerHTML={{ __html: JSON.stringify(orgSchema) }} />
+      <script type="application/ld+json" suppressHydrationWarning dangerouslySetInnerHTML={{ __html: JSON.stringify(websiteSchema) }} />
       <div className="min-h-screen">
         {/* TIER 0: LEADERBOARD */}
         <div className="bg-white border-b border-gray-100 py-2 hidden lg:flex justify-center items-center">
