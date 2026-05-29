@@ -137,7 +137,7 @@ export default async function AdBanner({
                 </div>
                 <Link
                     href="/contact"
-                    className="bg-brand-navy text-white text-[10px] font-black uppercase tracking-widest px-8 py-3 rounded-full hover:bg-brand-gold transition-all shadow-lg hover:scale-105 active:scale-95"
+                    className="bg-brand-navy text-white text-[10px] font-black uppercase tracking-widest px-8 py-3 rounded-full shadow-lg"
                 >
                     Contact Bureau
                 </Link>
@@ -155,7 +155,7 @@ export default async function AdBanner({
             alt={finalAlt}
             width={finalWidth}
             height={finalHeight}
-            className="rounded-2xl shadow-xl hover:shadow-2xl transition-all duration-500 border border-gray-100"
+            className="rounded-2xl shadow-xl border border-gray-100"
             style={{ width: '100%', height: 'auto', display: 'block' }}
             unoptimized   // Sanity CDN URLs don't need Next.js optimisation
         />
@@ -176,7 +176,7 @@ export default async function AdBanner({
             </span>
             {/* Only wrap in <a> if we actually have a target URL */}
             {finalLink ? (
-                <a href={finalLink} target="_blank" rel="noopener noreferrer nofollow" className="block transform hover:scale-[1.01] transition-transform duration-500">
+                <a href={finalLink} target="_blank" rel="noopener noreferrer nofollow" className="block">
                     {imgElement}
                 </a>
             ) : (
