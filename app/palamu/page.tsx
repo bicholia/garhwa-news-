@@ -93,7 +93,16 @@ export default async function PalamuPage({ searchParams }: { searchParams: Promi
                                             return (
                                                 <Link key={i} href={`/news/${article.slug}`} className="group flex flex-col">
                                                     <div className="aspect-video relative overflow-hidden rounded-sm bg-gray-100 mb-4">
-                                                        {img ? <Image src={img} className="object-cover group-hover:scale-110 transition-transform duration-700" alt={article.title} fill sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw" /> : null}
+                                                        {img ? (
+                                                            <Image src={img} className="object-cover group-hover:scale-110 transition-transform duration-700" alt={article.title} fill sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw" />
+                                                        ) : (
+                                                            <div className="w-full h-full bg-[#0B1120] flex flex-col items-center justify-center">
+                                                                <div className="border border-brand-red/40 rounded-xl px-4 py-3 text-center">
+                                                                    <div className="text-brand-red font-black uppercase tracking-[0.4em] mb-1 text-[7px]">ThinkIndia Bureau</div>
+                                                                    <div className="text-white font-black tracking-tighter text-lg">DIGITAL BUREAU</div>
+                                                                </div>
+                                                            </div>
+                                                        )}
                                                         <div className="absolute top-2 left-2 bg-ndtv-black/80 text-white text-[8px] font-black uppercase px-1.5 py-0.5 rounded">THINK INDIA</div>
                                                     </div>
                                                     <h3 className="text-[16px] font-bold text-gray-900 leading-[1.35] group-hover:text-brand-red transition-colors serif-font line-clamp-3">

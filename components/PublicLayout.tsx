@@ -9,9 +9,9 @@ export default function PublicLayout({ children }: { children: React.ReactNode }
     return (
         <div className="flex flex-col min-h-screen">
             <Header />
-            <main className="flex-grow pb-20 lg:pb-0">
+            <div className="flex-grow pb-20 lg:pb-0">
                 {children}
-            </main>
+            </div>
             <Footer />
             <MobileNav />
         </div>

@@ -162,23 +162,35 @@ export default function Header() {
                     </div>
                 </div>
 
-                {/* TIER 2: White Trending Bar */}
+                {/* TIER 2: Trending News Bar */}
                 {!isScrolled && isDesktop && (
                     <div className="bg-white border-b border-gray-200 py-2 overflow-hidden">
                         <div className="container flex items-center gap-4">
-                            <div className="bg-brand-red text-white text-[10px] font-black px-2 py-1 rounded inline-flex shrink-0">
-                                QUICK LINKS
+                            <div className="bg-brand-red text-white text-[10px] font-black px-2 py-1 rounded inline-flex shrink-0 animate-pulse">
+                                LATEST NEWS
                             </div>
                             <div className="flex items-center gap-6 overflow-x-auto no-scrollbar scroll-smooth">
-                                {quickLinks.map((link, idx) => (
-                                    <Link 
-                                        key={idx} 
-                                        href={link.href}
-                                        className="whitespace-nowrap text-[12px] font-medium text-gray-600 border-r border-gray-200 last:border-0 pr-6"
-                                    >
-                                        {link.name}
-                                    </Link>
-                                ))}
+                                {Array.isArray(breakingNews) && breakingNews.length > 0 ? (
+                                    breakingNews.slice(0, 8).map((news: any, idx: number) => (
+                                        <Link 
+                                            key={idx} 
+                                            href={`/news/${news.slug?.current || news.slug}`}
+                                            className="whitespace-nowrap text-[12px] font-bold text-gray-800 hover:text-brand-red border-r border-gray-200 last:border-0 pr-6 transition-colors"
+                                        >
+                                            {news.title}
+                                        </Link>
+                                    ))
+                                ) : (
+                                    quickLinks.map((link, idx) => (
+                                        <Link 
+                                            key={idx} 
+                                            href={link.href}
+                                            className="whitespace-nowrap text-[12px] font-medium text-gray-600 border-r border-gray-200 last:border-0 pr-6"
+                                        >
+                                            {link.name}
+                                        </Link>
+                                    ))
+                                )}
                             </div>
                         </div>
                     </div>

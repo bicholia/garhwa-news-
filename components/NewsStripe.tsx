@@ -1,6 +1,15 @@
 import Link from 'next/link'
 import { urlFor } from '@/lib/sanity'
-import { TrendingUp, Clock } from 'lucide-react'
+import { TrendingUp } from 'lucide-react'
+
+const DigitalBureauPlaceholder = () => (
+    <div className="w-full h-full bg-[#0B1120] flex flex-col items-center justify-center">
+        <div className="border border-brand-red/40 rounded-lg px-3 py-2 text-center">
+            <div className="text-brand-red font-black uppercase tracking-[0.4em] mb-1 text-[6px]">ThinkIndia Bureau</div>
+            <div className="text-white font-black serif-font tracking-tighter text-sm">DIGITAL BUREAU</div>
+        </div>
+    </div>
+);
 
 interface NewsStripeProps {
     articles: any[]
@@ -64,9 +73,7 @@ export default function NewsStripe({ articles, title, variant = 'horizontal' }: 
                                         className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700" 
                                     />
                                 ) : (
-                                    <div className="w-full h-full bg-brand-navy/5 flex items-center justify-center text-gray-300">
-                                        <Clock size={24} />
-                                    </div>
+                                    <DigitalBureauPlaceholder />
                                 )}
                                 <div className="absolute inset-0 bg-brand-red/5 opacity-0 group-hover:opacity-100 transition-opacity" />
                             </div>

@@ -42,33 +42,38 @@ async function getHomepageData() {
     pgChatra,
     pgIndia
   ] = await Promise.all([
-    getAllNews(30),
-    getNewsByDistrict('garhwa', 15),
-    getNewsByDistrict('palamu', 15),
-    getNewsByCategory('अपराध', 12),
-    getNewsByCategory('राजनीति', 12),
-    getNewsByCategory('खेल', 12),
-    getNewsByCategory('शिक्षा', 12),
-    getNewsByDistrict('latehar', 6),
-    getNewsByDistrict('chatra', 6),
-    getNewsByDistrict('india', 15),
+    getAllNews(60),
+    getNewsByDistrict('garhwa', 30),
+    getNewsByDistrict('palamu', 30),
+    getNewsByCategory('अपराध', 24),
+    getNewsByCategory('राजनीति', 24),
+    getNewsByCategory('खेल', 24),
+    getNewsByCategory('शिक्षा', 24),
+    getNewsByDistrict('latehar', 15),
+    getNewsByDistrict('chatra', 15),
+    getNewsByDistrict('india', 30),
   ])
 
-  const snFeatured = await client.fetch(`*[_type == "article"] | order(publishedAt desc)[0...60] { _id, title, "slug": slug.current, excerpt, featureImage, publishedAt, author->{name} }`)
+  const snFeatured = await client.fetch(`*[_type == "article"] | order(publishedAt desc)[0...100] { _id, title, "slug": slug.current, excerpt, featureImage, publishedAt, author->{name} }`)
   const snAstrology = await client.fetch(`*[_type == "article" && category->slug.current == "astrology"] | order(publishedAt desc)[0...3] { _id, title, "slug": slug.current, excerpt, featureImage, publishedAt, author->{name} }`)
   const snLove = await client.fetch(`*[_type == "article" && category->slug.current == "love-relationships"] | order(publishedAt desc)[0...3] { _id, title, "slug": slug.current, excerpt, featureImage, publishedAt, author->{name} }`)
+  const snNational = await client.fetch(`*[_type == "article" && category->slug.current in ["national", "india", "rashtriya"]] | order(publishedAt desc)[0...15] { _id, title, "slug": slug.current, excerpt, featureImage, publishedAt, author->{name} }`)
+  const snWorld = await client.fetch(`*[_type == "article" && category->slug.current in ["world", "international", "global"]] | order(publishedAt desc)[0...15] { _id, title, "slug": slug.current, excerpt, featureImage, publishedAt, author->{name} }`)
+  const snSneha = await client.fetch(`*[_type == "article" && (title match "*स्नेहा*" || title match "*रूपेश*" || slug.current match "*sneha*")] | order(publishedAt desc) { _id, title, "slug": slug.current, excerpt, featureImage, publishedAt, author->{name} }`)
 
   return {
-    featured: mergeAndSortNews(pgFeatured, snFeatured, 30),
-    garhwa: mergeAndSortNews(pgGarhwa.articles || pgGarhwa, [], 10),
-    palamu: mergeAndSortNews(pgPalamu.articles || pgPalamu, [], 10),
-    crime: mergeAndSortNews(pgCrime, [], 10),
-    politics: mergeAndSortNews(pgPolitics, [], 8),
-    sports: mergeAndSortNews(pgSports, [], 8),
-    education: mergeAndSortNews(pgEducation, [], 8),
-    latehar: pgLatehar.articles || pgLatehar,
-    chatra: pgChatra.articles || pgChatra,
-    india: mergeAndSortNews(pgIndia.articles || pgIndia, [], 10),
+    featured: mergeAndSortNews(pgFeatured, [...(snFeatured || []), ...(snSneha || [])], 100),
+    garhwa: mergeAndSortNews(pgGarhwa.articles || pgGarhwa, [], 30),
+    palamu: mergeAndSortNews(pgPalamu.articles || pgPalamu, [], 30),
+    crime: mergeAndSortNews(pgCrime, [], 20),
+    politics: mergeAndSortNews(pgPolitics, [], 20),
+    sports: mergeAndSortNews(pgSports, [], 20),
+    education: mergeAndSortNews(pgEducation, [], 20),
+    latehar: mergeAndSortNews(pgLatehar.articles || pgLatehar, [], 15),
+    chatra: mergeAndSortNews(pgChatra.articles || pgChatra, [], 15),
+    india: mergeAndSortNews(pgIndia.articles || pgIndia, [], 30),
+    national: snNational || [],
+    world: snWorld || [],
     astrology: snAstrology || [],
     loveRelationships: snLove || [],
   }
@@ -82,8 +87,6 @@ export default async function Home() {
 
   const isDuplicate = (story: any) => {
     if (!story) return true
-    // Ensure only stories with images are shown on the homepage
-    if (!story.featureImage && !story.image_url) return true
     
     const id = story._id || story.id
     const normTitle = normalizeText(story.title)
@@ -98,7 +101,21 @@ export default async function Home() {
     if (normTitle) shownTitles.add(normTitle)
   }
 
-  const allFeatured = data.featured || []
+  let allFeatured = data.featured || []
+  
+  // Prioritize Sneha / Rupesh news to the absolute top of the feed
+  allFeatured = allFeatured.sort((a, b) => {
+    const isSneha = (s: any) => {
+      const t = s.title?.toLowerCase() || '';
+      const sl = s.slug?.toLowerCase() || (s.slug?.current?.toLowerCase()) || '';
+      return t.includes('sneha') || t.includes('rupesh') || t.includes('स्नेहा') || t.includes('रूपेश') || sl.includes('sneha') || sl.includes('rupesh');
+    };
+    const aSneha = isSneha(a);
+    const bSneha = isSneha(b);
+    if (aSneha && !bSneha) return -1;
+    if (!aSneha && bSneha) return 1;
+    return 0; // maintain relative original order if both are sneha or neither is sneha
+  });
   
   // 1. Hero Setup
   let mainStory = allFeatured.find(s => s && s.slug && s.slug.toLowerCase().includes('sneha') && !isDuplicate(s));
@@ -140,13 +157,17 @@ export default async function Home() {
     return res
   }
 
-  const fGarhwa = filterNews(data.garhwa, 10)
-  const fPalamu = filterNews(data.palamu, 10)
-  const fIndia = filterNews(data.india, 10)
-  const fPolitics = filterNews(data.politics, 8)
-  const fCrime = filterNews(data.crime, 8)
-  const fSports = filterNews(data.sports, 8)
-  const fEducation = filterNews(data.education, 8)
+  const fGarhwa = filterNews(data.garhwa, 16)
+  const fPalamu = filterNews(data.palamu, 16)
+  const fIndia = filterNews(data.india, 16)
+  const fPolitics = filterNews(data.politics, 12)
+  const fCrime = filterNews(data.crime, 12)
+  const fSports = filterNews(data.sports, 12)
+  const fEducation = filterNews(data.education, 12)
+  const fLatehar = filterNews(data.latehar, 8)
+  const fChatra = filterNews(data.chatra, 8)
+  const fNational = filterNews(data.national, 12)
+  const fWorld = filterNews(data.world, 12)
 
   // 3. Ad Replacement News (High Density)
   const adTopNews = filterNews(allFeatured, 4)
@@ -223,14 +244,18 @@ export default async function Home() {
             {/* MAIN FEED (LHS) */}
             <div className="lg:col-span-8 xl:col-span-9">
               
-              {/* NATIONAL SECTION */}
-              <NewsGrid title="Local & National News" articles={fIndia} variant="mixed" link="/india" />
+              {/* NATIONAL & WORLD SECTION */}
+              <NewsGrid title="Top National Headlines" articles={fNational.length > 0 ? fNational : fIndia} variant="mixed" link="/category/national" />
+              
+              {fWorld.length > 0 && (
+                <NewsGrid title="International Updates" articles={fWorld} variant="standard" limit={8} link="/category/world" />
+              )}
 
               {/* BIG STORY GRID: GARHWA */}
-              <NewsGrid title="Local News: Garhwa" articles={fGarhwa} variant="standard" limit={8} link="/garhwa" />
+              <NewsGrid title="Local News: Garhwa" articles={fGarhwa} variant="standard" limit={16} link="/garhwa" />
 
               {/* DENSE GRID: PALAMU */}
-              <NewsGrid title="Local News: Palamu" articles={fPalamu} variant="standard" limit={8} link="/palamu" />
+              <NewsGrid title="Local News: Palamu" articles={fPalamu} variant="standard" limit={16} link="/palamu" />
 
               {/* PHOTO GALLERY HOOK */}
               <div className="my-12 lg:my-20">
@@ -250,8 +275,13 @@ export default async function Home() {
               </div>
 
               {/* SECONDARY CATEGORIES */}
-              <NewsGrid title="Local Education News" articles={fEducation} variant="standard" limit={4} link="/category/education" />
-              <NewsGrid title="Local Sports Arena" articles={fSports} variant="mixed" limit={6} link="/category/sports" />
+              <NewsGrid title="Local Education News" articles={fEducation} variant="standard" limit={8} link="/category/education" />
+              <NewsGrid title="Local Sports Arena" articles={fSports} variant="mixed" limit={8} link="/category/sports" />
+              
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-8 lg:gap-12 mt-12">
+                 <NewsGrid title="More Local News" articles={fLatehar} variant="list" link="/latehar" />
+                 <NewsGrid title="Jharkhand Updates" articles={fChatra} variant="list" link="/chatra" />
+              </div>
 
             </div>
 
@@ -270,7 +300,7 @@ export default async function Home() {
                         <TrendingUp size={14} /> Bureau Intel
                     </h3>
                     <div className="space-y-4 relative z-10">
-                        {allFeatured.slice(20, 25).map((article: any, i: number) => (
+                        {allFeatured.slice(20, 35).map((article: any, i: number) => (
                           <Link key={i} href={`/news/${article.slug}`} className="group block border-b border-white/5 pb-3 last:border-0">
                             <div className="flex flex-col flex-1">
                               <div className='min-h-[36px] lg:min-h-[40px]'>

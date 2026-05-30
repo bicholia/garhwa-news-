@@ -83,7 +83,16 @@ export default async function JharkhandPage({ searchParams }: { searchParams: Pr
                                             return (
                                                 <Link key={i} href={`/news/${article.slug}`} className="group flex flex-col">
                                                     <div className="aspect-video relative overflow-hidden rounded-sm bg-gray-100 mb-6 border border-gray-100">
-                                                        {img ? <img src={img} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-1000" alt={article.title} /> : null}
+                                                        {img ? (
+                                                            <img src={img} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-1000" alt={article.title} />
+                                                        ) : (
+                                                            <div className="w-full h-full bg-[#0B1120] flex flex-col items-center justify-center">
+                                                                <div className="border border-brand-red/40 rounded-xl px-4 py-3 text-center">
+                                                                    <div className="text-brand-red font-black uppercase tracking-[0.4em] mb-1 text-[7px]">ThinkIndia Bureau</div>
+                                                                    <div className="text-white font-black tracking-tighter text-lg">DIGITAL BUREAU</div>
+                                                                </div>
+                                                            </div>
+                                                        )}
                                                         <div className="absolute bottom-3 right-3 bg-brand-red text-white text-[9px] font-black uppercase px-2 py-1 rounded-sm opacity-0 group-hover:opacity-100 transition-opacity">Full Report</div>
                                                     </div>
                                                     <h3 className="text-[18px] font-bold text-gray-900 leading-[1.3] group-hover:text-brand-red transition-colors serif-font line-clamp-3">

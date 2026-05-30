@@ -35,8 +35,17 @@ export default function NDTVHero({ mainStory, topStories, trendingStories }: NDT
                 // Fallback
             }
         }
-        return `/placeholder_${Math.abs((story._id?.length || 0) % 4) + 1}.png`;
+        return null;
     };
+
+    const DigitalBureauPlaceholder = ({ large = false }: { large?: boolean }) => (
+        <div className="w-full h-full bg-[#0B1120] flex flex-col items-center justify-center">
+            <div className="border border-brand-red/40 rounded-xl px-6 py-4 text-center">
+                <div className={`text-brand-red font-black uppercase tracking-[0.4em] mb-1.5 ${large ? 'text-[9px]' : 'text-[7px]'}`}>ThinkIndia Bureau</div>
+                <div className={`text-white font-black serif-font tracking-tighter ${large ? 'text-3xl' : 'text-xl'}`}>DIGITAL BUREAU</div>
+            </div>
+        </div>
+    );
 
     if (!mainStory) return null
 
@@ -53,18 +62,22 @@ export default function NDTVHero({ mainStory, topStories, trendingStories }: NDT
                                 href={`/news/${s.slug?.current || s.slug}`}
                                 className={`absolute inset-0 transition-opacity duration-500 ease-in-out ${i === activeHeroIdx ? 'opacity-100 z-10' : 'opacity-0 z-0'}`}
                             >
-                                <img 
-                                    src={resolveImageUrl(s, 1200, 800) || ''} 
-                                    alt={s.title} 
-                                    className="w-full h-full object-cover" 
-                                />
+                                {resolveImageUrl(s, 1200, 800) ? (
+                                    <img 
+                                        src={resolveImageUrl(s, 1200, 800) || ''} 
+                                        alt={s.title} 
+                                        className="w-full h-full object-cover" 
+                                    />
+                                ) : (
+                                    <DigitalBureauPlaceholder large />
+                                )}
                                 <div className="absolute inset-0 bg-gradient-to-t from-[#0B1120] via-[#0B1120]/40 to-transparent opacity-90" />
                                 
                                 <div className="absolute bottom-0 left-0 p-5 lg:p-8 w-full">
                                     <div className="inline-flex items-center gap-2 bg-brand-red text-white text-[8px] lg:text-[9px] font-black px-2.5 py-1 uppercase tracking-[0.2em] rounded-full mb-3 shadow-xl">
                                         <Flame size={10} className="animate-pulse" /> {i === 0 ? 'Bureau Flash' : 'Editorial Choice'}
                                     </div>
-                                    <h1 className="text-lg lg:text-3xl font-black text-white leading-tight lg:leading-[1.1] mb-2 lg:mb-4 serif-font tracking-tight group-hover:text-brand-red transition-colors duration-500 drop-shadow-2xl line-clamp-3 lg:line-clamp-none">
+                                    <h1 className="text-lg lg:text-3xl font-black text-white leading-tight lg:leading-[1.1] mb-2 lg:mb-4 serif-font tracking-tight drop-shadow-2xl line-clamp-3 lg:line-clamp-none">
                                         {s.title}
                                     </h1>
                                     <p className="text-gray-300 text-sm lg:text-base font-medium max-w-2xl line-clamp-2 hidden md:block">
@@ -87,13 +100,17 @@ export default function NDTVHero({ mainStory, topStories, trendingStories }: NDT
                     {topStories.slice(0, 3).map((s, i) => (
                         <Link key={i} href={`/news/${s.slug}`} className="group space-y-3">
                             <div className="aspect-[4/3] rounded-2xl overflow-hidden shadow-sm border border-gray-100 dark:border-white/5 bg-gray-50 dark:bg-white/5">
-                                <img 
-                                    src={resolveImageUrl(s, 400, 300) || ''} 
-                                    className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700 grayscale-[0.5] group-hover:grayscale-0" 
-                                    alt={s.title}
-                                />
+                                {resolveImageUrl(s, 400, 300) ? (
+                                    <img 
+                                        src={resolveImageUrl(s, 400, 300) || ''} 
+                                        className="w-full h-full object-cover" 
+                                        alt={s.title}
+                                    />
+                                ) : (
+                                    <DigitalBureauPlaceholder />
+                                )}
                             </div>
-                            <h5 className="text-[15px] lg:text-lg font-black text-gray-900 dark:text-white line-clamp-2 leading-snug group-hover:text-brand-red transition-colors serif-font">
+                            <h5 className="text-[15px] lg:text-lg font-black text-gray-900 dark:text-white line-clamp-2 leading-snug serif-font">
                                 {s.title}
                             </h5>
                         </Link>

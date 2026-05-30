@@ -248,11 +248,20 @@ export default async function Page({ params }: { params: Promise<{ slug: string 
                                     {(article.related || []).slice(0, 6).map((item: any, i: number) => {
                                         const thumb = (item.featureImage?.asset?._ref && item.featureImage.asset._ref.startsWith('image-'))
                                             ? urlFor(item.featureImage).width(100).height(100).url() 
-                                            : (item.image_url || '/placeholder.png')
+                                            : (item.image_url || null)
                                         return (
                                             <Link key={i} href={`/news/${item.slug}`} className="flex gap-4 group">
                                                 <div className="shrink-0 w-20 h-20 relative rounded-sm overflow-hidden bg-white">
-                                                    <Image src={thumb} alt={item.title} fill className="object-cover group-hover:scale-110 transition-transform" />
+                                                    {thumb ? (
+                                                        <Image src={thumb} alt={item.title} fill className="object-cover group-hover:scale-110 transition-transform" />
+                                                    ) : (
+                                                        <div className="w-full h-full bg-[#0B1120] flex flex-col items-center justify-center">
+                                                            <div className="border border-brand-red/40 rounded-lg px-2 py-1.5 text-center">
+                                                                <div className="text-brand-red font-black uppercase tracking-[0.3em] text-[5px] mb-0.5">ThinkIndia</div>
+                                                                <div className="text-white font-black tracking-tighter text-[10px]">BUREAU</div>
+                                                            </div>
+                                                        </div>
+                                                    )}
                                                 </div>
                                                 <div className="flex flex-col gap-2">
                                                     <h4 className="text-[13px] font-bold text-gray-900 leading-snug group-hover:text-brand-red transition-colors serif-font line-clamp-3">

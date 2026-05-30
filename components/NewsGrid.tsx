@@ -38,16 +38,17 @@ export default function NewsGrid({
                 // Fallback handled below
             }
         }
-        
-        // Fallback to random placeholder
-        const id = article._id || article.id || article.title || '';
-        let hash = 0;
-        for (let i = 0; i < id.length; i++) {
-            hash = id.charCodeAt(i) + ((hash << 5) - hash);
-        }
-        const index = Math.abs(hash % 4) + 1;
-        return `/placeholder_${index}.png`;
+        return null;
     };
+
+    const DigitalBureauPlaceholder = ({ small = false }: { small?: boolean }) => (
+        <div className="w-full h-full bg-[#0B1120] flex flex-col items-center justify-center">
+            <div className="border border-brand-red/40 rounded-xl px-4 py-3 text-center">
+                <div className={`text-brand-red font-black uppercase tracking-[0.4em] mb-1 ${small ? 'text-[6px]' : 'text-[7px]'}`}>ThinkIndia Bureau</div>
+                <div className={`text-white font-black serif-font tracking-tighter ${small ? 'text-sm' : 'text-lg'}`}>DIGITAL BUREAU</div>
+            </div>
+        </div>
+    );
 
     const renderCard = (article: any, index: number, isSmall: boolean = false) => {
         const imageUrl = resolveImageUrl(article, isSmall ? 100 : 400, isSmall ? 80 : 250);
@@ -73,9 +74,7 @@ export default function NewsGrid({
                             className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110" 
                         />
                     ) : (
-                        <div className="w-full h-full flex items-center justify-center bg-gray-50 text-gray-200">
-                            <Clock size={isSmall ? 18 : 36} />
-                        </div>
+                        <DigitalBureauPlaceholder small={isSmall} />
                     )}
                 </div>
 
@@ -136,9 +135,7 @@ export default function NewsGrid({
                                         className="w-full h-full object-cover transition-transform duration-1000 group-hover:scale-110"
                                     />
                                 ) : (
-                                    <div className="w-full h-full bg-brand-navy flex items-center justify-center text-brand-gold/20">
-                                        <Clock size={50} />
-                                    </div>
+                                    <DigitalBureauPlaceholder />
                                 )}
                                 <div className="absolute top-4 left-4 bg-brand-red text-white text-[8px] font-black px-3 py-1.5 uppercase tracking-widest rounded-full shadow-lg">Bureau Elite</div>
                             </div>
