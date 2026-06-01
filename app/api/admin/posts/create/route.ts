@@ -80,7 +80,7 @@ export async function POST(request: Request) {
             },
             district: data.district || 'garhwa',
             featured: data.featured || false,
-            publishedAt: new Date().toISOString(),
+            publishedAt: data.publishedAt ? new Date(data.publishedAt).toISOString() : new Date().toISOString(),
         }
 
         // Feature image (uploaded to Sanity assets)

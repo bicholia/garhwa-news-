@@ -123,6 +123,11 @@ export async function PUT(
                 : data.tags
         }
 
+        if (data.publishedAt) {
+            // data.publishedAt comes from datetime-local input as "YYYY-MM-DDTHH:MM"
+            patch.publishedAt = new Date(data.publishedAt).toISOString()
+        }
+
         const result = await client.patch(id).set(patch).commit()
 
         revalidatePath('/')

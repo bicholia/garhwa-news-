@@ -17,19 +17,46 @@ export default function EditPostPage() {
             .then(r => r.json())
             .then(data => {
                 if (data?._id) {
+                    // Convert Portable Text body[] to plain HTML if bodyHtml not stored
+                    const convertBodyToHtml = (blocks: any[]): string => {
+                        if (!Array.isArray(blocks)) return ''
+                        return blocks.map((block: any) => {
+                            if (block._type === 'image') {
+                                const url = block.asset?.url || ''
+                                return url ? `<figure style="margin:1.5rem 0;text-align:center"><img src="${url}" alt="News Image" style="max-width:100%;border-radius:8px;" /></figure>` : ''
+                            }
+                            if (block._type !== 'block') return ''
+                            const tag = block.style === 'h1' ? 'h1'
+                                : block.style === 'h2' ? 'h2'
+                                : block.style === 'h3' ? 'h3'
+                                : block.style === 'blockquote' ? 'blockquote'
+                                : 'p'
+                            const text = (block.children || []).map((child: any) => {
+                                let t = child.text || ''
+                                if (child.marks?.includes('strong')) t = `<strong>${t}</strong>`
+                                if (child.marks?.includes('em')) t = `<em>${t}</em>`
+                                if (child.marks?.includes('underline')) t = `<u>${t}</u>`
+                                return t
+                            }).join('')
+                            return text ? `<${tag}>${text}</${tag}>` : ''
+                        }).filter(Boolean).join('')
+                    }
+
                     // Normalize data for PostForm
                     setPost({
                         _id: data._id,
                         title: data.title || '',
                         excerpt: data.excerpt || '',
-                        // Body can be stored as bodyHtml (from our custom rich editor)
-                        body: data.bodyHtml || (Array.isArray(data.body) && data.body[0]?.children?.[0]?.text) || '',
+                        // bodyHtml pehle check karo (hamare custom editor se save hota hai)
+                        // Agar nahi hai to Portable Text body ko HTML me convert karo
+                        body: data.bodyHtml || convertBodyToHtml(data.body) || '',
                         category: data.category?.slug?.current || data.category || 'crime',
                         district: data.district || 'garhwa',
                         featured: data.featured || false,
                         featureImageUrl: data.featureImage?.asset?.url || data.featureImageUrl || '',
                         featureImageId: data.featureImage?.asset?._ref || data.featureImageId || '',
                         tags: Array.isArray(data.tags) ? data.tags.join(', ') : (data.tags || ''),
+                        publishedAt: data.publishedAt || '',
                     })
                 } else {
                     setError('खबर नहीं मिली')

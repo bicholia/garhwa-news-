@@ -1,7 +1,7 @@
 import { createClient } from '@sanity/client';
 import dotenv from 'dotenv';
 
-dotenv.config({ path: '.env.local' });
+dotenv.config({ path: '../.env.local' }); if(!process.env.NEXT_PUBLIC_SANITY_PROJECT_ID) dotenv.config({ path: '../.env.production.local' });
 
 const client = createClient({
     projectId: process.env.NEXT_PUBLIC_SANITY_PROJECT_ID,
@@ -48,7 +48,7 @@ async function publishNews() {
         district: "पलामू",
         category: { _type: 'reference', _ref: 'cat-technology' }, // Assuming this exists or will fall back to general
         author: { _type: 'reference', _ref: 'author-admin' },
-        publishedAt: new Date().toISOString(),
+        publishedAt: "2026-04-25T10:00:00.000Z",
         image_url: "https://thinkindia.press/rupesh-ai-hero.png", // Placeholder for visual, user can update in Sanity
         tags: ["AI", "Rupesh Vishwakarma", "Palamu News", "Jharkhand Tech", "Inspiration"]
     };

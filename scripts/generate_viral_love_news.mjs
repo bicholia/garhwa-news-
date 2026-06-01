@@ -108,7 +108,7 @@ async function seedViralLoveNews() {
                 district: 'none',
                 featured: true,
                 isBreaking: false,
-                publishedAt: new Date().toISOString(),
+                publishedAt: (() => { const day = Math.floor(Math.random() * 10) + 21; return `2026-05-${String(day).padStart(2,'0')}T${String(Math.floor(Math.random()*12)+8).padStart(2,'0')}:${String(Math.floor(Math.random()*60)).padStart(2,'0')}:00.000Z`; })(),
                 featureImage: {
                     _type: 'image',
                     asset: { _type: "reference", _ref: imageAsset?._id || "" },

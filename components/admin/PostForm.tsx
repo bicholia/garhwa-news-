@@ -56,6 +56,13 @@ export default function PostForm({ initialData, isEditing }: PostFormProps) {
     const [isDuplicate, setIsDuplicate] = useState(false)
     const [checkingDuplicate, setCheckingDuplicate] = useState(false)
 
+    const toLocalDatetimeValue = (iso?: string) => {
+        const d = iso ? new Date(iso) : new Date()
+        // Format as YYYY-MM-DDTHH:MM for datetime-local input
+        const pad = (n: number) => String(n).padStart(2, '0')
+        return `${d.getFullYear()}-${pad(d.getMonth()+1)}-${pad(d.getDate())}T${pad(d.getHours())}:${pad(d.getMinutes())}`
+    }
+
     const [formData, setFormData] = useState({
         title: initialData?.title || '',
         excerpt: initialData?.excerpt || '',
@@ -67,6 +74,7 @@ export default function PostForm({ initialData, isEditing }: PostFormProps) {
         featureImageId: initialData?.featureImageId || '',
         tags: initialData?.tags || '',
         author: initialData?.author?._ref || 'author-suhasini',
+        publishedAt: toLocalDatetimeValue(initialData?.publishedAt),
     })
 
     const set = (key: string) => (e: any) =>
@@ -373,6 +381,35 @@ export default function PostForm({ initialData, isEditing }: PostFormProps) {
 
                 {/* ===== RIGHT: Settings ===== */}
                 <div className="flex flex-col gap-5 lg:sticky lg:top-[72px]">
+
+                    {/* 📅 Date & Time Changer Card */}
+                    <div style={{ background: 'white', padding: '1.5rem', borderRadius: '1rem', border: '2px solid #fbbf24', boxShadow: '0 2px 12px rgba(251,191,36,0.15)' }}>
+                        <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', marginBottom: '0.75rem' }}>
+                            <span style={{ fontSize: '1.2rem' }}>📅</span>
+                            <span style={{ fontWeight: 800, fontSize: '0.85rem', color: '#92400e', textTransform: 'uppercase', letterSpacing: '0.05em' }}>खबर की तारीख व समय</span>
+                        </div>
+                        <input
+                            type="datetime-local"
+                            value={formData.publishedAt}
+                            onChange={e => setFormData(prev => ({ ...prev, publishedAt: e.target.value }))}
+                            style={{
+                                width: '100%',
+                                padding: '0.85rem 1rem',
+                                border: '2px solid #fde68a',
+                                borderRadius: '0.75rem',
+                                fontSize: '0.9rem',
+                                outline: 'none',
+                                boxSizing: 'border-box' as const,
+                                background: '#fffbeb',
+                                color: '#78350f',
+                                fontWeight: 600,
+                                cursor: 'pointer'
+                            }}
+                        />
+                        <p style={{ fontSize: '0.7rem', color: '#a16207', marginTop: '0.4rem' }}>
+                            ⚠️ यहाँ बदलकर Save करने पर खबर की तारीख बदल जाएगी
+                        </p>
+                    </div>
 
                     {/* Publish Button Card */}
                     <div style={{ background: 'white', padding: '1.5rem', borderRadius: '1rem', border: '1px solid #e2e8f0' }}>

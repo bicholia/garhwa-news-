@@ -1,5 +1,4 @@
 import { NextResponse } from 'next/server'
-import { sendNotificationToTelegram } from '@/lib/telegram'
 
 export async function POST(request: Request) {
     try {
@@ -17,7 +16,7 @@ export async function POST(request: Request) {
 👤 *Name:* ${name}
 📧 *Email:* ${email || 'Not provided'}
 📱 *Phone:* ${phone || 'Not provided'}
-🏢 *Branch:* ${subject || 'General'}
+🏢 *Subject:* ${subject || 'General'}
 
 📝 *Message:*
 ${message}
@@ -25,15 +24,32 @@ ${message}
 ThinkIndia.press Bureau
 `
 
-        const ok = await sendNotificationToTelegram(telegramMessage)
+        // Try to send to Telegram (non-blocking — don't fail the form if Telegram is down)
+        try {
+            const botToken = process.env.TELEGRAM_BOT_TOKEN
+            const chatId = process.env.TELEGRAM_CHAT_ID
 
-        if (ok) {
-            return NextResponse.json({ success: true })
-        } else {
-            // Fallback: Even if telegram fails, we might want to log it or save to DB
-            console.error('Failed to send contact notification to Telegram')
-            return NextResponse.json({ error: 'Failed to send notification' }, { status: 500 })
+            if (botToken && chatId) {
+                await fetch(`https://api.telegram.org/bot${botToken}/sendMessage`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        chat_id: chatId,
+                        text: telegramMessage,
+                        parse_mode: 'Markdown'
+                    })
+                })
+            } else {
+                // Log to server console as fallback
+                console.log('[Contact Form Submission]', { name, email, phone, subject, message })
+            }
+        } catch (telegramErr) {
+            console.error('Telegram delivery failed (non-critical):', telegramErr)
         }
+
+        // Always return success to the user
+        return NextResponse.json({ success: true })
+
     } catch (error) {
         console.error('Contact API Error:', error)
         return NextResponse.json({ error: 'Internal server error' }, { status: 500 })

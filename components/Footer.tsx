@@ -15,7 +15,6 @@ const navLinks = {
     ],
     other: [
         { label: 'About Us', href: '/about' },
-        { label: 'Contact Us', href: '/contact' },
         { label: 'Privacy Policy', href: '/privacy-policy' },
         { label: 'Terms of Service', href: '/terms' },
         { label: 'Disclaimer', href: '/disclaimer' },
@@ -121,7 +120,6 @@ export default function Footer() {
                     <div className="flex flex-wrap justify-center md:justify-end gap-6">
                         <Link href="/privacy-policy" className="hover:text-black">Privacy</Link>
                         <Link href="/terms" className="hover:text-black">Terms</Link>
-                        <Link href="/contact" className="hover:text-black">Feedback</Link>
                         <button 
                             onClick={() => window.dispatchEvent(new CustomEvent('show-install-prompt'))}
                             className="bg-ndtv-black text-white px-3 py-1 rounded text-[10px] hover:bg-brand-red transition-all"
